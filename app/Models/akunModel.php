@@ -16,8 +16,8 @@ class akunModel extends Authenticatable
     public $timestamps = false;
 
     protected $fillable = [
-        'usernama',
-        'pw',
+        'username',
+        'password',
         'nama',
         'alamat',
         'no_hp',
