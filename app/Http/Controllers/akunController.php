@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use App\Models\akunModel;
 use App\Models\kecamatanModel;
 use App\Models\desaModel;
@@ -90,7 +91,7 @@ class akunController extends Controller
 
         return redirect('/login');
     }
-
+    // IKI GET ALL
     public function index(Request $request)
     {
         // 1. Buat kerangka Query dasar (Hanya ambil yang rolenya 'user')
@@ -118,7 +119,7 @@ class akunController extends Controller
 
         return view('pages.akun', compact('data_akun', 'kecamatan', 'desa'));
     }
-
+    // IKI GET BY ID
     public function show($id)
     {
         $akun = akunModel::findOrFail($id);
@@ -261,5 +262,66 @@ class akunController extends Controller
         ]);
 
         return back()->with('success', 'Password untuk pengguna ' . $akun->nama . ' berhasil direset.');
+    }
+
+    public function showForgotPassword()
+    {
+        return view('pages.lupapassword', ['title' => 'Lupa Password']);
+    }
+
+    // Mengirim Link Reset ke Email
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:akun,email'], [
+            'email.exists' => 'Email ini tidak terdaftar di sistem kami.'
+        ]);
+
+        // Mengirim email bawaan Laravel
+        $status = Password::broker()->sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('status', 'Kami telah mengirimkan link reset password ke email Anda!');
+        }
+
+        return back()->withErrors(['email' => 'Gagal mengirim link reset password. Coba lagi nanti.']);
+    }
+
+    // Menampilkan Halaman Ganti Password Baru
+    public function showResetPassword(Request $request, $token)
+    {
+        return view('pages.resetpassword', [
+            'title' => 'Reset Password',
+            'token' => $token,
+            'email' => $request->email
+        ]);
+    }
+
+    //  Perubahan Password
+    public function submitResetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email|exists:akun,email',
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            'password.min' => 'Password minimal harus 6 karakter.'
+        ]);
+
+        $status = Password::broker()->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect('/login')->with('success', 'Password Anda berhasil direset! Silakan login dengan password baru.');
+        }
+
+        return back()->withErrors(['email' => 'Token reset password tidak valid atau sudah kadaluarsa.']);
     }
 }

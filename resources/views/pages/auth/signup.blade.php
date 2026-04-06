@@ -150,7 +150,7 @@
                         <div class="mt-5">
                             <p class="text-center text-sm font-normal text-gray-700 sm:text-start dark:text-gray-400">
                                 Sudah punya akun Smart-Saka?
-                                <a href="/signin" class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Login</a>
+                                <a href="/login" class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Login</a>
                             </p>
                         </div>
 

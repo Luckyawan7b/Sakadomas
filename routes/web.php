@@ -79,7 +79,15 @@ Route::get('/register', [akunController::class, 'showRegister'
 ])->name('register');
 Route::post('/register', [akunController::class, 'register'
 ])->name('register.post');
-Route::post('/logout', [App\Http\Controllers\akunController::class, 'logout'])->name('logout');
+Route::post('/logout', [akunController::class, 'logout'])->name('logout');
+
+// Lupa Password saya lupa
+Route::get('/lupa-password', [akunController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/lupa-password', [akunController::class, 'sendResetLink'])->name('password.email');
+
+// Reset Password link email
+Route::get('/reset-password/{token}', [akunController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [akunController::class, 'submitResetPassword'])->name('password.update');
 
 // Route API untuk Dropdown Desa dinamis
 Route::get('/api/desa/{id_kecamatan}', [akunController::class, 'getDesaByKecamatan']);

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\desaModel;
+use App\Notifications\ResetPasswordNotification;
 
 
 class akunModel extends Authenticatable
@@ -38,5 +39,10 @@ class akunModel extends Authenticatable
     public function getAuthPassword()
     {
         return $this->password;
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

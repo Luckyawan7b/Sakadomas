@@ -66,7 +66,7 @@
                                     </div>
 
                                     <div class="flex items-center justify-between">
-                                        <a href="/reset-password"
+                                        <a href="/lupa-password"
                                             class="text-brand-500 hover:text-brand-600 dark:text-brand-400 text-sm">
                                             Lupa password?
                                         </a>
