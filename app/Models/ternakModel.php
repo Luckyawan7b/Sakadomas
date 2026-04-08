@@ -20,6 +20,7 @@ class ternakModel extends Model
         'status_ternak', // ENUM('sehat','sakit','hamil')
         'status_jual', //ENUM('tidak dijual','siap jual','booking','terjual')
         'last_update', // Date
+        'last_monitor', // Date
         'id_kamar',
         'id_jenis_ternak',
     ];

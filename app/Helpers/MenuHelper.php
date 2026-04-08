@@ -134,15 +134,15 @@ class MenuHelper
                         ],
                         [
                             'name' => 'Data Monitoring',
-                            'path' => '#',
+                            'path' => '/monitoring',
                         ]
                     ],
                 ],
-                [
-                    'name' => 'Kalender',
-                    'icon' => 'calendar',
-                    'path' => '/calendar',
-                ],
+                // [
+                //     'name' => 'Kalender',
+                //     'icon' => 'calendar',
+                //     'path' => '/calendar',
+                // ],
                 [
                     'name' => 'Jadwal Survei',
                     'icon' => 'survei',

@@ -14,7 +14,7 @@ class kamarModel extends Model
     protected $fillable = [
         'nomor_kamar', //TINYINT NOT NULL
         'kapasitas',  //TINYINT NOT NULL
-        'status', // ENUM('terisi','kosong','penuh','karantina')
+        // 'status', // ENUM('terisi','kosong','penuh','karantina')
         'id_kandang'
     ];
 

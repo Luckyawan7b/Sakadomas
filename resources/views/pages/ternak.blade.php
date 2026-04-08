@@ -13,7 +13,9 @@
             <div class="flex flex-wrap items-center gap-3">
                 @php
                     // Cek apakah ada filter yang sedang aktif
-                    $isFiltered = request()->filled('id_jenis_ternak') && request('id_jenis_ternak') !== 'semua' ||
+                    $isFiltered = request()->filled('id_kandang') && request('id_kandang') !== 'semua' ||
+                                  request()->filled('id_jenis_ternak') && request('id_jenis_ternak') !== 'semua' ||
+                                  request()->filled('usia_min') || request()->filled('usia_max') ||
                                   request()->filled('usia_min') || request()->filled('usia_max') ||
                                   request()->filled('berat_min') || request()->filled('berat_max') ||
                                   request()->filled('status_ternak') && request('status_ternak') !== 'semua' ||
@@ -59,14 +61,27 @@
 
                     <form method="GET" action="{{ route('ternak.index') }}" class="flex flex-col gap-5">
 
-                        <div>
-                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Jenis Ternak</label>
-                            <select name="id_jenis_ternak" class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
-                                <option value="semua" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" {{ request('id_jenis_ternak') == 'semua' ? 'selected' : '' }}>Semua Jenis</option>
-                                @foreach($data_jenis as $jenis)
-                                    <option value="{{ $jenis->id_jenis_ternak }}" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" {{ request('id_jenis_ternak') == $jenis->id_jenis_ternak ? 'selected' : '' }}>{{ $jenis->jenis_ternak }}</option>
-                                @endforeach
-                            </select>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Lokasi Kandang</label>
+                                <select name="id_kandang" class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
+                                    <option value="semua" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" {{ request('id_kandang') == 'semua' ? 'selected' : '' }}>Semua Kandang</option>
+                                    @foreach($data_kandang as $kd)
+                                        <option value="{{ $kd->id_kandang }}" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" {{ request('id_kandang') == $kd->id_kandang ? 'selected' : '' }}>Kandang {{ $kd->nomor_kandang }}</option>
+                                    @endforeach
+                                    <option value="kosong" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white font-semibold" {{ request('id_kandang') == 'kosong' ? 'selected' : '' }}>Kosong (Tanpa Kandang)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Jenis Ternak</label>
+                                <select name="id_jenis_ternak" class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
+                                    <option value="semua" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" {{ request('id_jenis_ternak') == 'semua' ? 'selected' : '' }}>Semua Jenis</option>
+                                    @foreach($data_jenis as $jenis)
+                                        <option value="{{ $jenis->id_jenis_ternak }}" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white capitalize" {{ request('id_jenis_ternak') == $jenis->id_jenis_ternak ? 'selected' : '' }}>{{ $jenis->jenis_ternak }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -115,7 +130,7 @@
 
                         <div class="flex items-center gap-3 mt-4 justify-end">
                             {{-- Tombol Reset: Merupakan link yang membuang semua parameter di URL --}}
-                            <a href="{{ route('ternak.index') }}" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] sm:w-auto">
+                            <a href="{{ route('ternak.index') }}" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">
                                 Reset Filter
                             </a>
                             <button type="submit" class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">
@@ -232,7 +247,7 @@
                         </div>
 
                         <div class="flex items-center gap-3 mt-4 justify-end">
-                            <button @click="modalTambah = false" type="button" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 sm:w-auto">Batal</button>
+                            <button @click="modalTambah = false" type="button" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Batal</button>
                             <button type="submit" class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">Simpan Ternak</button>
                         </div>
                     </form>
@@ -302,8 +317,21 @@
 
                                 <td class="py-4 px-4 text-center">
                                     <div class="flex items-center justify-center space-x-3.5">
-                                        <button @click="modalEdit = true" type="button" class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-yellow-500 text-white hover:bg-yellow-600">Edit</button>
-                                        <button @click="modalHapus = true" type="button" class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-red-500 text-white hover:bg-red-600">Hapus</button>
+                                        <a href="{{ route('ternak.detail', $ternak->id_ternak) }}" class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                            Detail
+                                        </a>
+
+                                        <button @click="modalEdit = true" type="button" class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-yellow-500 text-white shadow-theme-xs hover:bg-yellow-600">
+                                            Edit
+                                        </button>
+
+                                        <button @click="modalHapus = true" type="button" class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-red-500 text-white shadow-theme-xs hover:bg-red-600">
+                                            Hapus
+                                        </button>
                                     </div>
                                 </td>
 
@@ -406,7 +434,7 @@
                                                 </div>
 
                                                 <div class="flex items-center gap-3 mt-4 justify-end">
-                                                    <button @click="modalEdit = false" type="button" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 sm:w-auto">Batal</button>
+                                                    <button @click="modalEdit = false" type="button" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Batal</button>
                                                     <button type="submit" class="flex w-full justify-center rounded-lg bg-yellow-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-yellow-600 sm:w-auto">Simpan Perubahan</button>
                                                 </div>
                                             </form>
@@ -424,7 +452,7 @@
                                             <form method="POST" action="{{ route('ternak.delete', $ternak->id_ternak) }}" class="flex justify-center gap-3">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button @click="modalHapus = false" type="button" class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">Batal</button>
+                                                <button @click="modalHapus = false" type="button" class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800  dark:text-gray-300 dark:hover:bg-white/[0.03]">Batal</button>
                                                 <button type="submit" class="rounded-lg bg-red-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-600">Ya, Hapus!</button>
                                             </form>
                                         </div>

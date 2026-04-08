@@ -1,0 +1,383 @@
+{
+    "Cross Texel": [
+        {
+            "month": 0,
+            "weight_male_kg": 4.35,
+            "weight_female_kg": 4.35
+        },
+        {
+            "month": 1,
+            "weight_male_kg": 10.95,
+            "weight_female_kg": 9.75
+        },
+        {
+            "month": 2,
+            "weight_male_kg": 17.55,
+            "weight_female_kg": 15.15
+        },
+        {
+            "month": 3,
+            "weight_male_kg": 24.15,
+            "weight_female_kg": 20.55
+        },
+        {
+            "month": 4,
+            "weight_male_kg": 28.27,
+            "weight_female_kg": 23.92
+        },
+        {
+            "month": 5,
+            "weight_male_kg": 31.99,
+            "weight_female_kg": 26.96
+        },
+        {
+            "month": 6,
+            "weight_male_kg": 35.29,
+            "weight_female_kg": 29.66
+        },
+        {
+            "month": 7,
+            "weight_male_kg": 38.17,
+            "weight_female_kg": 32.02
+        },
+        {
+            "month": 8,
+            "weight_male_kg": 40.65,
+            "weight_female_kg": 34.05
+        },
+        {
+            "month": 9,
+            "weight_male_kg": 42.71,
+            "weight_female_kg": 35.74
+        },
+        {
+            "month": 10,
+            "weight_male_kg": 44.36,
+            "weight_female_kg": 37.09
+        },
+        {
+            "month": 11,
+            "weight_male_kg": 45.6,
+            "weight_female_kg": 38.1
+        },
+        {
+            "month": 12,
+            "weight_male_kg": 46.42,
+            "weight_female_kg": 38.77
+        },
+        {
+            "month": 13,
+            "weight_male_kg": 46.84,
+            "weight_female_kg": 39.11
+        },
+        {
+            "month": 14,
+            "weight_male_kg": 46.84,
+            "weight_female_kg": 39.11
+        },
+        {
+            "month": 15,
+            "weight_male_kg": 46.42,
+            "weight_female_kg": 38.77
+        },
+        {
+            "month": 16,
+            "weight_male_kg": 45.6,
+            "weight_female_kg": 38.1
+        },
+        {
+            "month": 17,
+            "weight_male_kg": 44.36,
+            "weight_female_kg": 37.09
+        },
+        {
+            "month": 18,
+            "weight_male_kg": 42.71,
+            "weight_female_kg": 35.74
+        },
+        {
+            "month": 19,
+            "weight_male_kg": 40.65,
+            "weight_female_kg": 34.05
+        },
+        {
+            "month": 20,
+            "weight_male_kg": 38.17,
+            "weight_female_kg": 32.02
+        },
+        {
+            "month": 21,
+            "weight_male_kg": 35.29,
+            "weight_female_kg": 29.66
+        },
+        {
+            "month": 22,
+            "weight_male_kg": 33.55,
+            "weight_female_kg": 28.24
+        },
+        {
+            "month": 23,
+            "weight_male_kg": 34.05,
+            "weight_female_kg": 28.65
+        },
+        {
+            "month": 24,
+            "weight_male_kg": 34.55,
+            "weight_female_kg": 29.05
+        }
+    ],
+    "Merino": [
+        {
+            "month": 0,
+            "weight_male_kg": 3.5,
+            "weight_female_kg": 3.5
+        },
+        {
+            "month": 1,
+            "weight_male_kg": 8.78,
+            "weight_female_kg": 7.82
+        },
+        {
+            "month": 2,
+            "weight_male_kg": 14.06,
+            "weight_female_kg": 12.14
+        },
+        {
+            "month": 3,
+            "weight_male_kg": 19.34,
+            "weight_female_kg": 16.46
+        },
+        {
+            "month": 4,
+            "weight_male_kg": 22.64,
+            "weight_female_kg": 19.16
+        },
+        {
+            "month": 5,
+            "weight_male_kg": 25.61,
+            "weight_female_kg": 21.59
+        },
+        {
+            "month": 6,
+            "weight_male_kg": 28.25,
+            "weight_female_kg": 23.75
+        },
+        {
+            "month": 7,
+            "weight_male_kg": 30.56,
+            "weight_female_kg": 25.64
+        },
+        {
+            "month": 8,
+            "weight_male_kg": 32.54,
+            "weight_female_kg": 27.26
+        },
+        {
+            "month": 9,
+            "weight_male_kg": 34.19,
+            "weight_female_kg": 28.61
+        },
+        {
+            "month": 10,
+            "weight_male_kg": 35.51,
+            "weight_female_kg": 29.69
+        },
+        {
+            "month": 11,
+            "weight_male_kg": 36.5,
+            "weight_female_kg": 30.5
+        },
+        {
+            "month": 12,
+            "weight_male_kg": 37.16,
+            "weight_female_kg": 31.04
+        },
+        {
+            "month": 13,
+            "weight_male_kg": 37.49,
+            "weight_female_kg": 31.31
+        },
+        {
+            "month": 14,
+            "weight_male_kg": 37.49,
+            "weight_female_kg": 31.31
+        },
+        {
+            "month": 15,
+            "weight_male_kg": 37.16,
+            "weight_female_kg": 31.04
+        },
+        {
+            "month": 16,
+            "weight_male_kg": 36.5,
+            "weight_female_kg": 30.5
+        },
+        {
+            "month": 17,
+            "weight_male_kg": 35.51,
+            "weight_female_kg": 29.69
+        },
+        {
+            "month": 18,
+            "weight_male_kg": 34.19,
+            "weight_female_kg": 28.61
+        },
+        {
+            "month": 19,
+            "weight_male_kg": 32.54,
+            "weight_female_kg": 27.26
+        },
+        {
+            "month": 20,
+            "weight_male_kg": 30.56,
+            "weight_female_kg": 25.64
+        },
+        {
+            "month": 21,
+            "weight_male_kg": 28.25,
+            "weight_female_kg": 23.75
+        },
+        {
+            "month": 22,
+            "weight_male_kg": 26.86,
+            "weight_female_kg": 22.62
+        },
+        {
+            "month": 23,
+            "weight_male_kg": 27.26,
+            "weight_female_kg": 22.94
+        },
+        {
+            "month": 24,
+            "weight_male_kg": 27.66,
+            "weight_female_kg": 23.26
+        }
+    ],
+    "Etawa (PE)": [
+        {
+            "month": 0,
+            "weight_male_kg": 2.33,
+            "weight_female_kg": 2.33
+        },
+        {
+            "month": 1,
+            "weight_male_kg": 5.47,
+            "weight_female_kg": 4.89
+        },
+        {
+            "month": 2,
+            "weight_male_kg": 8.6,
+            "weight_female_kg": 7.46
+        },
+        {
+            "month": 3,
+            "weight_male_kg": 11.73,
+            "weight_female_kg": 10.03
+        },
+        {
+            "month": 4,
+            "weight_male_kg": 13.8,
+            "weight_female_kg": 11.71
+        },
+        {
+            "month": 5,
+            "weight_male_kg": 15.65,
+            "weight_female_kg": 13.23
+        },
+        {
+            "month": 6,
+            "weight_male_kg": 17.3,
+            "weight_female_kg": 14.58
+        },
+        {
+            "month": 7,
+            "weight_male_kg": 18.75,
+            "weight_female_kg": 15.76
+        },
+        {
+            "month": 8,
+            "weight_male_kg": 19.98,
+            "weight_female_kg": 16.78
+        },
+        {
+            "month": 9,
+            "weight_male_kg": 21.02,
+            "weight_female_kg": 17.62
+        },
+        {
+            "month": 10,
+            "weight_male_kg": 21.84,
+            "weight_female_kg": 18.29
+        },
+        {
+            "month": 11,
+            "weight_male_kg": 22.46,
+            "weight_female_kg": 18.8
+        },
+        {
+            "month": 12,
+            "weight_male_kg": 22.87,
+            "weight_female_kg": 19.14
+        },
+        {
+            "month": 13,
+            "weight_male_kg": 23.08,
+            "weight_female_kg": 19.31
+        },
+        {
+            "month": 14,
+            "weight_male_kg": 23.08,
+            "weight_female_kg": 19.31
+        },
+        {
+            "month": 15,
+            "weight_male_kg": 22.87,
+            "weight_female_kg": 19.14
+        },
+        {
+            "month": 16,
+            "weight_male_kg": 22.46,
+            "weight_female_kg": 18.8
+        },
+        {
+            "month": 17,
+            "weight_male_kg": 21.84,
+            "weight_female_kg": 18.29
+        },
+        {
+            "month": 18,
+            "weight_male_kg": 21.02,
+            "weight_female_kg": 17.62
+        },
+        {
+            "month": 19,
+            "weight_male_kg": 19.98,
+            "weight_female_kg": 16.78
+        },
+        {
+            "month": 20,
+            "weight_male_kg": 18.75,
+            "weight_female_kg": 15.76
+        },
+        {
+            "month": 21,
+            "weight_male_kg": 17.3,
+            "weight_female_kg": 14.58
+        },
+        {
+            "month": 22,
+            "weight_male_kg": 16.44,
+            "weight_female_kg": 13.87
+        },
+        {
+            "month": 23,
+            "weight_male_kg": 16.69,
+            "weight_female_kg": 14.07
+        },
+        {
+            "month": 24,
+            "weight_male_kg": 16.93,
+            "weight_female_kg": 14.28
+        }
+    ]
+}

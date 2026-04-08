@@ -28,12 +28,25 @@ class ternakController extends Controller
         $query = ternakModel::with(['kamar.kandang', 'jenis_ternak'])
                             ->orderBy('id_ternak', 'desc');
 
-        // 1. Filter Jenis Ternak
+        // 1. Filter Lokasi Kandang (Baru)
+        if ($request->filled('id_kandang') && $request->id_kandang !== 'semua') {
+            if ($request->id_kandang === 'kosong') {
+                // Jika mencari 'kosong', berarti id_kamar-nya null
+                $query->whereNull('id_kamar');
+            } else {
+                // Jika mencari kandang tertentu, cari lewat relasi kamar
+                $query->whereHas('kamar', function ($q) use ($request) {
+                    $q->where('id_kandang', $request->id_kandang);
+                });
+            }
+        }
+
+        // 2. Filter Jenis Ternak
         if ($request->filled('id_jenis_ternak') && $request->id_jenis_ternak !== 'semua') {
             $query->where('id_jenis_ternak', $request->id_jenis_ternak);
         }
 
-        // 2. Filter Rentang Usia (Bulan)
+        // 3. Filter Rentang Usia (Bulan)
         if ($request->filled('usia_min')) {
             $query->where('usia', '>=', $request->usia_min);
         }
@@ -41,7 +54,7 @@ class ternakController extends Controller
             $query->where('usia', '<=', $request->usia_max);
         }
 
-        // 3. Filter Rentang Berat (Kg)
+        // 4. Filter Rentang Berat (Kg)
         if ($request->filled('berat_min')) {
             $query->where('berat', '>=', $request->berat_min);
         }
@@ -49,12 +62,12 @@ class ternakController extends Controller
             $query->where('berat', '<=', $request->berat_max);
         }
 
-        // 4. Filter Status Kesehatan
+        // 5. Filter Status Kesehatan
         if ($request->filled('status_ternak') && $request->status_ternak !== 'semua') {
             $query->where('status_ternak', $request->status_ternak);
         }
 
-        // 5. Filter Status Penjualan
+        // 6. Filter Status Penjualan
         if ($request->filled('status_jual') && $request->status_jual !== 'semua') {
             $query->where('status_jual', $request->status_jual);
         }
@@ -163,4 +176,73 @@ public function store(Request $request)
 
         return back()->with('success', 'Data ternak berhasil dihapus.');
     }
+
+    public function detail($id)
+    {
+        $ternak = ternakModel::with(['kamar.kandang', 'jenis_ternak'])->findOrFail($id);
+
+        // 1. Ambil Data Riwayat Penyakit (Hanya yang sakit)
+        $riwayat_penyakit = \App\Models\monitorModel::where('id_ternak', $id)
+                            ->whereNotNull('penyakit')
+                            ->where('penyakit', '!=', '')
+                            ->orderBy('tgl_monitoring', 'desc')
+                            ->get();
+
+        // 2. Ambil Semua Data Monitoring untuk Grafik
+        $monitoring = \App\Models\monitorModel::where('id_ternak', $id)
+                            ->orderBy('usia', 'asc')
+                            ->get();
+
+        // 3. Baca File JSON Standar Pertumbuhan
+        $jsonPath = public_path('json/sheep_growth_data.json');
+        $idealData = [];
+
+        if (file_exists($jsonPath)) {
+            $jsonData = json_decode(file_get_contents($jsonPath), true);
+
+            // Mapping nama dari Database ke kunci JSON Anda
+            $mapJenis = [
+                'merino' => 'Merino',
+                'crosstexel' => 'Cross Texel',
+                'etawa' => 'Etawa (PE)'
+            ];
+
+            $namaJenisDb = strtolower($ternak->jenis_ternak->jenis_ternak ?? '');
+            $keyJson = $mapJenis[$namaJenisDb] ?? null;
+
+            if ($keyJson && isset($jsonData[$keyJson])) {
+                $idealData = $jsonData[$keyJson];
+            }
+        }
+
+        // 4. Siapkan Array untuk Grafik (X = Umur Bulan, Y1 = Ideal, Y2 = Aktual)
+        $chartLabels = [];
+        $chartIdeal = [];
+        $chartAktual = [];
+
+        $kelaminKey = $ternak->jenis_kelamin == 'jantan' ? 'weight_male_kg' : 'weight_female_kg';
+
+        // Petakan data monitoring aktual berdasarkan usianya
+        $actualMap = [];
+        foreach($monitoring as $m) {
+            $actualMap[$m->usia] = $m->berat;
+        }
+
+        // Memasukkan berat saat ini juga ke dalam map aktual
+        $actualMap[$ternak->usia] = $ternak->berat;
+
+        // Racik datanya (Maksimal 24 Bulan sesuai JSON)
+        foreach($idealData as $row) {
+            $bulan = $row['month'];
+            $chartLabels[] = $bulan . " Bln";
+            $chartIdeal[] = $row[$kelaminKey];
+
+            // Jika ada data aktual di bulan tersebut, masukkan. Jika tidak, biarkan kosong (null)
+            $chartAktual[] = isset($actualMap[$bulan]) ? $actualMap[$bulan] : null;
+        }
+
+        return view('pages.grafik-ternak', compact('ternak', 'riwayat_penyakit', 'chartLabels', 'chartIdeal', 'chartAktual'));
+    }
+
+
 }

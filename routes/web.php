@@ -7,6 +7,7 @@ use App\Http\Controllers\kandangController;
 use App\Http\Controllers\kamarController;
 use App\Http\Controllers\surveiController;
 use App\Http\Controllers\ternakController;
+use App\Http\Controllers\monitorController;
 
 
 // dashboard pages
@@ -153,9 +154,15 @@ Route::get('/ternak', [ternakController::class, 'index'])->name('ternak.index');
 Route::post('/ternak', [ternakController::class, 'store'])->name('ternak.store');
 Route::put('/ternak/{id}', [ternakController::class, 'update'])->name('ternak.update');
 Route::delete('/ternak/{id}', [ternakController::class, 'delete'])->name('ternak.delete');
+Route::get('/ternak/{id}/detail', [ternakController::class, 'detail'])->name('ternak.detail');
+
 
 Route::get('/kandang/{id_kandang}/kamar/{id_kamar}/ternak', [kamarController::class, 'showTernak'])->name('kamar.ternak');
 
+Route::get('/monitoring', [monitorController::class, 'index'])->name('monitoring.index');
+Route::post('/monitoring', [monitorController::class, 'store'])->name('monitoring.store');
+Route::put('/monitoring/{id}', [monitorController::class, 'update'])->name('monitoring.update');
+Route::delete('/monitoring/{id}', [monitorController::class, 'delete'])->name('monitoring.delete');
 
 
 

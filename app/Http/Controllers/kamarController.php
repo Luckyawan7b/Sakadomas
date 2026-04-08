@@ -79,7 +79,7 @@ class kamarController extends Controller
             'nomor_kamar' => $request->nomor_kamar,
             'kapasitas' => $request->kapasitas, // Simpan kapasitas kamar
             'id_kandang' => $request->id_kandang,
-            'status' => 'kosong', // Status default
+            // 'status' => 'kosong', // Status default
         ]);
 
         return back()->with('success', 'Kamar baru berhasil ditambahkan.');
@@ -90,7 +90,7 @@ class kamarController extends Controller
         $request->validate([
             'id_kandang' => 'required|exists:kandang,id_kandang',
             'kapasitas' => 'required|integer|min:1', // Validasi edit kapasitas
-            'status' => 'required|in:kosong,terisi,penuh,karantina', // ENUM baru
+            // 'status' => 'required|in:kosong,terisi,penuh,karantina', // ENUM baru
             'nomor_kamar' => [
                 'required',
                 'integer',
@@ -121,7 +121,7 @@ class kamarController extends Controller
             'nomor_kamar' => $request->nomor_kamar,
             'kapasitas' => $request->kapasitas, // Update kapasitas kamar
             'id_kandang' => $request->id_kandang,
-            'status' => $request->status,
+            // 'status' => $request->status,
         ]);
 
         return back()->with('success', 'Data kamar berhasil diperbarui.');

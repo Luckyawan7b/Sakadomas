@@ -18,7 +18,7 @@
                         @if (session('success'))
                             <div class="mb-5">
                                 <x-ui.alert variant="success" title="Registrasi Berhasil!" message="{{ session('success') }}"
-                                    :showLink="true" linkHref="/signin" linkText="Ke Halaman Login" />
+                                    :showLink="true" linkHref="/login" linkText="Ke Halaman Login" />
                             </div>
                         @else
                             <form method="POST" action="{{ route('register.post') }}">
