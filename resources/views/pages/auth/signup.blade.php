@@ -164,7 +164,8 @@
                     <x-common.common-grid-shape />
                     <div class="flex max-w-xs flex-col items-center">
                         <a href="/" class="mb-4 block">
-                            <img src="./images/logo/sakadomas.png" alt="Logo" />
+                            {{-- <img src="./images/logo/sakadomas.png" alt="Logo" /> --}}
+                            <img src="https://i.postimg.cc/R098ZMpj/2.png" alt="Logo" style="width:320px; height: auto;" />
                         </a>
                         {{-- <p class="text-center text-gray-400 dark:text-white/60">
                             Free and Open-Source Tailwind CSS Admin Dashboard Template

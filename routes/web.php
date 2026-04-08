@@ -12,13 +12,13 @@ use App\Http\Controllers\monitorController;
 
 // dashboard pages
 Route::get('/', function () {
-    return view('pages.dashboard.ecommerce', ['title' => 'E-commerce Dashboard']);
+    return view('pages.dashboard.ecommerce', ['title' => 'SMART-SAKA | SAKADOMAS']);
 })->name('dashboard');
 
 // calender pages
-Route::get('/calendar', function () {
-    return view('pages.calender', ['title' => 'Calendar']);
-})->name('calendar');
+// Route::get('/calendar', function () {
+//     return view('pages.calender', ['title' => 'Calendar']);
+// })->name('calendar');
 
 // profile pages
 // Route::get('/profile', function () {
@@ -26,34 +26,34 @@ Route::get('/calendar', function () {
 // })->name('profile');
 
 // form pages
-Route::get('/form-elements', function () {
-    return view('pages.form.form-elements', ['title' => 'Form Elements']);
-})->name('form-elements');
+// Route::get('/form-elements', function () {
+//     return view('pages.form.form-elements', ['title' => 'Form Elements']);
+// })->name('form-elements');
 
-// tables pages
-Route::get('/basic-tables', function () {
-    return view('pages.tables.basic-tables', ['title' => 'Basic Tables']);
-})->name('basic-tables');
+// // tables pages
+// Route::get('/basic-tables', function () {
+//     return view('pages.tables.basic-tables', ['title' => 'Basic Tables']);
+// })->name('basic-tables');
 
-// pages
+// // pages
 
-Route::get('/blank', function () {
-    return view('pages.blank', ['title' => 'Blank']);
-})->name('blank');
+// Route::get('/blank', function () {
+//     return view('pages.blank', ['title' => 'Blank']);
+// })->name('blank');
 
-// error pages
-Route::get('/error-404', function () {
-    return view('pages.errors.error-404', ['title' => 'Error 404']);
-})->name('error-404');
+// // error pages
+// Route::get('/error-404', function () {
+//     return view('pages.errors.error-404', ['title' => 'Error 404']);
+// })->name('error-404');
 
-// chart pages
-Route::get('/line-chart', function () {
-    return view('pages.chart.line-chart', ['title' => 'Line Chart']);
-})->name('line-chart');
+// // chart pages
+// Route::get('/line-chart', function () {
+//     return view('pages.chart.line-chart', ['title' => 'Line Chart']);
+// })->name('line-chart');
 
-Route::get('/bar-chart', function () {
-    return view('pages.chart.bar-chart', ['title' => 'Bar Chart']);
-})->name('bar-chart');
+// Route::get('/bar-chart', function () {
+//     return view('pages.chart.bar-chart', ['title' => 'Bar Chart']);
+// })->name('bar-chart');
 
 
 // authentication pages
@@ -72,9 +72,9 @@ Route::get('/login', [akunController::class, 'showLogin'])->name('login');
 // Memproses data login
 Route::post('/login', [akunController::class, 'login'])->name('login.post');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware('auth');
 
 Route::get('/register', [akunController::class, 'showRegister'
 ])->name('register');
@@ -94,34 +94,34 @@ Route::post('/reset-password', [akunController::class, 'submitResetPassword'])->
 Route::get('/api/desa/{id_kecamatan}', [akunController::class, 'getDesaByKecamatan']);
 
 // ui elements pages
-Route::get('/alerts', function () {
-    return view('pages.ui-elements.alerts', ['title' => 'Alerts']);
-})->name('alerts');
+// Route::get('/alerts', function () {
+//     return view('pages.ui-elements.alerts', ['title' => 'Alerts']);
+// })->name('alerts');
 
-Route::get('/avatars', function () {
-    return view('pages.ui-elements.avatars', ['title' => 'Avatars']);
-})->name('avatars');
+// Route::get('/avatars', function () {
+//     return view('pages.ui-elements.avatars', ['title' => 'Avatars']);
+// })->name('avatars');
 
-Route::get('/badge', function () {
-    return view('pages.ui-elements.badges', ['title' => 'Badges']);
-})->name('badges');
+// Route::get('/badge', function () {
+//     return view('pages.ui-elements.badges', ['title' => 'Badges']);
+// })->name('badges');
 
-Route::get('/buttons', function () {
-    return view('pages.ui-elements.buttons', ['title' => 'Buttons']);
-})->name('buttons');
+// Route::get('/buttons', function () {
+//     return view('pages.ui-elements.buttons', ['title' => 'Buttons']);
+// })->name('buttons');
 
-Route::get('/image', function () {
-    return view('pages.ui-elements.images', ['title' => 'Images']);
-})->name('images');
+// Route::get('/image', function () {
+//     return view('pages.ui-elements.images', ['title' => 'Images']);
+// })->name('images');
 
-Route::get('/videos', function () {
-    return view('pages.ui-elements.videos', ['title' => 'Videos']);
-})->name('videos');
+// Route::get('/videos', function () {
+//     return view('pages.ui-elements.videos', ['title' => 'Videos']);
+// })->name('videos');
 
 //Manajemen Data Akun
 Route::get('/data-akun', [akunController::class, 'index'])->name('akun.index');
 Route::get('/data-akun/{id}', [akunController::class, 'show'])->name('akun.show');
-Route::post('/data-akun', [App\Http\Controllers\akunController::class, 'store'])->name('akun.store');
+Route::post('/data-akun', [akunController::class, 'store'])->name('akun.store');
 Route::get('/data-akun/{id}/edit', [akunController::class, 'edit'])->name('akun.edit');
 Route::put('/data-akun/{id}', [akunController::class, 'update'])->name('akun.update');
 

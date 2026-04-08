@@ -27,7 +27,7 @@ class akunController extends Controller
     public function showRegister()
     {
         $kecamatan = kecamatanModel::all();
-        return view('pages.auth.signup', ['title' => 'Sign Up'], compact('kecamatan'));
+        return view('pages.auth.signup', ['title' => 'Register | SMART-SAKA'], compact('kecamatan'));
     }
 
     public function register(Request $request)
@@ -61,7 +61,7 @@ class akunController extends Controller
 
     public function showLogin()
     {
-        return view('pages.auth.signin');
+        return view('pages.auth.signin',['title' => 'Login | SMART-SAKA']);
     }
 
     public function login(Request $request)

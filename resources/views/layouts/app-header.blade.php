@@ -50,8 +50,10 @@
 
             <!-- Logo (mobile only) -->
             <a href="/" class="xl:hidden">
-                <img class="dark:hidden" src="/images/logo/smart-saka.png" alt="Logo" />
-                <img class="hidden dark:block" src="/images/logo/smart-saka.png" alt="Logo" />
+                {{-- <img class="dark:hidden" src="https://i.postimg.cc/vmQ89wSd/1.png" alt="Logo" /> --}}
+                <img class="dark:hidden" src="./images/logo/1.png" alt="Logo" />
+                {{-- <img class="hidden dark:block" src="https://i.postimg.cc/R098ZMpj/2.png" alt="Logo" /> --}}
+                <img class="hidden dark:block" src="./images/logo/2.png" alt="Logo" />
             </a>
 
             <!-- Application Menu Toggle (mobile only) -->
