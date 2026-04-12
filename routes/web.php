@@ -15,6 +15,14 @@ Route::get('/', function () {
     return view('pages.dashboard.ecommerce', ['title' => 'SMART-SAKA | SAKADOMAS']);
 })->name('dashboard');
 
+// Route::get('/test', function () {
+//     return view('pages.dashboard.testingDashboard', ['title' => 'SMART-SAKA | SAKADOMAS']);
+// })->name('dashboard2');
+
+Route::get('/test', function () {
+    return view('pages.tesLogin', ['title' => 'SMART-SAKA | SAKADOMAS']);
+})->name('dashboard2');
+
 // calender pages
 // Route::get('/calendar', function () {
 //     return view('pages.calender', ['title' => 'Calendar']);

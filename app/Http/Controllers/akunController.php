@@ -34,7 +34,7 @@ class akunController extends Controller
     {
         $request->validate([
             'username' => 'required|string|max:255|unique:akun,username|alpha_num',
-            'email'    => 'nullable|email|max:100|unique:akun,email',
+            'email'    => 'required|email|max:100|unique:akun,email',
             'password' => 'required|string|min:6',
             'nama'     => 'required|string|max:255',
             'alamat'   => 'required|string',

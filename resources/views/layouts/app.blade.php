@@ -7,8 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    {{-- <link rel="icon" href="https://i.postimg.cc/L51FGms2/Logo_Sakadomas.ico.png"> --}}
-    <link rel="icon" src="./images/logo/Logo_Sakadomas.png">
+    <link rel="icon" href="https://i.postimg.cc/L51FGms2/Logo_Sakadomas.ico.png">
+    {{-- <link rel="icon" src="./images/logo/Logo_Sakadomas.png"> --}}
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>

@@ -126,10 +126,12 @@ public function store(Request $request)
 
     public function update(Request $request, $id)
     {
+        // 1. Jika dikirim kosong dari dropdown, ubah jadi null
         if ($request->id_kamar === 'kosong' || $request->id_kamar === '') {
             $request->merge(['id_kamar' => null]);
         }
 
+        // 2. Validasi Input Dasar
         $request->validate([
             'id_jenis_ternak' => 'required',
             'id_kamar' => 'nullable|exists:kamar,id_kamar',
@@ -143,10 +145,12 @@ public function store(Request $request)
 
         $ternak = ternakModel::findOrFail($id);
 
+        // 3. LOGIKA BARU: Cek kapasitas HANYA jika pindah kamar
         if ($request->id_kamar && $request->id_kamar != $ternak->id_kamar) {
             $kamar_tujuan = kamarModel::findOrFail($request->id_kamar);
             $jumlah_isi_tujuan = ternakModel::where('id_kamar', $request->id_kamar)->count();
 
+            // Jika jumlah penghuni di kamar tujuan sudah mencapai batasnya
             if ($jumlah_isi_tujuan >= $kamar_tujuan->kapasitas) {
                 return back()->withErrors([
                     'id_kamar' => 'Gagal memindah! Kamar tujuan (' . $kamar_tujuan->nomor_kamar . ') sudah penuh.'
@@ -154,6 +158,7 @@ public function store(Request $request)
             }
         }
 
+        // 4. Update Data jika Lolos Validasi
         $ternak->update([
             'id_jenis_ternak' => $request->id_jenis_ternak,
             'id_kamar' => $request->id_kamar,

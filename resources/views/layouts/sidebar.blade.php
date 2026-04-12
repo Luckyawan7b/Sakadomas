@@ -64,19 +64,19 @@
         'xl:justify-center' :
         'justify-start'">
         <a href="/">
-            <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="dark:hidden" src="/images/logo/1.png" alt="Logo" width="100%" />
             {{-- <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="dark:hidden" src="https://i.postimg.cc/vmQ89wSd/1.png" alt="Logo" width="100%" /> --}}
+                class="dark:hidden" src="/images/logo/1.png" alt="Logo" width="100%" /> --}}
+            <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
+                class="dark:hidden" src="https://i.postimg.cc/vmQ89wSd/1.png" alt="Logo" width="100%" />
                 {{-- class="dark:hidden" src="https://i.postimg.cc/nrZMd931/No_slogan.png" alt="Logo" width="100%" /> --}}
             {{-- <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
                 class="hidden dark:block" src="/images/logo/smart-saka.png" alt="Logo" width="150" height="40" /> --}}
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                {{-- class="hidden dark:block" src="https://i.postimg.cc/tRFQNM0w/Drag-Mode-(2).png" alt="Logo" width="100%"  /> --}}
-                class="hidden dark:block" src="./images/logo/2.png" alt="Logo" width="100%"  />
+                class="hidden dark:block" src="https://i.postimg.cc/tRFQNM0w/Drag-Mode-(2).png" alt="Logo" width="100%"  />
+                {{-- class="hidden dark:block" src="./images/logo/2.png" alt="Logo" width="100%"  /> --}}
             <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
-                {{-- src="https://i.postimg.cc/yNV69CrK/Logo_Sakadomas.png" alt="Logo" width="32" height="32" /> --}}
-                src="./images/logo/Logo_Sakadomas.png" alt="Logo" width="32" height="32" />
+                src="https://i.postimg.cc/yNV69CrK/Logo_Sakadomas.png" alt="Logo" width="32" height="32" />
+                {{-- src="./images/logo/Logo_Sakadomas.png" alt="Logo" width="32" height="32" /> --}}
 
         </a>
     </div>
