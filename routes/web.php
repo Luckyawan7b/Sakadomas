@@ -8,7 +8,13 @@ use App\Http\Controllers\kamarController;
 use App\Http\Controllers\surveiController;
 use App\Http\Controllers\ternakController;
 use App\Http\Controllers\monitorController;
+use App\Http\Controllers\transaksiController;
 
+/*
+|--------------------------------------------------------------------------
+| Guest Routes — Hanya bisa diakses jika belum login
+|--------------------------------------------------------------------------
+*/
 
 // dashboard pages
 Route::get('/', function () {
@@ -19,9 +25,9 @@ Route::get('/', function () {
 //     return view('pages.dashboard.testingDashboard', ['title' => 'SMART-SAKA | SAKADOMAS']);
 // })->name('dashboard2');
 
-Route::get('/test', function () {
-    return view('pages.tesLogin', ['title' => 'SMART-SAKA | SAKADOMAS']);
-})->name('dashboard2');
+// Route::get('/test', function () {
+//     return view('pages.tesLogin', ['title' => 'SMART-SAKA | SAKADOMAS']);
+// })->name('dashboard2');
 
 // calender pages
 // Route::get('/calendar', function () {
@@ -63,44 +69,6 @@ Route::get('/test', function () {
 //     return view('pages.chart.bar-chart', ['title' => 'Bar Chart']);
 // })->name('bar-chart');
 
-
-// authentication pages
-// Route::get('/signin', function () {
-//     return view('pages.auth.signin', ['title' => 'Sign In']);
-// })->name('signin');
-
-// Route::get('/signup', function () {
-//     return view('pages.auth.signup', ['title' => 'Sign Up']);
-// })->name('signup');
-
-
-// Menampilkan halaman login
-Route::get('/login', [akunController::class, 'showLogin'])->name('login');
-
-// Memproses data login
-Route::post('/login', [akunController::class, 'login'])->name('login.post');
-
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware('auth');
-
-Route::get('/register', [akunController::class, 'showRegister'
-])->name('register');
-Route::post('/register', [akunController::class, 'register'
-])->name('register.post');
-Route::post('/logout', [akunController::class, 'logout'])->name('logout');
-
-// Lupa Password saya lupa
-Route::get('/lupa-password', [akunController::class, 'showForgotPassword'])->name('password.request');
-Route::post('/lupa-password', [akunController::class, 'sendResetLink'])->name('password.email');
-
-// Reset Password link email
-Route::get('/reset-password/{token}', [akunController::class, 'showResetPassword'])->name('password.reset');
-Route::post('/reset-password', [akunController::class, 'submitResetPassword'])->name('password.update');
-
-// Route API untuk Dropdown Desa dinamis
-Route::get('/api/desa/{id_kecamatan}', [akunController::class, 'getDesaByKecamatan']);
-
 // ui elements pages
 // Route::get('/alerts', function () {
 //     return view('pages.ui-elements.alerts', ['title' => 'Alerts']);
@@ -125,6 +93,68 @@ Route::get('/api/desa/{id_kecamatan}', [akunController::class, 'getDesaByKecamat
 // Route::get('/videos', function () {
 //     return view('pages.ui-elements.videos', ['title' => 'Videos']);
 // })->name('videos');
+
+
+// authentication pages
+// Route::get('/signin', function () {
+//     return view('pages.auth.signin', ['title' => 'Sign In']);
+// })->name('signin');
+
+// Route::get('/signup', function () {
+//     return view('pages.auth.signup', ['title' => 'Sign Up']);
+// })->name('signup');
+
+
+// login
+Route::get('/login', [akunController::class, 'showLogin'])->name('login');
+Route::post('/login', [akunController::class, 'login'])->name('login.post');
+
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware('auth');
+// Route::get('/register', [RegisteredUserController::class, 'create'])
+//         ->name('register');
+
+// Route::post('/register', [RegisteredUserController::class, 'store']);
+
+// Route::get('/register', [akunController::class, 'showRegister'
+// ])->name('register');
+// Route::post('/register', [akunController::class, 'register'
+// ])->name('register.post');
+
+// INTEGRASI LANDING CSS
+Route::get('/register', [akunController::class, 'showRegister'
+])->name('register');
+Route::post('/register', [akunController::class, 'register'
+])->name('register.post');
+
+
+Route::post('/logout', [akunController::class, 'logout'])->name('logout');
+
+// Lupa Password saya lupa
+Route::get('/lupa-password', [akunController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/lupa-password', [akunController::class, 'sendResetLink'])->name('password.email');
+
+// Reset Password link email
+Route::get('/reset-password/{token}', [akunController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [akunController::class, 'submitResetPassword'])->name('password.update');
+
+// Route API untuk Dropdown Desa dinamis
+Route::get('/api/desa/{id_kecamatan}', [akunController::class, 'getDesaByKecamatan']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Pelanggan Routes — Hanya bisa diakses jika login sebagai pelanggan
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes — Hanya bisa diakses jika login sebagai admin
+|--------------------------------------------------------------------------
+*/
 
 //Manajemen Data Akun
 Route::get('/data-akun', [akunController::class, 'index'])->name('akun.index');
@@ -172,7 +202,12 @@ Route::post('/monitoring', [monitorController::class, 'store'])->name('monitorin
 Route::put('/monitoring/{id}', [monitorController::class, 'update'])->name('monitoring.update');
 Route::delete('/monitoring/{id}', [monitorController::class, 'delete'])->name('monitoring.delete');
 
+Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi.index');
+Route::post('/transaksi/tambah', [transaksiController::class, 'store'])->name('transaksi.store');
+Route::put('/transaksi/update/{id}', [transaksiController::class, 'update'])->name('transaksi.update');
+Route::delete('/transaksi/hapus/{id}', [transaksiController::class, 'delete'])->name('transaksi.delete');
 
+Route::get('/transaksi/rekap', [transaksiController::class, 'rekap'])->name('transaksi.rekap');
 
 
 

@@ -27,7 +27,8 @@ class akunController extends Controller
     public function showRegister()
     {
         $kecamatan = kecamatanModel::all();
-        return view('pages.auth.signup', ['title' => 'Register | SMART-SAKA'], compact('kecamatan'));
+        return view('auth.register', ['title' => 'Register | SMART-SAKA'], compact('kecamatan'));
+        // return view('pages.auth.signup', ['title' => 'Register | SMART-SAKA'], compact('kecamatan'));
     }
 
     public function register(Request $request)
@@ -61,25 +62,34 @@ class akunController extends Controller
 
     public function showLogin()
     {
-        return view('pages.auth.signin',['title' => 'Login | SMART-SAKA']);
+        return view('auth.login',['title' => 'Login | SMART-SAKA']);
+        // return view('pages.auth.signin',['title' => 'Login | SMART-SAKA']);
     }
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'username' => 'required|string',
+        $request->validate([
+            'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
+        $input = $request->input('login');
+
+        $fieldType = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $fieldType => $input,
+            'password' => $request->input('password'),
+        ];
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
             return redirect()->intended('/');
         }
 
         return back()->withErrors([
-            'username' => 'Username atau password yang Anda masukkan salah.',
-        ])->onlyInput('username');
+            'login' => 'Username/Email atau password yang Anda masukkan salah.',
+        ])->onlyInput('login');
     }
 
     // Memproses logout
@@ -266,7 +276,8 @@ class akunController extends Controller
 
     public function showForgotPassword()
     {
-        return view('pages.lupapassword', ['title' => 'Lupa Password']);
+        // return view('pages.lupapassword', ['title' => 'Lupa Password']);
+        return view('auth.forgot-password', ['title' => 'Lupa Password']);
     }
 
     // Mengirim Link Reset ke Email
@@ -291,7 +302,8 @@ class akunController extends Controller
     // Menampilkan Halaman Ganti Password Baru
     public function showResetPassword(Request $request, $token)
     {
-        return view('pages.resetpassword', [
+        // return view('pages.resetpassword', [
+        return view('auth.reset-password', [
             'title' => 'Reset Password',
             'token' => $token,
             'email' => $request->email

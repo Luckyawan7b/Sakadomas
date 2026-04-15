@@ -161,11 +161,11 @@ class MenuHelper
                     'subItems' => [
                         [
                             'name' => 'Data Transaksi',
-                            'path' => '#',
+                            'path' => '/transaksi',
                         ],
                         [
                             'name' => 'Rekap Transaksi',
-                            'path' => '#',
+                            'path' => '/transaksi/rekap',
                         ]
                     ],
                 ]

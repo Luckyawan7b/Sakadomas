@@ -1,141 +1,578 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
-
+<html class="light" lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Smart-Saka | Pilihan Cerdas Penikmat Domba</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
-    <title>{{ $title ?? 'Reset Password' }} | SMART-SAKA</title>
+    <!-- Tailwind CSS (CDN for prototype, dev will use npm/vite) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.store('theme', {
-                init() {
-                    const savedTheme = localStorage.getItem('theme');
-                    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' :
-                        'light';
-                    this.theme = savedTheme || systemTheme;
-                    this.updateTheme();
-                },
-                theme: 'light',
-                toggle() {
-                    this.theme = this.theme === 'light' ? 'dark' : 'light';
-                    localStorage.setItem('theme', this.theme);
-                    this.updateTheme();
-                },
-                updateTheme() {
-                    const html = document.documentElement;
-                    const body = document.body;
-                    if (this.theme === 'dark') {
-                        html.classList.add('dark');
-                        body.classList.add('dark', 'bg-gray-900');
-                    } else {
-                        html.classList.remove('dark');
-                        body.classList.remove('dark', 'bg-gray-900');
+    <!-- ==================== TAILWIND CONFIG (For tailwind.config.js) ==================== -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#204e2b",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#386641",
+                        "on-primary-container": "#afe2b3",
+                        "primary-fixed": "#bcefc0",
+                        "primary-fixed-dim": "#a0d3a5",
+                        "on-primary-fixed": "#00210a",
+                        "on-primary-fixed-variant": "#22502d",
+                        "secondary": "#805533",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#fdc39a",
+                        "on-secondary-container": "#794e2e",
+                        "secondary-fixed": "#ffdcc5",
+                        "secondary-fixed-dim": "#f4bb92",
+                        "on-secondary-fixed": "#301400",
+                        "on-secondary-fixed-variant": "#653d1e",
+                        "tertiary": "#47453b",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#5e5d51",
+                        "on-tertiary-container": "#d9d6c7",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "background": "#fef9f2",
+                        "on-background": "#1d1c17",
+                        "surface": "#fef9f2",
+                        "on-surface": "#1d1c17",
+                        "surface-variant": "#e6e2db",
+                        "on-surface-variant": "#414941",
+                        "outline": "#727970",
+                        "outline-variant": "#c1c9be",
+                        "surface-bright": "#fef9f2",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f8f3ec",
+                        "surface-container": "#f2ede6",
+                        "surface-container-high": "#ece8e1",
+                        "surface-container-highest": "#e6e2db",
+                        "surface-dim": "#ded9d3",
+                        "inverse-surface": "#32302c",
+                        "inverse-on-surface": "#f5f0e9",
+                        "inverse-primary": "#a0d3a5",
+                    },
+                    fontFamily: {
+                        "noto-serif": ["Noto Serif", "serif"],
+                        "manrope": ["Manrope", "sans-serif"],
                     }
                 }
-            });
-        });
-    </script>
-
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('theme');
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            const theme = savedTheme || systemTheme;
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.body.classList.add('dark', 'bg-gray-900');
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.body.classList.remove('dark', 'bg-gray-900');
             }
-        })();
+        }
     </script>
 
+    <!-- ==================== GLOBAL CSS (For resources/css/app.css) ==================== -->
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #fef9f2;
+            color: #1d1c17;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Custom form focus effect */
+        .input-focus-effect:focus-within {
+            background-color: #fef9f2;
+            box-shadow: 0 0 0 1px rgba(32, 78, 43, 0.3);
+        }
+
+        /* View transition animations */
+        .page-enter {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Remove default scrollbar for aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fef9f2;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c9be;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #727970;
+        }
+    </style>
 </head>
+<body class="selection:bg-primary/20">
 
-<body>
+    <!-- App Container -->
+    <div id="app" class="relative w-full min-h-screen">
 
-    {{-- preloader --}}
-    <x-common.preloader />
-    {{-- preloader end --}}
-
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-theme-sm dark:bg-gray-900 dark:border dark:border-gray-800">
-            <div class="text-center mb-8">
-                <h3 class="text-2xl font-bold text-gray-800 dark:text-white/90">Buat Password Baru</h3>
-                <p class="text-sm text-gray-500 mt-2 dark:text-gray-400">Silakan masukkan password baru Anda di bawah ini.</p>
-            </div>
-
-            @if ($errors->any())
-                <div class="mb-4 p-4 text-sm text-red-800 bg-red-50 rounded-lg border border-red-200">
-                    {{ $errors->first() }}
+        <!-- ==================== VIEW 1: LOGIN (resources/views/auth/login.blade.php) ==================== -->
+        <div id="view-login" class="page-view h-screen w-full flex overflow-hidden">
+            <!-- TopAppBar -->
+            <header class="w-full absolute top-0 z-50 flex justify-between items-center px-6 md:px-12 py-6 bg-transparent">
+                <div class="text-2xl font-bold text-emerald-900 tracking-tighter font-noto-serif">
+                    Smart-Saka
                 </div>
-            @endif
-
-            <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-5">
-                @csrf
-                <input type="hidden" name="token" value="{{ $token }}">
-
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Alamat Email</label>
-                    <input type="email" name="email" value="{{ request('email') }}" required readonly
-                        class="dark:bg-gray-800 h-11 w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">
+                <div class="flex items-center gap-4 md:gap-6">
+                    <button class="text-emerald-800/70 hover:text-emerald-600 transition-colors scale-95 active:scale-90">
+                        <span class="material-symbols-outlined" data-icon="language">language</span>
+                    </button>
+                    <button class="text-emerald-800/70 hover:text-emerald-600 transition-colors scale-95 active:scale-90">
+                        <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                    </button>
                 </div>
+            </header>
 
-                <div x-data="{ show: false }">
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Password Baru</label>
-                    <div class="relative">
-                        <input :type="show ? 'text' : 'password'" name="password" required minlength="6" autofocus
-                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
+            <!-- Left Visual -->
+            <section class="relative hidden md:flex md:w-1/2 lg:w-3/5 h-full items-center justify-center p-24">
+                <div class="absolute inset-0 z-0 bg-neutral-900">
+                    <img alt="Pastoral Landscape" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrk6fE8kEC3K3jaVT-YmMz3S3xQYlJYG8YOIzBNnofi-jNoDgG_yyS-fjlgph_BpInG8kcH_aYiQB-b4b6AgJphdlZG7wE9x9fShnVe1un-e0gNKhtSXSiDTwITPaHjZBWvqwLF_chhoa-VMaZDv2NLYUpOkMIyMvWpggFtNwIyiKhTIsFZxBRYzivIUHqIAb_aqakryh8ly76FhAWn4Q5KS-HG8rZFVfxvBeYd8ZZvflw-hBH-fEU4uOZmtzapnp0-gpcbmFizd4">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-primary/80 via-primary/40 to-transparent mix-blend-multiply"></div>
+                </div>
+                <div class="relative z-10 w-full max-w-2xl flex flex-col items-center text-center text-white page-enter">
+                    <p class="font-manrope text-xs uppercase tracking-[0.4em] mb-12 opacity-80">PT Sakadomas</p>
+                    <h1 class="font-noto-serif text-5xl lg:text-7xl font-bold leading-tight mb-8 tracking-tight">Smart-Saka</h1>
+                    <div class="w-16 h-[1px] bg-white/40 mb-8"></div>
+                    <p class="font-manrope text-lg font-light leading-relaxed max-w-lg opacity-90 tracking-wide">Pilihan Cerdas Penikmat Domba</p>
+                </div>
+                <div class="absolute bottom-12 left-12 z-10 flex items-center gap-3 opacity-60">
+                    <div class="w-8 h-[1px] bg-white"></div>
+                    <span class="font-manrope text-[10px] uppercase tracking-widest text-white">Cultivating Precision</span>
+                </div>
+            </section>
 
-                        <button type="button" @click="show = !show" class="absolute right-0 top-0 flex h-11 w-11 items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                            <svg x-show="show" style="display: none;" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                            </svg>
-                            <svg x-show="!show" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                        </button>
+            <!-- Right Form -->
+            <section class="w-full md:w-1/2 lg:w-2/5 h-full bg-surface-bright flex flex-col justify-center px-8 sm:px-16 lg:px-24 relative overflow-y-auto">
+                <div class="max-w-md w-full mx-auto py-20">
+                    <div class="md:hidden mb-12">
+                        <span class="font-noto-serif text-2xl font-bold text-primary tracking-tighter">Smart-Saka</span>
                     </div>
-                </div>
-
-                <div x-data="{ show: false }">
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Konfirmasi Password Baru</label>
-                    <div class="relative">
-                        <input :type="show ? 'text' : 'password'" name="password_confirmation" required minlength="6"
-                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90">
-
-                        <button type="button" @click="show = !show" class="absolute right-0 top-0 flex h-11 w-11 items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                            <svg x-show="show" style="display: none;" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                            </svg>
-                            <svg x-show="!show" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                        </button>
+                    <div class="mb-12">
+                        <h2 class="font-noto-serif text-4xl font-bold text-on-surface mb-3 tracking-tight">Selamat Datang</h2>
+                        <p class="font-manrope text-on-surface-variant/70 text-sm tracking-wide">Masukkan Email dan Password</p>
                     </div>
+
+                    <form onsubmit="event.preventDefault();" class="space-y-6">
+                        <div>
+                            <label class="block font-manrope text-[11px] uppercase tracking-widest text-on-surface-variant mb-2 ml-1">Masukkan Email</label>
+                            <input class="w-full px-5 py-4 bg-surface-container-highest border-none rounded-xl text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/30 focus:bg-surface-bright transition-all" placeholder="nama@email.com" type="email">
+                        </div>
+                        <div>
+                            <label class="block font-manrope text-[11px] uppercase tracking-widest text-on-surface-variant mb-2 ml-1">Masukkan Password</label>
+                            <div class="relative">
+                                <input class="pw-input w-full px-5 py-4 bg-surface-container-highest border-none rounded-xl text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/30 focus:bg-surface-bright transition-all" placeholder="••••••••" type="password">
+                                <button class="pw-toggle absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-primary transition-colors" type="button">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <div class="relative flex items-center justify-center">
+                                    <input class="peer appearance-none w-5 h-5 rounded-lg border-2 border-outline-variant checked:bg-primary checked:border-primary transition-all duration-200" type="checkbox">
+                                    <span class="material-symbols-outlined absolute text-white text-[14px] opacity-0 peer-checked:opacity-100 pointer-events-none" style="font-variation-settings: 'FILL' 1;">check</span>
+                                </div>
+                                <span class="text-sm font-manrope text-on-surface-variant group-hover:text-on-surface transition-colors">Ingat Saya</span>
+                            </label>
+                            <a href="#" onclick="navigate('view-forgot')" class="text-sm font-manrope text-primary font-semibold hover:underline underline-offset-4 decoration-primary/30">Lupa Password?</a>
+                        </div>
+
+                        <div class="pt-4 space-y-4">
+                            <button type="submit" class="w-full py-4 bg-primary text-on-primary font-bold rounded-xl shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">
+                                Masuk
+                            </button>
+
+                            <div class="relative flex items-center py-2">
+                                <div class="flex-grow border-t border-outline-variant/30"></div>
+                                <span class="flex-shrink mx-4 text-[10px] font-manrope uppercase tracking-[0.2em] text-outline/60">Atau</span>
+                                <div class="flex-grow border-t border-outline-variant/30"></div>
+                            </div>
+
+                            {{-- <button type="button" class="w-full py-4 bg-surface-container-low border border-outline-variant/20 text-on-surface font-semibold rounded-xl flex items-center justify-center gap-3 hover:bg-surface-container transition-colors duration-300">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+                                </svg>
+                                <span>Masuk Dengan Google</span>
+                            </button> --}}
+                        </div>
+                    </form>
+
+                    <p class="mt-12 text-center font-manrope text-sm text-on-surface-variant">
+                        Belum Punya Akun? <a href="#" onclick="navigate('view-register')" class="text-primary font-bold hover:underline underline-offset-4 decoration-primary/30 ml-1">Daftar</a>
+                    </p>
                 </div>
 
-                <button type="submit" class="mt-2 w-full rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600">
-                    Simpan Password Baru
-                </button>
-            </form>
+                <footer class="absolute bottom-6 w-full left-0 flex justify-center space-x-6 px-8 pointer-events-none">
+                    <span class="text-on-surface-variant/40 font-manrope text-[10px] uppercase tracking-widest hidden sm:block">© 2024 Smart-Saka.</span>
+                    <div class="flex space-x-4 pointer-events-auto">
+                        <a href="#" class="text-on-surface-variant/50 hover:text-primary font-manrope text-[10px] uppercase tracking-widest transition-colors">Privacy Policy</a>
+                        <a href="#" class="text-on-surface-variant/50 hover:text-primary font-manrope text-[10px] uppercase tracking-widest transition-colors">Terms</a>
+                    </div>
+                </footer>
+            </section>
         </div>
+
+        <!-- ==================== VIEW 2: REGISTER (resources/views/auth/register.blade.php) ==================== -->
+        <div id="view-register" class="page-view hidden min-h-screen flex flex-col md:flex-row bg-surface">
+            <!-- Header Mobile/Responsive -->
+            <header class="fixed top-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-sm md:hidden">
+                <div class="flex justify-between items-center w-full px-6 py-4">
+                    <div class="font-noto-serif text-2xl italic font-bold text-primary">Smart-Saka</div>
+                    <button onclick="navigate('view-login')" class="font-manrope text-xs tracking-widest uppercase text-primary hover:bg-surface-variant transition-colors px-4 py-2 rounded-xl">Masuk</button>
+                </div>
+            </header>
+
+            <!-- Left Visual -->
+            <section class="hidden md:flex md:w-1/2 lg:w-2/5 relative overflow-hidden bg-surface-dim h-screen sticky top-0">
+                <img alt="Serene sheep farm" class="absolute inset-0 w-full h-full object-cover" src="https://media.istockphoto.com/id/2210264157/id/foto/close-up-domba-betina-dan-domba-dombanya-di-ladang-pada-jam-emas.jpg?s=612x612&w=0&k=20&c=7_HbLYcMJY5yd5i3CtZM5O-NihWv5s9feYU9PiTDcC8=">
+                <div class="absolute inset-0 bg-gradient-to-tr from-primary/80 to-transparent"></div>
+
+                <div class="absolute top-8 left-8">
+                     <button onclick="navigate('view-login')" class="flex items-center text-white/80 hover:text-white transition-colors bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm">
+                        <span class="material-symbols-outlined mr-2 text-sm">arrow_back</span>
+                        <span class="font-manrope text-sm font-medium">Kembali ke Login</span>
+                    </button>
+                </div>
+
+                <div class="relative z-10 p-16 flex flex-col justify-end h-full max-w-2xl page-enter">
+                    <h1 class="font-noto-serif text-5xl font-bold text-white mb-6 leading-tight tracking-tight">Smart-Saka</h1>
+                    <p class="font-noto-serif italic text-xl text-primary-fixed leading-relaxed opacity-90">
+                        "Pilihan Cerdas Penikmat Domba"
+                    </p>
+                </div>
+            </section>
+
+            <!-- Right Form -->
+            <section class="w-full md:w-1/2 lg:w-3/5 flex justify-center bg-surface p-6 pt-24 md:p-12 lg:p-20 overflow-y-auto">
+                <div class="w-full max-w-xl">
+                    <div class="mb-10 text-center md:text-left">
+                        <h2 class="font-noto-serif text-3xl md:text-4xl font-bold text-on-surface mb-2">Daftar Akun Baru</h2>
+                        <p class="text-on-surface-variant font-medium opacity-80">Lengkapi data diri Anda untuk bergabung dalam ekosistem.</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault();" class="space-y-5">
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Nama Lengkap</label>
+                            <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200">
+                                <input type="text" class="w-full bg-transparent border-none focus:ring-0 px-4 py-3.5 text-on-surface placeholder:text-outline-variant" placeholder="Masukkan nama lengkap sesuai KTP">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-1.5">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Username</label>
+                                <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200">
+                                    <input type="text" class="w-full bg-transparent border-none focus:ring-0 px-4 py-3.5 text-on-surface placeholder:text-outline-variant" placeholder="contoh: budi_farm">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">No Handphone / WA</label>
+                                <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200">
+                                    <input type="tel" class="w-full bg-transparent border-none focus:ring-0 px-4 py-3.5 text-on-surface placeholder:text-outline-variant" placeholder="0812...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-1.5">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Email</label>
+                                <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200">
+                                    <input type="email" class="w-full bg-transparent border-none focus:ring-0 px-4 py-3.5 text-on-surface placeholder:text-outline-variant" placeholder="nama@email.com">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Password</label>
+                                <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200 flex items-center pr-4 relative">
+                                    <input type="password" class="pw-input w-full bg-transparent border-none focus:ring-0 px-4 py-3.5 text-on-surface placeholder:text-outline-variant" placeholder="••••••••">
+                                    <button type="button" class="pw-toggle absolute right-4 text-on-surface-variant hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined">visibility</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-5">
+                            <div class="space-y-1.5">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Kecamatan</label>
+                                <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200 relative">
+                                    <select class="w-full bg-transparent border-none focus:ring-0 pl-4 pr-10 py-3.5 text-on-surface appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Pilih Kecamatan</option>
+                                        <option>Sukabumi</option>
+                                        <option>Cisaat</option>
+                                        <option>Kaduhejo</option>
+                                    </select>
+                                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Desa</label>
+                                <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200 relative">
+                                    <select class="w-full bg-transparent border-none focus:ring-0 pl-4 pr-10 py-3.5 text-on-surface appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Pilih Desa</option>
+                                        <option>Sukamaju</option>
+                                        <option>Cibodas</option>
+                                    </select>
+                                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Alamat Lengkap</label>
+                            <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200">
+                                <textarea rows="3" class="w-full bg-transparent border-none focus:ring-0 px-4 py-3.5 text-on-surface placeholder:text-outline-variant resize-none" placeholder="Detail jalan, RT/RW, nomor rumah..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">
+                                Daftar Sekarang
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-8 pt-8 border-t border-surface-container-highest text-center">
+                        <p class="text-on-surface-variant text-sm font-medium">
+                            Sudah punya akun?
+                            <a href="#" onclick="navigate('view-login')" class="text-primary font-bold hover:underline underline-offset-4 ml-1">Masuk di sini</a>
+                        </p>
+                    </div>
+
+                    <footer class="mt-12 text-center pb-8">
+                        <p class="font-manrope text-xs tracking-widest uppercase text-outline">
+                            © 2024 Smart-Saka. All rights reserved.
+                        </p>
+                    </footer>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== VIEW 3: FORGOT PASSWORD (resources/views/auth/forgot-password.blade.php) ==================== -->
+        <div id="view-forgot" class="page-view hidden min-h-screen flex flex-col md:flex-row bg-surface">
+            <!-- Left Editorial -->
+            <section class="hidden md:flex md:w-1/2 relative overflow-hidden bg-neutral-900 h-screen sticky top-0">
+                <div class="absolute inset-0 z-0">
+                    <img class="w-full h-full object-cover opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvG4AmQQalFUdvNtjuel4kscvHK7ATN9ufT7DkBzaVKZp0t8ZNDYz2U81wthWEabXS1mi8npBFPRsciIcKJrVfAFPppx-dWaEopkHRDJOQJLYpycaNG98uhMnbqO__e99nJDqfg6w_e5X21xsk-g12ECQyVsnJtawUeh-YEZ5g5JZFKvb46WCbo_FbVqkRBQH7n0xj20DZdjIDArF9qic4Fy_RA7_FNCPFmqrRDhTTu-DU2IufePGx0T2_VBaGdjeifO19pl0mvFM">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/40 to-primary-container/20"></div>
+                </div>
+                <div class="relative z-10 p-16 flex flex-col justify-end h-full page-enter">
+                    <div class="max-w-md">
+                        <span class="text-primary-fixed-dim font-manrope tracking-[0.2em] uppercase text-xs mb-6 block drop-shadow-sm">Pemulihan Akun</span>
+                        <h1 class="font-noto-serif text-5xl italic tracking-tight leading-tight text-white mb-8 drop-shadow-md">
+                            "Menjaga Akses Peternakan Anda."
+                        </h1>
+                        <div class="h-1 w-24 bg-primary-container"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Form -->
+            <section class="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16 bg-surface overflow-y-auto">
+                <div class="w-full max-w-sm">
+                    <div class="mb-12">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-3xl">🐏</span>
+                            <span class="text-2xl font-noto-serif italic text-primary font-bold">Smart-Saka</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-on-surface mb-2">Lupa Kata Sandi?</h2>
+                        <p class="text-on-surface-variant font-manrope text-sm leading-relaxed">Masukkan email yang terdaftar. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); navigate('view-reset');" class="space-y-8">
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-bold text-on-surface-variant tracking-widest uppercase ml-1" for="email-forgot">Alamat Email</label>
+                            <div class="relative group">
+                                <input type="email" id="email-forgot" class="w-full bg-surface-container-highest text-on-surface border-none rounded-xl px-5 py-4 focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-outline/50" placeholder="nama@email.com" required>
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">mail</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6 pt-2">
+                            <!-- For prototype purpose, this button navigates to reset password directly -->
+                            <button type="submit" class="w-full bg-primary text-on-primary font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                                <span>Kirim Tautan Pemulihan</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </button>
+
+                            <div class="flex items-center justify-between pt-4 border-t border-surface-container-highest">
+                                <a href="#" onclick="navigate('view-login')" class="text-on-surface-variant hover:text-primary text-sm font-bold flex items-center gap-1 transition-colors">
+                                    <span class="material-symbols-outlined text-base">arrow_back</span>
+                                    Kembali Masuk
+                                </a>
+                                <a href="#" class="text-on-surface-variant hover:text-primary text-sm font-medium transition-colors">Butuh Bantuan?</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="mt-16 p-4 rounded-xl bg-primary-container/10 border border-primary-container/20 flex items-start gap-4">
+                        <span class="material-symbols-outlined text-primary mt-0.5" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                        <div>
+                            <p class="text-[11px] font-bold text-primary uppercase tracking-widest mb-1">Keamanan Prioritas</p>
+                            <p class="text-xs text-on-surface-variant leading-relaxed">Tautan pemulihan hanya berlaku selama 30 menit. Pastikan email Anda aktif.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== VIEW 4: RESET PASSWORD (resources/views/auth/reset-password.blade.php) ==================== -->
+        <div id="view-reset" class="page-view hidden min-h-screen flex flex-col lg:flex-row bg-surface">
+            <!-- Left Visual -->
+            <section class="hidden lg:flex lg:w-1/2 relative flex-col justify-end p-20 bg-primary-container overflow-hidden h-screen sticky top-0">
+                <div class="absolute inset-0 z-0 bg-neutral-900">
+                    <img alt="Serene sheep farm" class="w-full h-full object-cover opacity-60 mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKuEBIuj8p7UgnGn-KiwA8982axoXU74O2BrKkgmUTFaMd1eXEB0gsVbhNkYHVqpfluB_u7NqR2-k4jnFCVy2fvVP-5u2S2lXnVsv0qdhrPu4j4Tc8E-eLT37BBMd04sPBJP8EIyIQEL6RyGozP0SsccQe5mh8izPfPtPzFSNqTCWms7YBlw1iAKjvxxWzIBYJyx_TeFqAD7Ew5Q1MaxUBAGoTIY7Vq4Q1ZStw9NRWssBuT_vt5aVDBgpGe55sEhhTTiR9kG2O-5E">
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+                </div>
+                <div class="relative z-10 space-y-6 page-enter">
+                    <blockquote class="font-noto-serif text-5xl leading-tight text-white tracking-tight max-w-lg drop-shadow-md">
+                        "Keamanan adalah ketenangan di padang rumput."
+                    </blockquote>
+                    <div class="flex flex-col space-y-2">
+                        <span class="text-primary-fixed font-manrope text-[11px] tracking-[0.2em] uppercase font-bold">~ Smart-Saka Security</span>
+                        <div class="w-12 h-[2px] bg-primary-fixed"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Form -->
+            <section class="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 lg:p-24 bg-surface overflow-y-auto">
+                <div class="w-full max-w-md flex flex-col">
+                    <header class="mb-10">
+                        <div class="inline-flex items-center justify-center w-14 h-14 bg-primary-container/20 text-primary rounded-2xl mb-6">
+                            <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">lock_reset</span>
+                        </div>
+                        <h1 class="font-noto-serif text-3xl md:text-4xl font-bold text-on-surface tracking-tight mb-3">Atur Ulang Sandi</h1>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">
+                            Silakan masukkan kata sandi baru Anda untuk mengamankan kembali akun Smart-Saka.
+                        </p>
+                    </header>
+
+                    <form onsubmit="event.preventDefault(); navigate('view-login');" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant ml-1">Kata Sandi Baru</label>
+                            <div class="relative group">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors z-10">lock</span>
+                                <input type="password" id="new_pw" class="pw-input w-full pl-12 pr-12 py-4 bg-surface-container-highest border-none rounded-xl focus:ring-2 focus:ring-primary/30 transition-all text-on-surface placeholder:text-outline/60" placeholder="Min. 8 karakter">
+                                <button type="button" class="pw-toggle absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors z-10">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </button>
+                            </div>
+                            <!-- Strength Meter (Static for UI Demo) -->
+                            <div class="pt-2 px-1">
+                                <div class="flex gap-1 h-1.5 w-full rounded-full overflow-hidden">
+                                    <div class="h-full w-1/3 bg-primary transition-all duration-500"></div>
+                                    <div class="h-full w-1/3 bg-primary transition-all duration-500"></div>
+                                    <div class="h-full w-1/3 bg-surface-container-highest transition-all duration-500"></div>
+                                </div>
+                                <p class="text-[10px] uppercase tracking-widest mt-2 font-bold text-primary">Kekuatan: Sedang</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant ml-1">Konfirmasi Kata Sandi</label>
+                            <div class="relative group">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors z-10">shield</span>
+                                <input type="password" class="pw-input w-full pl-12 pr-12 py-4 bg-surface-container-highest border-none rounded-xl focus:ring-2 focus:ring-primary/30 transition-all text-on-surface placeholder:text-outline/60" placeholder="Ulangi kata sandi baru">
+                                <button type="button" class="pw-toggle absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors z-10">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <button type="submit" class="w-full bg-primary text-white py-4 px-6 rounded-xl font-bold hover:bg-primary-container hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-lg shadow-primary/20">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+
+                    <footer class="mt-12 flex items-center justify-between border-t border-surface-container-highest pt-8">
+                        <a href="#" onclick="navigate('view-login')" class="flex items-center text-sm font-bold text-on-surface-variant hover:text-primary transition-colors group">
+                            <span class="material-symbols-outlined text-lg mr-2 group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                            Kembali Login
+                        </a>
+                        <a href="#" class="flex items-center text-sm font-bold text-on-surface-variant hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-lg mr-1">help_outline</span> Bantuan
+                        </a>
+                    </footer>
+                </div>
+            </section>
+        </div>
+
     </div>
 
+    <!-- ==================== GLOBAL JS (For resources/js/app.js) ==================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Password Visibility Toggle Logic ---
+            const toggleButtons = document.querySelectorAll('.pw-toggle');
+
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Temukan input yang sejajar/bersamaan dengan tombol ini dalam container yang sama
+                    const container = this.closest('.relative');
+                    const input = container.querySelector('.pw-input');
+                    const icon = this.querySelector('.material-symbols-outlined');
+
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.textContent = 'visibility_off';
+                    } else {
+                        input.type = 'password';
+                        icon.textContent = 'visibility';
+                    }
+                });
+            });
+
+        });
+
+        // --- 2. Navigation Logic (SPA Routing for Prototype) ---
+        // Catatan untuk Developer Laravel:
+        // Fungsi ini hanya untuk simulasi UI. Di Laravel, gunakan tag <a> dengan route()
+        // contoh: <a href="{{ route('login') }}">
+
+        function navigate(targetViewId) {
+            // Sembunyikan semua view
+            const views = document.querySelectorAll('.page-view');
+            views.forEach(view => {
+                view.classList.add('hidden');
+            });
+
+            // Tampilkan view target dan scroll ke atas
+            const targetView = document.getElementById(targetViewId);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                window.scrollTo(0, 0);
+
+                // Trigger ulang animasi jika diperlukan (mengubah reflow)
+                const animatedElements = targetView.querySelectorAll('.page-enter');
+                animatedElements.forEach(el => {
+                    el.style.animation = 'none';
+                    el.offsetHeight; /* trigger reflow */
+                    el.style.animation = null;
+                });
+            }
+        }
+    </script>
 </body>
-
-@stack('scripts')
-
 </html>

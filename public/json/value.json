@@ -1,0 +1,100 @@
+{
+  "ternak_klasifikasi": [
+    {
+      "breed_name": "Cross Texel",
+      "age_categories": [
+        {
+          "category_name": "Anakan/Bibit",
+          "age_range": "0-5 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "10 - 14 kg", "min_weight": 10, "max_weight": 14, "prices": { "Jantan": 990000, "Betina": 900000 } },
+            { "class_name": "Medium", "weight_range": "15 - 19 kg", "min_weight": 15, "max_weight": 19, "prices": { "Jantan": 1485000, "Betina": 1350000 } },
+            { "class_name": "Super", "weight_range": "20 - 25 kg", "min_weight": 20, "max_weight": 25, "prices": { "Jantan": 1980000, "Betina": 1800000 } }
+          ]
+        },
+        {
+          "category_name": "Doro/Muda",
+          "age_range": "6-11 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "20 - 25 kg", "min_weight": 20, "max_weight": 25, "prices": { "Jantan": 1650000, "Betina": 1500000 } },
+            { "class_name": "Medium", "weight_range": "26 - 32 kg", "min_weight": 26, "max_weight": 32, "prices": { "Jantan": 2145000, "Betina": 1950000 } },
+            { "class_name": "Super", "weight_range": "33 - 40 kg", "min_weight": 33, "max_weight": 40, "prices": { "Jantan": 2700000, "Betina": 2475000 } }
+          ]
+        },
+        {
+          "category_name": "Indukan/Dewasa",
+          "age_range": ">= 12 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "35 - 45 kg", "min_weight": 35, "max_weight": 45, "prices": { "Jantan": 2600000, "Betina": 2300000 } },
+            { "class_name": "Medium", "weight_range": "46 - 55 kg", "min_weight": 46, "max_weight": 55, "prices": { "Jantan": 3450000, "Betina": 3100000 } },
+            { "class_name": "Super", "weight_range": "56 - 70 kg", "min_weight": 56, "max_weight": 70, "prices": { "Jantan": 4150000, "Betina": 3800000 } }
+          ]
+        }
+      ]
+    },
+    {
+      "breed_name": "Merino",
+      "age_categories": [
+        {
+          "category_name": "Anakan/Bibit",
+          "age_range": "0-5 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "10 - 14 kg", "min_weight": 10, "max_weight": 14, "prices": { "Jantan": 1200000, "Betina": 1000000 } },
+            { "class_name": "Medium", "weight_range": "15 - 19 kg", "min_weight": 15, "max_weight": 19, "prices": { "Jantan": 1500000, "Betina": 1200000 } },
+            { "class_name": "Super", "weight_range": "20 - 25 kg", "min_weight": 20, "max_weight": 25, "prices": { "Jantan": 1800000, "Betina": 1500000 } }
+          ]
+        },
+        {
+          "category_name": "Doro/Muda",
+          "age_range": "6-11 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "20 - 25 kg", "min_weight": 20, "max_weight": 25, "prices": { "Jantan": 1500000, "Betina": 1300000 } },
+            { "class_name": "Medium", "weight_range": "26 - 32 kg", "min_weight": 26, "max_weight": 32, "prices": { "Jantan": 1800000, "Betina": 1600000 } },
+            { "class_name": "Super", "weight_range": "33 - 40 kg", "min_weight": 33, "max_weight": 40, "prices": { "Jantan": 2300000, "Betina": 2100000 } }
+          ]
+        },
+        {
+          "category_name": "Indukan/Dewasa",
+          "age_range": ">= 12 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "35 - 45 kg", "min_weight": 35, "max_weight": 45, "prices": { "Jantan": 2250000, "Betina": 2050000 } },
+            { "class_name": "Medium", "weight_range": "46 - 55 kg", "min_weight": 46, "max_weight": 55, "prices": { "Jantan": 2900000, "Betina": 2700000 } },
+            { "class_name": "Super", "weight_range": "56 - 70 kg", "min_weight": 56, "max_weight": 70, "prices": { "Jantan": 3500000, "Betina": 3200000 } }
+          ]
+        }
+      ]
+    },
+    {
+      "breed_name": "Etawa (PE)",
+      "age_categories": [
+        {
+          "category_name": "Anakan/Bibit",
+          "age_range": "0-5 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "10 - 14 kg", "min_weight": 10, "max_weight": 14, "prices": { "Jantan": 800000, "Betina": 700000 } },
+            { "class_name": "Medium", "weight_range": "15 - 19 kg", "min_weight": 15, "max_weight": 19, "prices": { "Jantan": 1100000, "Betina": 1000000 } },
+            { "class_name": "Super", "weight_range": "20 - 25 kg", "min_weight": 20, "max_weight": 25, "prices": { "Jantan": 1500000, "Betina": 1400000 } }
+          ]
+        },
+        {
+          "category_name": "Doro/Muda",
+          "age_range": "6-11 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "20 - 25 kg", "min_weight": 20, "max_weight": 25, "prices": { "Jantan": 1300000, "Betina": 1200000 } },
+            { "class_name": "Medium", "weight_range": "26 - 32 kg", "min_weight": 26, "max_weight": 32, "prices": { "Jantan": 1700000, "Betina": 1500000 } },
+            { "class_name": "Super", "weight_range": "33 - 40 kg", "min_weight": 33, "max_weight": 40, "prices": { "Jantan": 2200000, "Betina": 2000000 } }
+          ]
+        },
+        {
+          "category_name": "Indukan/Dewasa",
+          "age_range": ">= 12 bulan",
+          "weight_classes": [
+            { "class_name": "Standard", "weight_range": "35 - 45 kg", "min_weight": 35, "max_weight": 45, "prices": { "Jantan": 2100000, "Betina": 1800000 } },
+            { "class_name": "Medium", "weight_range": "46 - 55 kg", "min_weight": 46, "max_weight": 55, "prices": { "Jantan": 2700000, "Betina": 2400000 } },
+            { "class_name": "Super", "weight_range": "56 - 70 kg", "min_weight": 56, "max_weight": 70, "prices": { "Jantan": 3300000, "Betina": 3000000 } }
+          ]
+        }
+      ]
+    }
+  ]
+}

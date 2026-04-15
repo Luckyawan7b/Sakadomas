@@ -7,6 +7,7 @@ use App\Models\ternakModel;
 use App\Models\kamarModel;
 use App\Models\kandangModel;
 use App\Models\jenisTernakModel;
+use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 
 class ternakController extends Controller
@@ -72,6 +73,15 @@ class ternakController extends Controller
             $query->where('status_jual', $request->status_jual);
         }
 
+        // 7. Filter Jenis Kelamin
+        if ($request->filled('jenis_kelamin') && $request->jenis_kelamin !== 'semua') {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+        // Pencarian berdasarkan ID Ternak dari form Search Input "q"
+        if ($request->filled('q')) {
+            $query->where('id_ternak', 'like', '%' . $request->q . '%');
+        }
+
         $data_ternak = $query->paginate(10);
 
         $data_kandang = kandangModel::all();
@@ -81,7 +91,7 @@ class ternakController extends Controller
         return view('pages.ternak', compact('data_ternak', 'data_kandang', 'data_kamar', 'data_jenis'));
     }
 
-public function store(Request $request)
+    public function store(Request $request)
     {
         if ($request->id_kamar === 'kosong' || $request->id_kamar === '') {
             $request->merge(['id_kamar' => null]);
@@ -93,7 +103,7 @@ public function store(Request $request)
             'jenis_kelamin' => 'required|in:jantan,betina',
             'usia' => 'required|integer|min:0',
             'berat' => 'required|numeric|min:0',
-            'harga' => 'required|numeric|min:0',
+            // 'harga' => 'required|numeric|min:0',
             'status_ternak' => 'required|in:sehat,sakit,hamil',
             'status_jual' => 'required|in:tidak dijual,siap jual,booking,terjual',
         ]);
@@ -109,13 +119,22 @@ public function store(Request $request)
             }
         }
 
+        $hargaOtomatis = $this->hitungHargaOtomatis(
+            $request->id_jenis_ternak,
+            $request->usia,
+            $request->berat,
+            $request->jenis_kelamin
+        );
+
+
         ternakModel::create([
             'id_jenis_ternak' => $request->id_jenis_ternak,
             'id_kamar' => $request->id_kamar,
             'jenis_kelamin' => $request->jenis_kelamin,
             'usia' => $request->usia,
             'berat' => $request->berat,
-            'harga' => $request->harga,
+            // 'harga' => $request->harga,
+            'harga' => $hargaOtomatis,
             'status_ternak' => $request->status_ternak,
             'status_jual' => $request->status_jual,
             'last_update' => \Carbon\Carbon::now(),
@@ -247,6 +266,47 @@ public function store(Request $request)
         }
 
         return view('pages.grafik-ternak', compact('ternak', 'riwayat_penyakit', 'chartLabels', 'chartIdeal', 'chartAktual'));
+    }
+
+    private function hitungHargaOtomatis($id_jenis_ternak, $usia, $berat, $jenis_kelamin)
+    {
+        $jsonPath = public_path('json/value.json');
+        if (!File::exists($jsonPath)) return 0;
+
+        $data = json_decode(File::get($jsonPath), true);
+        $jenisTernak = \App\Models\jenisTernakModel::find($id_jenis_ternak);
+        $namaJenis = $jenisTernak ? $jenisTernak->jenis_ternak : '';
+
+        // Mapping nama jenis dari DB ke JSON
+        $mapJenis = [
+            'crosstexel' => 'Cross Texel',
+            'merino' => 'Merino',
+            'etawa' => 'Etawa (PE)'
+        ];
+        $searchJenis = $mapJenis[strtolower($namaJenis)] ?? $namaJenis;
+
+        foreach ($data['ternak_klasifikasi'] as $breed) {
+            if ($breed['breed_name'] === $searchJenis) {
+                // Tentukan kategori usia
+                $kategoriUsia = '';
+                if ($usia <= 5) $kategoriUsia = 'Anakan/Bibit';
+                elseif ($usia <= 11) $kategoriUsia = 'Doro/Muda';
+                else $kategoriUsia = 'Indukan/Dewasa';
+
+                foreach ($breed['age_categories'] as $ageCat) {
+                    if ($ageCat['category_name'] === $kategoriUsia) {
+                        foreach ($ageCat['weight_classes'] as $wClass) {
+                            // Cek apakah berat masuk dalam rentang kelas
+                            if ($berat >= $wClass['min_weight'] && $berat <= $wClass['max_weight']) {
+                                $keyKelamin = ucfirst(strtolower($jenis_kelamin));
+                                return $wClass['prices'][$keyKelamin] ?? 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return 0; // Kembalikan 0 jika tidak ditemukan kecocokan
     }
 
 

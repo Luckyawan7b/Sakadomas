@@ -17,4 +17,9 @@ class monitorModel extends Model
         'tgl_monitoring', // Date
         'id_ternak',
     ];
+
+    public function ternak()
+    {
+        return $this->belongsTo(ternakModel::class, 'id_ternak', 'id_ternak');
+    }
 }

@@ -83,6 +83,13 @@ class monitorController extends Controller
             if ($ternak->status_ternak == 'hamil' && !$request->filled('penyakit')) {
                 $status_baru = 'hamil'; // Tetap hamil jika tidak sakit
             }
+            
+            $harga_baru = $this->hitungHargaOtomatis(
+                $ternak->id_jenis_ternak,
+                $ternak->usia,
+                $request->berat,
+                $ternak->jenis_kelamin
+            );
 
             // 1. Simpan ke tabel monitoring (dengan usia yang terhitung otomatis)
             monitorModel::create([
@@ -131,4 +138,52 @@ class monitorController extends Controller
 
         return back()->with('success', 'Data monitoring berhasil dihapus.');
     }
+
+    private function hitungHargaOtomatis($id_jenis_ternak, $usia, $berat, $jenis_kelamin)
+{
+    $jsonPath = public_path('json/value.json');
+    if (!\Illuminate\Support\Facades\File::exists($jsonPath)) return 0;
+
+    $data = json_decode(\Illuminate\Support\Facades\File::get($jsonPath), true);
+    $jenisTernak = \App\Models\jenisTernakModel::find($id_jenis_ternak);
+    $namaJenisDb = strtolower($jenisTernak->jenis_ternak ?? '');
+
+    // Mapping nama dari DB ke Breed Name di JSON
+    $mapJenis = [
+        'crosstexel' => 'Cross Texel',
+        'merino' => 'Merino',
+        'etawa' => 'Etawa (PE)'
+    ];
+    $searchJenis = $mapJenis[$namaJenisDb] ?? $namaJenisDb;
+
+    // Tentukan Kategori Usia
+    $kategoriUsia = '';
+    if ($usia >= 0 && $usia <= 5) {
+        $kategoriUsia = 'Anakan/Bibit';
+    } elseif ($usia >= 6 && $usia <= 11) {
+        $kategoriUsia = 'Doro/Muda';
+    } elseif ($usia >= 12) {
+        $kategoriUsia = 'Indukan/Dewasa';
+    }
+
+    // Pencarian harga final di JSON
+    foreach ($data['ternak_klasifikasi'] as $breed) {
+        if ($breed['breed_name'] === $searchJenis) {
+            foreach ($breed['age_categories'] as $ageCat) {
+                if ($ageCat['category_name'] === $kategoriUsia) {
+                    foreach ($ageCat['weight_classes'] as $wClass) {
+                        // Cek apakah berat masuk dalam rentang kelas
+                        if ($berat >= $wClass['min_weight'] && $berat <= $wClass['max_weight']) {
+                            // Ambil harga langsung berdasarkan kelamin (tanpa multiplier)
+                            $keyKelamin = ucfirst(strtolower($jenis_kelamin));
+                            return $wClass['prices'][$keyKelamin] ?? 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return 0; // Return 0 jika di luar batas JSON
+}
 }

@@ -81,6 +81,10 @@
                 </div>
             </div>
 
+            <div class="col-span-12">
+                <h1 class="text-2xl lg:text-3xl font-bold text-black dark:text-white">SEK DURUNG MARI</h1>
+            </div>
+
         </div>
 
         {{-- ========================================================= --}}
