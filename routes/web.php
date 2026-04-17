@@ -9,6 +9,7 @@ use App\Http\Controllers\surveiController;
 use App\Http\Controllers\ternakController;
 use App\Http\Controllers\monitorController;
 use App\Http\Controllers\transaksiController;
+use App\Http\Controllers\LandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,10 @@ use App\Http\Controllers\transaksiController;
 
 // dashboard pages
 Route::get('/', function () {
+    return app(LandingController::class)->index();
+})->name('home');
+
+Route::get('/dashboard', function () {
     return view('pages.dashboard.ecommerce', ['title' => 'SMART-SAKA | SAKADOMAS']);
 })->name('dashboard');
 
@@ -141,6 +146,13 @@ Route::post('/reset-password', [akunController::class, 'submitResetPassword'])->
 
 // Route API untuk Dropdown Desa dinamis
 Route::get('/api/desa/{id_kecamatan}', [akunController::class, 'getDesaByKecamatan']);
+
+// Static pages untuk footer landing
+Route::view('/privacy', 'legal.privacy')->name('privacy');
+Route::view('/terms', 'legal.terms')->name('terms');
+
+// Blog placeholder (dipakai di footer landing)
+Route::get('/blog', fn () => redirect()->route('home'))->name('blog.index');
 
 
 /*

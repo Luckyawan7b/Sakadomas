@@ -1,0 +1,24 @@
+https://fasilkom.web.id/images/landing/hero-main.jpg : https://media.istockphoto.com/id/919517928/id/foto/herder-memberi-makan-domba.jpg?s=612x612&w=0&k=20&c=oa-Mso-nxLVYHcjsQeaXMalDa9xQcKedGuX6f8ak_bA=
+https://fasilkom.web.id/images/landing/about-1.jpg : https://cdn.pixabay.com/photo/2024/04/27/13/13/sheep-8723697_1280.png
+https://fasilkom.web.id/images/landing/about-2.jpg : https://milligansganderhillfarm.wordpress.com/wp-content/uploads/2013/06/merino-ewe-and-lamb.jpg?w=584
+https://fasilkom.web.id/images/landing/about-3.jpg : https://cdn.pixabay.com/photo/2016/10/22/12/15/sheep-1760585_1280.jpg
+
+
+https://fasilkom.web.id/images/landing/product-crosstexel.jpg : https://www.dombadorsip.com/image-upload/news-Mau-Memulai-Bisnis-Domba-Texel-Ini-Peluang-dan-Tips-Sukses-Memulainya-125.webp
+https://fasilkom.web.id/images/landing/product-merino.jpg : https://briscoefarm.com/wp-content/uploads/2023/10/p_75a.jpg
+https://fasilkom.web.id/images/landing/product-etawa.jpg : https://upload.wikimedia.org/wikipedia/commons/b/b2/Hausziege_04.jpg
+https://fasilkom.web.id/images/landing/product-garut.jpg : https://cdngnfi2.sgp1.cdn.digitaloceanspaces.com/gnfi/uploads/images/2022/08/1807072022-Aradea-domba-garut-termahal-by-Ahmad-Andhika-JagadTani-800x450.jpg
+https://fasilkom.web.id/images/landing/product-bibit.jpg : https://media.istockphoto.com/id/1749292025/id/foto/domba-betina-dengan-domba.jpg?s=612x612&w=0&k=20&c=L5L_BznSaXOUdYbW0rEapoe6xQ71_Z42V1NXZw1Dguc=
+https://fasilkom.web.id/images/landing/keunggulan-main.jpg : https://travelspromo.com/wp-content/uploads/2023/07/Peternakan-domba-di-Menggala-Ranch-yang-sangat-luas-Kurniawan-Abdul-azis_11zon.jpg
+
+
+https://fasilkom.web.id/images/landing/testi-collage-1.jpg : https://awsimages.detik.net.id/community/media/visual/2022/08/15/domba-garut-5_169.jpeg?w=1200
+https://fasilkom.web.id/images/landing/testi-collage-2.jpg : https://www.dombadorsip.com/image-upload/news-7-Cara-Memilih-Bibit-Domba-yang-Bagus-dan-Tips-Merawatnya-66.jpg
+https://fasilkom.web.id/images/landing/testi-collage-3.jpg : https://indomgb.s3.amazonaws.com/wp-content/uploads/2025/09/02090554/domba-batur3.jpeg
+
+
+https://fasilkom.web.id/images/landing/nl-1.jpg ; https://briscoefarm.com/wp-content/uploads/2023/10/p_75a.jpg
+https://fasilkom.web.id/images/landing/nl-2.jpg ; https://upload.wikimedia.org/wikipedia/commons/b/b2/Hausziege_04.jpg
+https://fasilkom.web.id/images/landing/nl-3.jpg ; https://www.dombadorsip.com/image-upload/news-Mau-Memulai-Bisnis-Domba-Texel-Ini-Peluang-dan-Tips-Sukses-Memulainya-125.webp
+https://fasilkom.web.id/images/landing/nl-4.jpg ; https://www.dombadorsip.com/image-upload/news-6-Ciri-Ciri-Domba-Dorper-untuk-Memilih-Domba-Terbaik-36.jpg
+

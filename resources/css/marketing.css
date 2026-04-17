@@ -1,0 +1,283 @@
+/* =============================================================================
+   resources/css/app.css — Smart-Saka Landing Page
+   "Refined Earthy" Design Direction
+   Tailwind CSS v4 — CSS-first configuration (NO tailwind.config.js)
+
+   PERBEDAAN UTAMA vs v3:
+   - @import "tailwindcss" menggantikan @tailwind base/components/utilities
+   - @plugin menggantikan plugins: [] di tailwind.config.js
+   - @theme { } menggantikan seluruh theme.extend di tailwind.config.js
+   - var(--color-*) menggantikan theme('colors.*') di dalam CSS
+   - Tidak ada tailwind.config.js sama sekali
+   ============================================================================= */
+
+/* ── 1. Core import ── */
+@import "tailwindcss";
+
+/* ── 2. Plugins — gunakan @plugin, bukan require() ── */
+@plugin "@tailwindcss/forms";
+
+
+/* =============================================================================
+   @THEME — CSS-first design token definition
+   Menggantikan seluruh tailwind.config.js theme.extend block
+   Semua token otomatis tersedia sebagai utility class:
+     --color-olive-700  →  bg-olive-700, text-olive-700, border-olive-700, dll
+     --font-serif       →  font-serif
+     --animate-float    →  animate-float
+   ============================================================================= */
+@theme {
+
+    /* ── Olive — Primary color scale ── */
+    --color-olive-50:  #f6f7f0;
+    --color-olive-100: #eaeddc;
+    --color-olive-200: #d4dabc;
+    --color-olive-300: #b8c291;
+    --color-olive-400: #9aaa68;
+    --color-olive-500: #7d9148;
+    --color-olive-600: #637438;
+    --color-olive-700: #4e5c2e;
+    --color-olive-800: #3f4a27;
+    --color-olive-900: #364021;
+    --color-olive-950: #1b2110;
+
+    /* ── Cream — Surface / background scale ── */
+    --color-cream-50:  #fdfdf8;
+    --color-cream-100: #f8f6ed;
+    --color-cream-200: #f0edd9;
+    --color-cream-300: #e4dfc0;
+    --color-cream-400: #d4cba0;
+    --color-cream-500: #c0b47d;
+
+    /* ── Bark — Warm accent scale ── */
+    --color-bark-100: #f5ede0;
+    --color-bark-200: #e8d4b8;
+    --color-bark-300: #d4b48a;
+    --color-bark-400: #b8906a;
+    --color-bark-500: #9a6e4a;
+    --color-bark-600: #7a5235;
+    --color-bark-700: #5c3a22;
+    --color-bark-800: #3f2614;
+
+    /* ── Font families ── */
+    --font-serif: "DM Serif Display", Georgia, serif;
+    --font-sans:  "Plus Jakarta Sans", system-ui, sans-serif;
+
+    /* ── Custom border radius ── */
+    --radius-4xl: 2rem;
+    --radius-5xl: 2.5rem;
+
+    /* ── Named animations ── */
+    --animate-float:      float 3.5s ease-in-out infinite;
+    --animate-float2:     float2 4s ease-in-out infinite;
+    --animate-pulse-ring: pulse-ring 2.2s infinite;
+    --animate-wa-bounce:  wa-bounce 2.5s ease-in-out infinite;
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50%       { transform: translateY(-8px); }
+    }
+    @keyframes float2 {
+        0%, 100% { transform: translateY(0px); }
+        50%       { transform: translateY(-6px); }
+    }
+    @keyframes pulse-ring {
+        0%   { box-shadow: 0 0 0 0 rgba(99, 116, 56, 0.5); }
+        100% { box-shadow: 0 0 0 14px rgba(99, 116, 56, 0); }
+    }
+    @keyframes wa-bounce {
+        0%, 100% { transform: scale(1); }
+        50%       { transform: scale(1.08); }
+    }
+}
+
+
+/* =============================================================================
+   BASE STYLES
+   ============================================================================= */
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-cream-50);
+    color: var(--color-olive-950);
+}
+
+/* Subtle grain texture — identitas visual brand */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.35;
+}
+
+img {
+    background-color: var(--color-cream-300);
+}
+
+
+/* =============================================================================
+   CUSTOM COMPONENT CLASSES
+   @layer components still valid in v4 — but use var() not theme()
+   ============================================================================= */
+@layer components {
+
+    /* ── Scroll Reveal — driven by IntersectionObserver in app.js ── */
+    .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity 0.65s cubic-bezier(.4,0,.2,1),
+                    transform 0.65s cubic-bezier(.4,0,.2,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .reveal-left {
+        opacity: 0;
+        transform: translateX(-28px);
+        transition: opacity 0.65s 0.1s cubic-bezier(.4,0,.2,1),
+                    transform 0.65s 0.1s cubic-bezier(.4,0,.2,1);
+    }
+    .reveal-right {
+        opacity: 0;
+        transform: translateX(28px);
+        transition: opacity 0.65s 0.1s cubic-bezier(.4,0,.2,1),
+                    transform 0.65s 0.1s cubic-bezier(.4,0,.2,1);
+    }
+    .reveal-left.visible, .reveal-right.visible {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    /* ── Navbar ── */
+    .navbar-scrolled {
+        box-shadow: 0 2px 24px rgba(27, 33, 16, 0.10);
+        background: rgba(253, 253, 248, 0.97) !important;
+    }
+
+    /* ── Section Badge pill ── */
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--color-olive-100);
+        color: var(--color-olive-700);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 6px 14px;
+        border-radius: 999px;
+    }
+
+    /* ── Dot grid decoration ── */
+    .dot-grid {
+        background-image: radial-gradient(circle, var(--color-olive-300) 1px, transparent 1px);
+        background-size: 22px 22px;
+    }
+
+    /* ── Hero gradient text ── */
+    .hero-gradient-text {
+        background: linear-gradient(135deg,
+            var(--color-olive-900) 0%,
+            var(--color-olive-600) 45%,
+            var(--color-olive-400) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* ── Product card hover ── */
+    .product-card {
+        transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease;
+    }
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 48px rgba(27, 33, 16, 0.13);
+    }
+
+    /* ── Feature card hover ── */
+    .feature-card {
+        transition: background 0.25s ease, transform 0.25s cubic-bezier(.34,1.56,.64,1);
+    }
+    .feature-card:hover { background: var(--color-olive-700); transform: translateY(-3px); }
+    .feature-card:hover * { color: var(--color-olive-100) !important; }
+    .feature-card:hover .feature-icon { background: rgba(255,255,255,0.12); }
+
+    /* ── Hamburger menu ── */
+    .hamburger span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--color-olive-900);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(3px, 3px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(3px, -3px); }
+
+    /* ── Newsletter input focus ── */
+    .nl-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(99, 116, 56, 0.25);
+    }
+
+    /* ── WhatsApp floating button ── */
+    .wa-float {
+        position: fixed;
+        bottom: 1.75rem;
+        right: 1.75rem;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: #25D366;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 0.75rem 1.1rem 0.75rem 0.9rem;
+        border-radius: 999px;
+        box-shadow: 0 8px 28px rgba(37, 211, 102, 0.35);
+        text-decoration: none;
+        transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+        user-select: none;
+    }
+    .wa-float:hover {
+        transform: translateY(-3px) scale(1.04);
+        box-shadow: 0 12px 36px rgba(37, 211, 102, 0.45);
+        background: #22c55e;
+    }
+    .wa-float .wa-icon {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+        animation: wa-bounce 2.5s ease-in-out infinite;
+    }
+    .wa-float .wa-label { display: none; }
+
+    @media (min-width: 768px) {
+        .wa-float .wa-label { display: block; }
+    }
+}
+
+
+/* =============================================================================
+   CUSTOM UTILITIES
+   ============================================================================= */
+@layer utilities {
+    .text-bark-gradient {
+        background: linear-gradient(120deg, var(--color-bark-600) 0%, var(--color-bark-400) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}
+
