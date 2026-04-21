@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 // use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Cloudinary\Cloudinary;    
+use Cloudinary\Cloudinary;
 use App\Models\transaksiModel;
 use App\Models\ternakModel;
 use App\Models\kandangModel;
@@ -160,4 +160,119 @@ class transaksiController extends Controller
         $data_transaksi = $query->paginate(15);
         return view('pages.rekap-transaksi', compact('data_transaksi'));
     }
+
+    public function createPesananUser()
+    {
+        $ternak_tersedia = \App\Models\ternakModel::with('jenis_ternak')
+            ->where('status_jual', 'siap jual')
+            ->where('status_ternak', 'sehat')
+            ->get();
+
+        $jenis_ternak = $ternak_tersedia->map(function ($item) {
+            $usia = $item->usia;
+            $berat = $item->berat;
+            $breed = $item->jenis_ternak->jenis_ternak;
+
+            // 1. Tentukan Kategori Usia
+            if ($usia <= 5) { $katUsia = 'Anakan/Bibit'; }
+            elseif ($usia <= 11) { $katUsia = 'Doro/Muda'; }
+            else { $katUsia = 'Indukan/Dewasa'; }
+
+            // 2. Tentukan Kelas Berat (Logic sesuai value.json)
+            // Contoh untuk Anakan (10-25kg), silakan sesuaikan rentang untuk kategori lain
+            $kelasBerat = 'Uncategorized';
+            if ($usia <= 5) {
+                if ($berat >= 10 && $berat <= 14) $kelasBerat = 'Standard';
+                elseif ($berat >= 15 && $berat <= 19) $kelasBerat = 'Medium';
+                elseif ($berat >= 20 && $berat <= 25) $kelasBerat = 'Super';
+            } else {
+                // Logic rentang berat untuk Doro/Indukan bisa ditambahkan di sini
+                if ($berat <= 25) $kelasBerat = 'Standard';
+                elseif ($berat <= 35) $kelasBerat = 'Medium';
+                else $kelasBerat = 'Super';
+            }
+
+            return [
+                'id_jenis' => $item->id_jenis_ternak,
+                'nama_produk' => $breed . ' - ' . $katUsia,
+                'kelas_berat' => $kelasBerat,
+                'jenis_kelamin' => $item->jenis_kelamin,
+                'harga' => $item->harga,
+            ];
+        })
+        ->groupBy(function ($item) {
+            return $item['nama_produk'] . $item['kelas_berat'] . $item['jenis_kelamin'] . $item['harga'];
+        })
+        ->map(function ($group) {
+            $first = $group->first();
+            return [
+                'id_jenis' => $first['id_jenis'],
+                'nama_produk' => $first['nama_produk'],
+                'kelas_berat' => $first['kelas_berat'],
+                'jenis_kelamin' => $first['jenis_kelamin'],
+                'harga' => $first['harga'],
+                'stok' => $group->count()
+            ];
+        })
+        ->values();
+
+        return view('pages.transaksi-user', compact('jenis_ternak'));
+    }
+
+    public function storePesananUser(Request $request)
+    {
+        // 1. Validasi Input
+        $request->validate([
+            'id_jenis_ternak'   => 'required',
+            'total_jumlah'      => 'required|integer|min:1',
+            'total_harga'       => 'required|numeric|min:0',
+            'metode_pembayaran' => 'required|in:transfer,cash',
+            'bukti_pembayaran'  => 'required_if:metode_pembayaran,transfer|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // 2. Trik Auto-Booking: Hitung harga per ekor untuk mencari ternak spesifik di kandang
+        $harga_per_ekor = $request->total_harga / $request->total_jumlah;
+
+        // Ambil ID ternak fisik yang benar-benar tersedia
+        $ternak_tersedia = \App\Models\ternakModel::where('id_jenis_ternak', $request->id_jenis_ternak)
+            ->where('harga', $harga_per_ekor)
+            ->where('status_jual', 'siap jual')
+            ->where('status_ternak', 'sehat')
+            ->take($request->total_jumlah)
+            ->get();
+
+        // Keamanan Ganda: Cek apakah selama proses ngisi form, domba keburu dibeli orang lain
+        if ($ternak_tersedia->count() < $request->total_jumlah) {
+            return back()->withErrors(['stok' => 'Mohon maaf, stok domba kriteria ini baru saja habis/tidak mencukupi.'])->withInput();
+        }
+
+        // 3. Upload Bukti Transfer ke Cloudinary (Jika Ada)
+        $uploadedFileUrl = null;
+        if ($request->hasFile('bukti_pembayaran')) {
+            $uploadedFileUrl = $this->uploadKeCloudinary($request->file('bukti_pembayaran'));
+        }
+
+        // 4. Buat Record Transaksi Utama
+        \App\Models\transaksiModel::create([
+            'id_akun'           => \Illuminate\Support\Facades\Auth::id(), // Deteksi User yang login
+            'id_ternak'         => $ternak_tersedia->first()->id_ternak, // Gunakan 1 ID sebagai perwakilan relasi
+            'tgl_transaksi'     => \Carbon\Carbon::now(),
+            'total_jumlah'      => $request->total_jumlah,
+            'total_harga'       => $request->total_harga,
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'bukti_pembayaran'  => $uploadedFileUrl,
+            'kurir'             => '-',
+            'no_kurir'          => '-',
+            'status'            => 'pending',
+        ]);
+
+        // 5. Kunci (Booking) SEMUA domba yang dipesan agar stok di sistem otomatis berkurang!
+        foreach ($ternak_tersedia as $ternak) {
+            $ternak->update(['status_jual' => 'booking']);
+        }
+
+        // 6. Selesai
+        return back()->with('success', 'Pesanan berhasil dibuat! Menunggu konfirmasi dari Admin.');
+    }
+
 }

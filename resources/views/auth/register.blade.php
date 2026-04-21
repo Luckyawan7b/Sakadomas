@@ -17,8 +17,8 @@
     <header class="fixed top-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-sm md:hidden">
         <div class="flex justify-between items-center w-full px-6 py-4">
             <span class="font-noto-serif text-2xl italic font-bold text-primary">Smart-Saka</span>
-            <a href="{{ route('login') }}" class="font-manrope text-xs tracking-widest uppercase text-primary hover:bg-surface-variant transition-colors px-4 py-2 rounded-xl">
-                Masuk
+            <a href="{{ route('home') }}" class="font-manrope text-xs tracking-widest uppercase text-primary hover:bg-surface-variant transition-colors px-4 py-2 rounded-xl">
+                Home
             </a>
         </div>
     </header>
@@ -31,9 +31,9 @@
         <div class="absolute inset-0 bg-gradient-to-tr from-primary/80 to-transparent"></div>
 
         <div class="absolute top-8 left-8 z-30">
-            <a href="{{ route('login') }}" class="flex items-center text-white/80 hover:text-white transition-colors bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm pointer-events-auto">
+            <a href="{{ route('home') }}" class="flex items-center text-white/80 hover:text-white transition-colors bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm pointer-events-auto">
                 <span class="material-symbols-outlined mr-2 text-sm" aria-hidden="true">arrow_back</span>
-                <span class="font-manrope text-sm font-medium">Kembali ke Login</span>
+                <span class="font-manrope text-sm font-medium">Kembali ke Dashboard</span>
             </a>
         </div>
 

@@ -15,7 +15,11 @@ class surveiController extends Controller
 
         if ($user->role === 'admin') {
             $data_survei = surveiModel::with('akun')->orderBy('tgl_survei', 'desc')->get();
-            $data_akun = akunModel::where('role', 'user')->get();
+            // $data_akun = akunModel::where('role', 'user')->get();
+            // $data_akun = akunModel::select('id_akun', 'nama', 'username')->get();
+            $data_akun = akunModel::where('role', 'user')
+                                  ->select('id_akun', 'nama', 'username')
+                                  ->get();
         }
         else {
             $data_survei = surveiModel::with('akun')

@@ -104,7 +104,7 @@ class ternakController extends Controller
             'usia' => 'required|integer|min:0',
             'berat' => 'required|numeric|min:0',
             // 'harga' => 'required|numeric|min:0',
-            'status_ternak' => 'required|in:sehat,sakit,hamil',
+            'status_ternak' => 'required|in:sehat,sakit,hamil,mati',
             'status_jual' => 'required|in:tidak dijual,siap jual,booking,terjual',
         ]);
 
@@ -158,7 +158,7 @@ class ternakController extends Controller
             'usia' => 'required|integer|min:0',
             'berat' => 'required|numeric|min:0',
             'harga' => 'required|numeric|min:0',
-            'status_ternak' => 'required|in:sehat,sakit,hamil',
+            'status_ternak' => 'required|in:sehat,sakit,hamil,mati',
             'status_jual' => 'required|in:tidak dijual,siap jual,booking,terjual',
         ]);
 

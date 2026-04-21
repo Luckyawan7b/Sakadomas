@@ -55,7 +55,7 @@
             <div x-show="modalFilter" style="display: none;"
                 class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
                 @click.self="modalFilter = false">
-                <div class="relative w-full max-w-[500px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
+                <div class="relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
                     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
                     x-transition:enter-end="opacity-100 scale-100">
 
@@ -110,7 +110,7 @@
                                     @foreach ($data_kandang as $kd)
                                         <option value="{{ $kd->id_kandang }}">Kandang {{ $kd->nomor_kandang }}</option>
                                     @endforeach
-                                    <option value="kosong" class="text-red-500 font-semibold">Kosong (Tanpa Kandang)</option>
+                                    <option value="kosong">Kosong (Tanpa Kandang)</option>
                                 </select>
                             </div>
 
@@ -217,13 +217,13 @@
             </div>
         </template>
 
-        {{-- MODAL TAMBAH MONITORING (DENGAN AUTOFILL ALPINE.JS) --}}
+        {{-- MODAL TAMBAH MONITORING --}}
 
         <template x-teleport="body">
             <div x-show="modalTambah" style="display: none;"
                 class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
                 @click.self="modalTambah = false">
-                <div class="relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
+                <div class="relative w-full max-w-[700px] overflow-y-auto grow rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
                     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
                     x-transition:enter-end="opacity-100 scale-100">
 
@@ -281,7 +281,7 @@
                                     @foreach ($data_kandang as $kd)
                                         <option value="{{ $kd->id_kandang }}">Kandang {{ $kd->nomor_kandang }}</option>
                                     @endforeach
-                                    <option value="kosong" class="text-red-500 font-semibold">Kosong (Tanpa Kandang)
+                                    <option value="kosong" >Kosong (Tanpa Kandang)
                                     </option>
                                 </select>
                             </div>

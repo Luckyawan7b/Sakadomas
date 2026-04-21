@@ -44,7 +44,7 @@
             <div x-show="modalTambah" style="display: none;"
                 class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
                 @click.self="modalTambah = false">
-                <div class="no-scrollbar relative w-full max-w-[500px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
+                <div class="no-scrollbar relative w-full max-w-[600px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
                     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
                     x-transition:enter-end="opacity-100 scale-100">
 
@@ -66,16 +66,105 @@
                             <div>
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pemohon
                                     (User)</label>
-                                <select name="id_akun" required
-                                    class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                                    <option value="" disabled selected>-- Pilih Pengguna --</option>
-                                    @foreach ($data_akun as $akun)
-                                        <option value="{{ $akun->id_akun }}"
-                                            {{ old('id_akun') == $akun->id_akun ? 'selected' : '' }}>
-                                            {{ $akun->nama }} ({{ $akun->username }})
-                                        </option>
-                                    @endforeach
-                                </select>
+
+                                @php
+                                    $oldId = old('id_akun');
+                                    $oldUser = $oldId ? collect($data_akun)->firstWhere('id_akun', $oldId) : null;
+                                    $oldText = $oldUser ? $oldUser->nama . ' (' . $oldUser->username . ')' : '';
+                                @endphp
+
+                                {{-- FIX: Teleport dropdown ke body agar tidak terpotong overflow-y-auto modal --}}
+                                <div x-data='{
+                                    open: false,
+                                    search: "",
+                                    selectedId: @json($oldId ?? ''),
+                                    selectedText: @json($oldText ?? ''),
+                                    users: @json($data_akun),
+                                    rect: { top: 0, left: 0, bottom: 0, width: 0 },
+                                    get filteredUsers() {
+                                        if (this.search === "") return this.users;
+                                        return this.users.filter(user =>
+                                            user.nama.toLowerCase().includes(this.search.toLowerCase()) ||
+                                            user.username.toLowerCase().includes(this.search.toLowerCase())
+                                        );
+                                    },
+                                    toggle() {
+                                        if (this.open) {
+                                            this.open = false;
+                                        } else {
+                                            const r = this.$refs.trigger.getBoundingClientRect();
+                                            this.rect = { top: r.top, left: r.left, bottom: r.bottom, width: r.width };
+                                            this.open = true;
+                                        }
+                                    },
+                                    closeIfNotTrigger(event) {
+                                        if (this.$refs.trigger && this.$refs.trigger.contains(event.target)) return;
+                                        this.open = false;
+                                        this.search = "";
+                                    },
+                                    selectUser(user) {
+                                        this.selectedId = user.id_akun;
+                                        this.selectedText = user.nama + " (" + user.username + ")";
+                                        this.open = false;
+                                        this.search = "";
+                                    }
+                                }'
+                                    class="relative">
+
+                                    <input type="hidden" name="id_akun" x-model="selectedId" required>
+
+                                    {{-- Trigger button --}}
+                                    <div x-ref="trigger" @click="toggle()"
+                                        class="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus-within:border-brand-500 focus-within:ring-3 focus-within:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                        <span x-text="selectedText || &#39;-- Ketik Nama / Username --&#39;"
+                                            :class="!selectedText ? & #39;text-gray-400 dark:text-gray-500&# 39;: & #39;&# 39;"></span>
+                                        <svg class="h-4 w-4 text-gray-500 transition-transform"
+                                            :class="open ? & #39;rotate-180&# 39;: & #39;&# 39;" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+
+                                    {{-- Panel dropdown di-teleport ke body agar tidak terpotong overflow modal --}}
+                                    <template x-teleport="body">
+                                        <div x-show="open" style="display: none;"
+                                            @click.outside="closeIfNotTrigger($event)"
+                                            x-transition:enter="transition ease-out duration-100"
+                                            x-transition:enter-start="transform opacity-0 scale-95"
+                                            x-transition:enter-end="transform opacity-100 scale-100"
+                                            :style="`position: fixed; top: ${rect.bottom + 4}px; left: ${rect.left}px; width: ${rect.width}px; z-index: 999999;`"
+                                            class="rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
+
+                                            <div class="p-2 border-b border-gray-100 dark:border-gray-700">
+                                                <input type="text" x-model="search"
+                                                    placeholder="Cari nama atau username..."
+                                                    class="w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                                                    @click.stop>
+                                            </div>
+
+                                            <ul class="max-h-52 overflow-y-auto p-1">
+                                                <template x-for="user in filteredUsers" :key="user.id_akun">
+                                                    <li @click="selectUser(user)"
+                                                        class="cursor-pointer rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                                                        :class="selectedId == user.id_akun ? &
+                                                            #39;bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400&# 39;:
+                                                        &
+                                                        #39;&# 39;">
+                                                        <div class="font-medium" x-text="user.nama"></div>
+                                                        <div class="text-xs text-gray-500 dark:text-gray-400"
+                                                            x-text="&#39;@&#39; + user.username"></div>
+                                                    </li>
+                                                </template>
+
+                                                <li x-show="filteredUsers.length === 0"
+                                                    class="px-3 py-3 text-sm text-gray-500 text-center italic">
+                                                    Pengguna tidak ditemukan.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         @endif
 
@@ -101,22 +190,33 @@
                             </div>
 
                             <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Waktu
-                                    Survei</label>
-                                <div class="relative">
-                                    <input type="text" name="waktu_survei" value="{{ old('waktu_survei') }}" required
-                                        x-init="flatpickr($el, { enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true })"
-                                        class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-                                        placeholder="Pilih jam (00:00)">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Waktu Survei (Jam Operasional)
+                                </label>
 
-                                    <span class="absolute top-1/2 right-3.5 -translate-y-1/2 pointer-events-none">
-                                        <svg class="fill-gray-700 dark:fill-gray-400" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM13 12H17V14H11V7H13V12Z">
-                                            </path>
-                                        </svg>
-                                    </span>
+                                {{-- Container Alpine.js untuk mengelola pilihan jam --}}
+                                <div x-data="{ selectedTime: '{{ old('waktu_survei', '') }}' }">
+                                    {{-- Input Hidden untuk mengirim data ke Backend --}}
+                                    <input type="hidden" name="waktu_survei" x-model="selectedTime" required>
+
+                                    {{-- Grid Tombol Jam --}}
+                                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                                        <template x-for="time in ['09:00', '11:00', '13:00', '15:00']"
+                                            :key="time">
+                                            <button type="button" @click="selectedTime = time"
+                                                :class="selectedTime === time ?
+                                                    'bg-brand-500 text-white border-brand-500 shadow-md transform scale-105' :
+                                                    'bg-white text-gray-700 border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                                                class="flex items-center justify-center rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-200"
+                                                x-text="time">
+                                            </button>
+                                        </template>
+                                    </div>
+
+                                    {{-- Pesan error jika validasi gagal --}}
+                                    @error('waktu_survei')
+                                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -253,7 +353,7 @@
                                     <div x-show="modalEdit" style="display: none;"
                                         class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
                                         @click.self="modalEdit = false">
-                                        <div class="no-scrollbar relative w-full max-w-[500px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
+                                        <div class="no-scrollbar relative w-full max-w-[600px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
                                             x-transition:enter="transition ease-out duration-200"
                                             x-transition:enter-start="opacity-0 scale-95"
                                             x-transition:enter-end="opacity-100 scale-100">
@@ -307,31 +407,35 @@
 
                                                     <div>
                                                         <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Waktu
-                                                            Survei</label>
-                                                        <div class="relative">
+                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                                            Waktu Survei (Jam Operasional)
+                                                        </label>
 
-                                                            {{-- <input type="time" name="waktu_survei"
-                                                                value="{{ old('waktu_survei') }}" required
-                                                                onclick="this.showPicker()" lang="id-ID"
-                                                                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"> --}}
+                                                        {{-- Container Alpine.js untuk mengelola pilihan jam --}}
+                                                        <div x-data="{ selectedTime: '{{ old('waktu_survei', '') }}' }">
+                                                            {{-- Input Hidden untuk mengirim data ke Backend --}}
+                                                            <input type="hidden" name="waktu_survei"
+                                                                x-model="selectedTime" required>
 
-                                                            <input type="text" name="waktu_survei"
-                                                                value="{{ old('waktu_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('H:i')) }}"
-                                                                required x-init="flatpickr($el, { enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true })"
-                                                                class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-                                                                placeholder="Pilih jam (00:00)">
+                                                            {{-- Grid Tombol Jam --}}
+                                                            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                                                                <template
+                                                                    x-for="time in ['09:00', '11:00', '13:00', '15:00']"
+                                                                    :key="time">
+                                                                    <button type="button" @click="selectedTime = time"
+                                                                        :class="selectedTime === time ?
+                                                                            'bg-brand-500 text-white border-brand-500 shadow-md transform scale-105' :
+                                                                            'bg-white text-gray-700 border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                                                                        class="flex items-center justify-center rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-200"
+                                                                        x-text="time">
+                                                                    </button>
+                                                                </template>
+                                                            </div>
 
-                                                            <span
-                                                                class="absolute top-1/2 right-3.5 -translate-y-1/2 pointer-events-none">
-                                                                <svg class="fill-gray-700 dark:fill-gray-400"
-                                                                    width="16" height="16" viewBox="0 0 24 24"
-                                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path
-                                                                        d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM13 12H17V14H11V7H13V12Z">
-                                                                    </path>
-                                                                </svg>
-                                                            </span>
+                                                            {{-- Pesan error jika validasi gagal --}}
+                                                            @error('waktu_survei')
+                                                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                                                            @enderror
                                                         </div>
                                                     </div>
                                                 </div>

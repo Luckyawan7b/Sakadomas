@@ -17,7 +17,7 @@ class ternakModel extends Model
         'usia', //int (bulan)
         'berat', // int (kg)
         'harga', // int
-        'status_ternak', // ENUM('sehat','sakit','hamil')
+        'status_ternak', // ENUM('sehat','sakit','hamil', 'mati')
         'status_jual', //ENUM('tidak dijual','siap jual','booking','terjual')
         'last_update', // Date
         'last_monitor', // Date

@@ -180,6 +180,8 @@
                                         {{ request('status_ternak') == 'sakit' ? 'selected' : '' }}>Sakit</option>
                                     <option value="hamil" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
                                         {{ request('status_ternak') == 'hamil' ? 'selected' : '' }}>Hamil</option>
+                                    <option value="mati" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
+                                        {{ request('status_ternak') == 'mati' ? 'selected' : '' }}>Mati</option>
                                 </select>
                             </div>
                             <div>
@@ -371,6 +373,8 @@
                                         {{ old('status_ternak') == 'sakit' ? 'selected' : '' }}>Sakit</option>
                                     <option value="hamil" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
                                         {{ old('status_ternak') == 'hamil' ? 'selected' : '' }}>Hamil</option>
+                                    <option value="mati" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
+                                        {{ old('status_ternak') == 'mati' ? 'selected' : '' }}>Mati</option>
                                 </select>
                             </div>
 
@@ -466,9 +470,12 @@
                                     @elseif(strtolower($ternak->status_ternak) == 'sakit')
                                         <span
                                             class="inline-flex rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-500/10">Sakit</span>
-                                    @else
+                                    @elseif(strtolower($ternak->status_ternak) == 'hamil')
                                         <span
                                             class="inline-flex rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-500/10">Hamil</span>
+                                    @else
+                                        <span
+                                            class="inline-flex rounded-full bg-gray-800 px-2 py-1 text-xs font-medium text-white dark:bg-gray-700">Mati</span>
                                     @endif
                                     <br>
                                     <span class="mt-1 inline-block text-xs text-gray-500 uppercase font-semibold">
@@ -496,10 +503,10 @@
                                             Edit
                                         </button>
 
-                                        <button @click="modalHapus = true" type="button"
+                                        {{-- <button @click="modalHapus = true" type="button"
                                             class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-red-500 text-white shadow-theme-xs hover:bg-red-600">
                                             Hapus
-                                        </button>
+                                        </button> --}}
                                     </div>
                                 </td>
 
@@ -544,9 +551,10 @@
                                                         selectedKamar: "{{ old('id_kamar', $ternak->id_kamar ?? 'kosong') }}",
                                                         semuaKamar: @json($data_kamar),
                                                         get kamarTersedia() {
+                                                            if (this.selectedKandang === "kosong") return [];
                                                             return this.semuaKamar.filter(k => k.id_kandang == this.selectedKandang);
-                                                        }
-                                                    }'>
+                                                    }
+                                                }'>
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pindah
@@ -555,58 +563,24 @@
                                                             @change="selectedKamar = (selectedKandang === 'kosong' ? 'kosong' : '')"
                                                             required
                                                             class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                            <option value="" disabled
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
-                                                                Pilih Kandang</option>
-                                                            @foreach ($data_kandang as $kd)
-                                                                <option value="{{ $kd->id_kandang }}"
-                                                                    class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
-                                                                    Kandang {{ $kd->nomor_kandang }}</option>
+                                                            <option value="" disabled class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Pilih Kandang</option>
+                                                            @foreach($data_kandang as $kd)
+                                                                <option value="{{ $kd->id_kandang }}" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Kandang {{ $kd->nomor_kandang }}</option>
                                                             @endforeach
-                                                            <option value="kosong"
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white font-semibold">
-                                                                Kosong (Tanpa Kandang)</option>
+                                                            <option value="kosong" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white ">Kosong (Keluar Kandang)</option>
                                                         </select>
                                                     </div>
-
-                                                    {{-- <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pindah
-                                                            Kamar</label>
-                                                        <select name="id_kamar" x-model="selectedKamar" required
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-
-                                                            <option value="" disabled
-                                                                x-show="selectedKandang !== 'kosong'"
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
-                                                                Pilih Kamar Terlebih Dahulu</option>
-
-                                                            <option value="kosong" x-show="selectedKandang === 'kosong'"
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
-                                                                Kosong</option>
-
-                                                            <template x-for="kamar in kamarTersedia"
-                                                                :key="kamar.id_kamar">
-                                                                <option
-                                                                    class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                                                    :value="kamar.id_kamar"
-                                                                    x-text="'Kamar ' + kamar.nomor_kamar"></option>
-                                                            </template>
-                                                        </select>
-                                                    </div> --}}
 
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pindah
                                                             Kamar</label>
-                                                        <select name="id_kamar" x-model="selectedKamar" required
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                            <template x-for="kamar in kamarTersedia"
-                                                                :key="kamar.id_kamar">
-                                                                <option
-                                                                    class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                                                    :value="kamar.id_kamar"
-                                                                    x-text="'Kamar ' + kamar.nomor_kamar"></option>
+                                                        <select name="id_kamar" x-model="selectedKamar" required class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                                            <option value="" disabled x-show="selectedKandang !== 'kosong'" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Pilih Kamar</option>
+                                                            <option value="kosong" x-show="selectedKandang === 'kosong'" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Kosong</option>
+
+                                                            <template x-for="kamar in kamarTersedia" :key="kamar.id_kamar">
+                                                                <option class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" :value="kamar.id_kamar" x-text="'Kamar ' + kamar.nomor_kamar"></option>
                                                             </template>
                                                         </select>
                                                     </div>
@@ -687,6 +661,10 @@
                                                                 class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
                                                                 {{ $ternak->status_ternak == 'hamil' ? 'selected' : '' }}>
                                                                 Hamil</option>
+                                                            <option value="mati"
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
+                                                                {{ $ternak->status_ternak == 'mati' ? 'selected' : '' }}>
+                                                                Mati</option>
                                                         </select>
                                                     </div>
                                                     <div>
@@ -727,7 +705,7 @@
                                 </template>
 
                                 {{-- MODAL HAPUS TERNAK (TETAP) --}}
-                                <template x-teleport="body">
+                                {{-- <template x-teleport="body">
                                     <div x-show="modalHapus" style="display: none;"
                                         class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
                                         @click.self="modalHapus = false">
@@ -753,7 +731,7 @@
                                             </form>
                                         </div>
                                     </div>
-                                </template>
+                                </template> --}}
 
                             </tr>
                         @empty

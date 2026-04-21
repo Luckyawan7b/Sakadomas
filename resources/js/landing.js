@@ -1,188 +1,164 @@
 /**
  * =============================================================================
- * resources/js/app.js
- * Smart-Saka — Main JavaScript Entry Point
- * Diproses oleh: Vite (ES Modules)
+ * resources/js/app.js — Smart-Saka Landing Page
+ * Stack: Tailwind CSS v4 · Alpine.js 3 (npm) · Axios (npm)
  * =============================================================================
  *
- * Catatan untuk Developer Laravel:
- * - File ini di-bundle oleh Vite, bukan dipakai inline.
- * - Untuk interaktivitas yang lebih kompleks, pertimbangkan Alpine.js.
- *   Install: npm install alpinejs
- *   Kemudian import Alpine di sini dan init via Alpine.start().
+ * package.json sudah menyertakan alpinejs ^3.14.9 dan axios ^1.11.0
+ * Keduanya di-import langsung — TIDAK perlu CDN di Blade layout.
  *
- * Struktur Modul:
- *   1. initPasswordToggles()   — Visibility toggle untuk semua input password
- *   2. initPasswordStrength()  — Strength meter untuk halaman reset password
- *   3. initSelectFocus()       — Sync warna label select dengan focus-within
+ * Pembagian tugas:
+ *   Alpine.js  → testimonial slider, FAQ accordion, mobile menu (di Blade)
+ *   Vanilla JS → navbar scroll, scroll reveal, toast, newsletter form
  * =============================================================================
  */
 
-import './bootstrap'; // Axios, CSRF setup (sudah ada di Laravel starter)
+import './bootstrap'; // axios setup + CSRF header
+
+/* ── Alpine.js — di-import dari node_modules, bukan CDN ── */
+import Alpine from 'alpinejs';
+window.Alpine = Alpine;
+Alpine.start();
 
 
 /* =============================================================================
-   1. PASSWORD VISIBILITY TOGGLE
-   Mengelola semua tombol `.pw-toggle` yang berada di dalam container
-   yang memiliki `.pw-input` pada halaman yang sama.
+   1. NAVBAR — scroll shadow + active link highlight via IntersectionObserver
    ============================================================================= */
+function initNavbar() {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
 
-/**
- * Inisialisasi toggle visibility untuk semua pasangan
- * tombol `.pw-toggle` dan input `.pw-input`.
- *
- * Tombol menggunakan aria-pressed untuk aksesibilitas screen reader.
- */
-function initPasswordToggles() {
-    /** @type {NodeListOf<HTMLButtonElement>} */
-    const toggleButtons = document.querySelectorAll('.pw-toggle');
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('navbar-scrolled', window.scrollY > 20);
+    }, { passive: true });
 
-    toggleButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            const container = button.closest('.relative');
-            if (!container) return;
+    const sections = document.querySelectorAll('section[id], footer[id]');
+    const navLinks  = document.querySelectorAll('nav a[href^="#"]');
 
-            /** @type {HTMLInputElement|null} */
-            const input = container.querySelector('.pw-input');
-            const icon  = button.querySelector('.material-symbols-outlined');
-
-            if (!input || !icon) return;
-
-            const isHidden = input.type === 'password';
-
-            // Toggle tipe input
-            input.type = isHidden ? 'text' : 'password';
-
-            // Update ikon Material Symbol
-            icon.textContent = isHidden ? 'visibility_off' : 'visibility';
-
-            // Update aria-pressed untuk screen reader
-            button.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+    new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            navLinks.forEach(link => {
+                const active = link.getAttribute('href') === '#' + entry.target.id;
+                link.classList.toggle('text-olive-600', active);
+                link.classList.toggle('bg-olive-50', active);
+                if (!active) {
+                    link.classList.remove('text-olive-600', 'bg-olive-50');
+                }
+            });
         });
-    });
+    }, { threshold: 0.4 }).observe;
+
+    // Re-observe all sections
+    const ioNav = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            navLinks.forEach(link => {
+                const match = link.getAttribute('href') === '#' + entry.target.id;
+                link.classList.toggle('text-olive-600', match);
+                link.classList.toggle('bg-olive-50', match);
+            });
+        });
+    }, { threshold: 0.4 });
+    sections.forEach(s => ioNav.observe(s));
 }
 
 
 /* =============================================================================
-   2. PASSWORD STRENGTH METER
-   Menghitung kekuatan password berdasarkan panjang dan kompleksitas,
-   lalu memperbarui tampilan bar dan label kekuatan.
-
-   Hanya aktif di halaman reset-password (ketika #strength-bars ada).
+   2. SCROLL REVEAL — .reveal / .reveal-left / .reveal-right
    ============================================================================= */
+function initScrollReveal() {
+    const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const io  = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('visible');
+            io.unobserve(entry.target);
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-/** @typedef {'weak'|'medium'|'strong'} StrengthLevel */
-
-/**
- * Kalkulasi kekuatan password.
- * @param {string} password
- * @returns {{ level: StrengthLevel, score: number, label: string }}
- */
-function calculateStrength(password) {
-    let score = 0;
-
-    if (password.length >= 8)  score++;
-    if (password.length >= 12) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
-
-    if (score <= 2) return { level: 'weak',   score: 1, label: 'Lemah' };
-    if (score <= 3) return { level: 'medium',  score: 2, label: 'Sedang' };
-    return               { level: 'strong',  score: 3, label: 'Kuat' };
+    els.forEach(el => io.observe(el));
 }
 
-/** Map level ke Tailwind color class */
-const STRENGTH_COLORS = {
-    weak:   'bg-error',
-    medium: 'bg-secondary',
-    strong: 'bg-primary',
-};
 
-/** Map level ke Tailwind text color class */
-const STRENGTH_TEXT_COLORS = {
-    weak:   'text-error',
-    medium: 'text-secondary',
-    strong: 'text-primary',
-};
+/* =============================================================================
+   3. TOAST NOTIFICATION — showToast(msg, type) callable globally
+   ============================================================================= */
+window.showToast = function (msg, type = 'success') {
+    const toast    = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-msg');
+    const toastIcon = document.getElementById('toast-icon');
+    if (!toast || !toastMsg) return;
 
-/**
- * Inisialisasi password strength meter.
- * Mencari input[name="password"] di dalam halaman yang juga memiliki
- * elemen #strength-bars.
- */
-function initPasswordStrength() {
-    const strengthContainer = document.getElementById('strength-bars');
-    if (!strengthContainer) return; // Tidak ada di halaman ini
+    toastMsg.textContent = msg;
 
-    const passwordInput = document.getElementById('password');
-    const strengthLabel = document.querySelector('.strength-label');
-    const bars          = strengthContainer.querySelectorAll('.strength-bar');
-
-    if (!passwordInput) return;
-
-    passwordInput.addEventListener('input', () => {
-        const value    = passwordInput.value;
-        const result   = calculateStrength(value);
-        const barColor = STRENGTH_COLORS[result.level];
-        const txtColor = STRENGTH_TEXT_COLORS[result.level];
-
-        // Reset semua bar
-        bars.forEach((bar, index) => {
-            // Hapus semua class warna sebelumnya
-            bar.classList.remove('bg-error', 'bg-secondary', 'bg-primary', 'bg-surface-container-highest');
-
-            if (index < result.score) {
-                bar.classList.add(barColor);
-                bar.setAttribute('data-level', String(result.score));
-            } else {
-                bar.classList.add('bg-surface-container-highest');
-                bar.removeAttribute('data-level');
-            }
-        });
-
-        // Update label teks
-        if (strengthLabel) {
-            strengthLabel.textContent = value.length > 0 ? `Kekuatan: ${result.label}` : '';
-            strengthLabel.className   = `strength-label text-[10px] uppercase tracking-widest mt-2 font-bold ${value.length > 0 ? txtColor : 'text-outline'}`;
+    if (toastIcon) {
+        const path = toastIcon.querySelector('path');
+        if (path) {
+            path.setAttribute('d', type === 'error'
+                ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+            );
         }
+    }
 
-        // Update aria-valuenow pada progressbar
-        const percentMap = { weak: 33, medium: 66, strong: 100 };
-        strengthContainer.setAttribute('aria-valuenow', String(percentMap[result.level]));
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 3200);
+};
+
+
+/* =============================================================================
+   4. NEWSLETTER FORM
+   ============================================================================= */
+function initNewsletter() {
+    const form = document.getElementById('nl-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const emailInput = document.getElementById('nl-email');
+        const btn        = form.querySelector('button[type="submit"]');
+        const email      = emailInput?.value.trim();
+        if (!email) return;
+
+        btn.textContent = 'Mendaftar…';
+        btn.disabled    = true;
+
+        try {
+            // TODO: ganti dengan endpoint nyata
+            // await window.axios.post('/newsletter/subscribe', { email });
+            await new Promise(r => setTimeout(r, 1200)); // simulasi
+
+            btn.textContent = '✓ Terdaftar!';
+            // v4: jangan inject dynamic Tailwind class — pakai inline style dengan CSS var
+            btn.style.background = 'var(--color-olive-300)';
+            if (emailInput) emailInput.value = '';
+            window.showToast('Berhasil! Anda akan mendapat info terbaru dari kami.');
+        } catch {
+            btn.textContent = 'Coba Lagi';
+            btn.disabled    = false;
+            window.showToast('Gagal mendaftar. Silakan coba lagi.', 'error');
+        }
     });
 }
 
 
 /* =============================================================================
-   3. SELECT DROPDOWN STYLING
-   Tailwind tidak dapat style native <select> dengan focus-within secara penuh.
-   Script ini menambahkan class manual saat select dalam focus.
+   INIT
    ============================================================================= */
-
-function initSelectFocus() {
-    document.querySelectorAll('.input-focus-effect select').forEach((select) => {
-        const wrapper = select.closest('.input-focus-effect');
-
-        select.addEventListener('focus', () => {
-            wrapper?.classList.add('ring-1', 'ring-primary/30');
-        });
-        select.addEventListener('blur', () => {
-            wrapper?.classList.remove('ring-1', 'ring-primary/30');
-        });
-    });
-}
-
-
-/* =============================================================================
-   INIT — Jalankan semua modul saat DOM siap
-   ============================================================================= */
-
 document.addEventListener('DOMContentLoaded', () => {
-    initPasswordToggles();
-    initPasswordStrength();
-    initSelectFocus();
+    initNavbar();
+    initScrollReveal();
+    initNewsletter();
 });
+
 
 // resources/js/app.js
 
