@@ -4,6 +4,48 @@ namespace App\Helpers;
 
 class MenuHelper
 {
+    public static function filterMenuByRole($menuGroups)
+{
+    $user = auth()->user();
+    if (!$user) return [];
+
+    $role = $user->role;
+
+    return collect($menuGroups)->map(function ($group) use ($role) {
+
+        $items = collect($group['items'])->map(function ($item) use ($role) {
+
+            // filter subItems dulu kalau ada
+            if (isset($item['subItems'])) {
+                $item['subItems'] = collect($item['subItems'])->filter(function ($sub) use ($role) {
+                    if (!isset($sub['roles'])) return true;
+                    return in_array($role, $sub['roles']);
+                })->values()->all();
+            }
+
+            if (isset($item['roles']) && !in_array($role, $item['roles'])) {
+                return null;
+            }
+
+            // kalau subItems kosong, skip
+            if (isset($item['subItems']) && count($item['subItems']) === 0) {
+                return null;
+            }
+
+            return $item;
+
+        })->filter()->values()->all();
+
+        if (count($items) > 0) {
+            $group['items'] = $items;
+            return $group;
+        }
+
+        return null;
+
+    })->filter()->values()->all();
+}
+
     public static function getMainNavItems()
     {
         return [
@@ -148,15 +190,11 @@ class MenuHelper
                         ]
                     ],
                 ],
-                // [
-                //     'name' => 'Kalender',
-                //     'icon' => 'calendar',
-                //     'path' => '/calendar',
-                // ],
                 [
                     'name' => 'Jadwal Survei',
                     'icon' => 'survei',
                     'path' => '/survei',
+                    'roles' => ['admin']
                 ],
 
             ]
@@ -192,6 +230,29 @@ class MenuHelper
                     'name' => 'Data Akun',
                     'icon' => 'user-profile',
                     'path' => '/data-akun',
+                    'roles' => ['admin'],
+
+                ]
+            ]
+        ],
+        [
+            'title' => 'Pesanan Saya',
+            'items' => [
+                [
+                    'name' => 'Transaksi Saya',
+                    'icon' => 'receipt',
+                    'path' => '#',
+                    'roles' => ['user'],
+                    'subItems' => [
+                        [
+                            'name' => 'Buat Pesanan',
+                            'path' => '/transaksi/create',
+                        ],
+                        [
+                            'name' => 'Riwayat Pesanan',
+                            'path' => '/transaksi/riwayat-saya',
+                        ]
+                    ],
                 ]
             ]
         ],

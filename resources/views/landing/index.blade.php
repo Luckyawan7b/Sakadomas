@@ -175,9 +175,9 @@
                 <div role="listitem">
                     <x-landing.product-card title="Kambing Etawa Super"
                         description="Produksi susu tinggi, postur tegap, dan mudah beradaptasi. Pilihan terbaik untuk usaha susu kambing."
-                        price="Rp 2.800.000" price-raw="2800000" image="{{ asset('images/landing/product-etawa1.jpg') }}"
-                        badge="Unggulan" badge-color="cream" category="Perah" delay="0.19s"
-                        wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
+                        price="Rp 2.800.000" price-raw="2800000"
+                        image="{{ asset('images/landing/product-etawa1.jpg') }}" badge="Unggulan" badge-color="cream"
+                        category="Perah" delay="0.19s" wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
                 </div>
 
                 <div role="listitem">
@@ -287,37 +287,40 @@
 
             <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-    <div class="reveal-left">
-        <h2 id="testimoni-heading" class="font-serif text-4xl lg:text-5xl text-olive-900 leading-tight mb-10">
-            Apa Kata<br>
-            <span class="italic text-bark-600">Pelanggan Kami?</span>
-        </h2>
-        <x-landing.testimonial-slider :testimonials="$testimonials ?? null" />
-    </div>
+                <div class="reveal-left">
+                    <h2 id="testimoni-heading" class="font-serif text-4xl lg:text-5xl text-olive-900 leading-tight mb-10">
+                        Apa Kata<br>
+                        <span class="italic text-bark-600">Pelanggan Kami?</span>
+                    </h2>
+                    <x-landing.testimonial-slider :testimonials="$testimonials ?? null" />
+                </div>
 
-    <div class="reveal-right hidden lg:grid grid-cols-2 grid-rows-2 gap-4 h-[480px]" aria-hidden="true">
-        <div class="rounded-2xl overflow-hidden row-span-2">
-            <img src="{{ asset('images/landing/testi-collage-1.jpg') }}" alt=""
-                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy">
+                <div class="reveal-right hidden lg:grid grid-cols-2 grid-rows-2 gap-4 h-[480px]" aria-hidden="true">
+                    <div class="rounded-2xl overflow-hidden row-span-2">
+                        <img src="{{ asset('images/landing/testi-collage-1.jpg') }}" alt=""
+                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            loading="lazy">
+                    </div>
+                    <div class="rounded-2xl overflow-hidden">
+                        <img src="{{ asset('images/landing/testi-collage-2.jpg') }}" alt=""
+                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            loading="lazy">
+                    </div>
+                    <div class="rounded-2xl overflow-hidden">
+                        <img src="{{ asset('images/landing/testi-collage-3.jpg') }}" alt=""
+                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            loading="lazy">
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="rounded-2xl overflow-hidden">
-            <img src="{{ asset('images/landing/testi-collage-2.jpg') }}" alt=""
-                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy">
-        </div>
-        <div class="rounded-2xl overflow-hidden">
-            <img src="{{ asset('images/landing/testi-collage-3.jpg') }}" alt=""
-                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy">
-        </div>
-    </div>
-    </div>
-    </div>
     </section> --}}
 
 
     {{-- ══════════════════════════════════════════════ NEWSLETTER ══ --}}
     {{-- <section id="newsletter" class="py-20 lg:py-28 bg-olive-900 relative overflow-hidden"
-        aria-labelledby="newsletter-heading"> --}}
-    {{-- <div class="absolute inset-0 dot-grid opacity-10 pointer-events-none" aria-hidden="true">
+        aria-labelledby="newsletter-heading">
+        <div class="absolute inset-0 dot-grid opacity-10 pointer-events-none" aria-hidden="true">
 
         </div>
         <div class="absolute top-0 left-0 w-96 h-96 bg-olive-800 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -325,13 +328,12 @@
         </div>
         <div class="absolute bottom-0 right-0 w-80 h-80 bg-olive-800 rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none"
             aria-hidden="true">
-        </div> --}}
+        </div>
 
-    {{-- <div class="relative z-10 max-w-7xl mx-auto px-5 lg:px-8"> --}}
-    {{-- <div class="grid lg:grid-cols-2 gap-12 items-center"> --}}
+        <div class="relative z-10 max-w-7xl mx-auto px-5 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
 
-    {{-- Left CTA --}}
-    {{-- <div class="reveal-left">
+                <div class="reveal-left">
                     <div class="section-badge bg-olive-800 text-olive-200 mb-6">Newsletter</div>
                     <h2 id="newsletter-heading" class="font-serif text-4xl lg:text-5xl text-cream-50 leading-tight mb-4">
                         Dapatkan Info Harga<br>
@@ -354,10 +356,9 @@
                         </button>
                     </form>
                     <p class="text-cream-200/50 text-xs mt-3">Tidak ada spam. Bisa unsubscribe kapan saja.</p>
-                </div> --}}
+                </div>
 
-    {{-- Right Photo Collage --}}
-    {{-- <div class="reveal-right grid grid-cols-2 gap-4" aria-hidden="true">
+                <div class="reveal-right grid grid-cols-2 gap-4" aria-hidden="true">
                     <div class="rounded-2xl overflow-hidden aspect-square">
                         <img src="{{ asset('images/landing/nl-1.jpg') }}" alt=""
                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
@@ -378,20 +379,17 @@
                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                             loading="lazy">
                     </div>
-                </div> --}}
-    {{-- </div> --}}
-    {{-- </div> --}}
-    {{-- </section> --}}
+                </div>
+            </div>
+        </div>
+    </section> --}}
 
 
 
     {{-- ══════════════════════════════════════════════ FOOTER / KONTAK ══ --}}
     {{-- Nilai bisnis dibaca dari config/smartsaka.php via LandingController --}}
-    <x-landing.footer
-        wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}"
-        email="{{ $email ?? config('smartsaka.email') }}"
-        :address="$address ?? config('smartsaka.address')"
-        map-src="{{ $mapsSrc ?? config('smartsaka.maps_embed_src') }}"
-    />
+    <x-landing.footer wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}"
+        email="{{ $email ?? config('smartsaka.email') }}" :address="$address ?? config('smartsaka.address')"
+        map-src="{{ $mapsSrc ?? config('smartsaka.maps_embed_src') }}" />
 
 @endsection

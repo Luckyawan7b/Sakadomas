@@ -14,7 +14,6 @@ class transaksiModel extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id_ternak',
         'tgl_transaksi',
         'total_jumlah',
         'total_harga',
@@ -23,7 +22,9 @@ class transaksiModel extends Model
         'kurir',
         'status',
         'id_akun',
-        'no_kurir'
+        'no_kurir',
+        'id_jenis_ternak',
+        'jenis_kelamin_pesanan',
     ];
 
     public function akun()
@@ -31,8 +32,13 @@ class transaksiModel extends Model
         return $this->belongsTo(akunModel::class, 'id_akun', 'id_akun');
     }
 
-    public function ternak()
+    public function jenisTernak()
     {
-        return $this->belongsTo(ternakModel::class, 'id_ternak', 'id_ternak');
+        return $this->belongsTo(jenisTernakModel::class, 'id_jenis_ternak', 'id_jenis_ternak');
+    }
+
+    public function detailTransaksi()
+    {
+        return $this->hasMany(detailTransaksiModel::class, 'id_transaksi', 'id_transaksi');
     }
 }

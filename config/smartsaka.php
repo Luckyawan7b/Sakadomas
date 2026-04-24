@@ -22,7 +22,7 @@ return [
     // ── WhatsApp ──────────────────────────────────────────────────────────────
     // Format: kode negara + nomor tanpa tanda hubung atau spasi
     // Contoh: 6281234567890 (62 = Indonesia, 81234567890 = nomor lokal)
-    'wa_number' => env('SMARTSAKA_WA_NUMBER', '6281234567890'),
+    'wa_number' => env('SMARTSAKA_WA_NUMBER', '62895700326271'),
 
     // Pesan default WA untuk tombol floating dan hero CTA
     'wa_default_message' => env(

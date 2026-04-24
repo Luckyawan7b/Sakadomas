@@ -166,8 +166,8 @@
                                 </td>
 
                                 <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
-                                    <span class="font-medium">ID Ternak: #{{ $transaksi->id_ternak }}</span><br>
-                                    <span class="text-xs text-gray-500">Jumlah: {{ $transaksi->total_jumlah }} Ekor</span>
+                                    <span class="font-medium">{{ $transaksi->jenisTernak->jenis_ternak ?? '-' }}</span><br>
+                                    <span class="text-xs text-gray-500">{{ ucfirst($transaksi->jenis_kelamin_pesanan ?? '-') }} &bull; {{ $transaksi->total_jumlah }} Ekor</span>
                                 </td>
 
                                 <td class="py-4 px-4 text-gray-800 dark:text-gray-300">

@@ -66,6 +66,21 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/transaksi/create', [transaksiController::class, 'createPesananUser'])->name('transaksi.create');
     Route::post('/transaksi/create/store', [transaksiController::class, 'storePesananUser'])->name('transaksi.create.store');
+    Route::get('/transaksi/riwayat-saya', [transaksiController::class, 'riwayatUser'])->name('transaksi.riwayat');
+
+    Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi.index');
+    Route::post('/transaksi/tambah', [transaksiController::class, 'store'])->name('transaksi.store');
+    Route::put('/transaksi/update/{id}', [transaksiController::class, 'update'])->name('transaksi.update');
+    Route::delete('/transaksi/hapus/{id}', [transaksiController::class, 'delete'])->name('transaksi.delete');
+    Route::get('/transaksi/rekap', [transaksiController::class, 'rekap'])->name('transaksi.rekap');
+
+    // User: Batalkan pesanan
+    Route::post('/transaksi/{id}/cancel', [transaksiController::class, 'cancelPesananUser'])->name('transaksi.cancel');
+
+    // Admin: Assign & remove ternak dari detail_transaksi
+    Route::post('/transaksi/{id}/assign', [transaksiController::class, 'assignTernak'])->name('transaksi.assign');
+    Route::delete('/transaksi/detail/{id}', [transaksiController::class, 'removeDetailTernak'])->name('transaksi.detail.remove');
+
 
     // API Publik yang butuh login
 });
@@ -122,11 +137,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/monitoring/{id}', [monitorController::class, 'delete'])->name('monitoring.delete');
 
     // Transaksi
-    Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi.index');
-    Route::post('/transaksi/tambah', [transaksiController::class, 'store'])->name('transaksi.store');
-    Route::put('/transaksi/update/{id}', [transaksiController::class, 'update'])->name('transaksi.update');
-    Route::delete('/transaksi/hapus/{id}', [transaksiController::class, 'delete'])->name('transaksi.delete');
-    Route::get('/transaksi/rekap', [transaksiController::class, 'rekap'])->name('transaksi.rekap');
 
 
 });
