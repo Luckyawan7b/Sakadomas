@@ -2,11 +2,13 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\Auth;
+
 class MenuHelper
 {
     public static function filterMenuByRole($menuGroups)
 {
-    $user = auth()->user();
+    $user = Auth::user();
     if (!$user) return [];
 
     $role = $user->role;
@@ -242,7 +244,7 @@ class MenuHelper
                     'name' => 'Transaksi Saya',
                     'icon' => 'receipt',
                     'path' => '#',
-                    'roles' => ['user'],
+                    'roles' => ['pelanggan'],
                     'subItems' => [
                         [
                             'name' => 'Buat Pesanan',

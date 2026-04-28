@@ -60,7 +60,7 @@ class akunController extends Controller
             'alamat'   => $request->alamat,
             'no_hp'    => $request->no_hp,
             'email'    => $request->email,
-            'role'     => 'user',
+            'role'     => 'pelanggan',
             'id_desa'  => $request->id_desa,
         ]);
 
@@ -126,7 +126,7 @@ class akunController extends Controller
     {
         // 1. Buat kerangka Query dasar (Hanya ambil yang rolenya 'user')
         $query = akunModel::with('desa.kecamatan')
-                          ->where('role', 'user')
+                          ->where('role', 'pelanggan')
                           ->orderBy('id_akun', 'desc');
 
         // 2. Jika ada inputan pencarian di URL (?q=...)
@@ -221,7 +221,7 @@ class akunController extends Controller
             'no_hp.max'          => 'Nomor telepon maksimal 15 angka.'
         ]);
 
-        $akun = \App\Models\akunModel::findOrFail($user->id_akun);
+        $akun = akunModel::findOrFail($user->id_akun);
         $akun->update([
             'nama'     => $request->nama,
             'username' => $request->username,
@@ -261,7 +261,7 @@ class akunController extends Controller
             'alamat'   => $request->alamat,
             'no_hp'    => $request->no_hp,
             'email'    => $request->email,
-            'role'     => 'user',
+            'role'     => 'pelanggan',
             'id_desa'  => $request->id_desa,
         ]);
 
@@ -286,7 +286,7 @@ class akunController extends Controller
             return back()->withErrors(['password_lama' => 'Password lama yang Anda masukkan salah.']);
         }
 
-        $akun = \App\Models\akunModel::findOrFail($user->id_akun);
+        $akun = akunModel::findOrFail($user->id_akun);
         $akun->update([
             'password' => Hash::make($request->password_baru)
         ]);
