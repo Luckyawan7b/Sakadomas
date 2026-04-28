@@ -125,7 +125,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Produk</p>
-                            <p class="text-sm font-semibold text-gray-800 dark:text-white">{{ $trx->jenisTernak->jenis_ternak ?? 'Domba' }} &bull; {{ ucfirst($trx->jenis_kelamin_pesanan ?? '-') }}</p>
+                            <p class="capitalize text-sm font-semibold text-gray-800 dark:text-white">{{ $trx->jenisTernak->jenis_ternak ?? 'Domba' }} &bull; {{ ucfirst($trx->jenis_kelamin_pesanan ?? '-') }}</p>
                             <p class="text-xs text-gray-500">{{ $trx->total_jumlah }} Ekor</p>
                         </div>
                         <div>
@@ -212,7 +212,7 @@
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm mb-4">
                         <div>
                             <p class="text-xs text-gray-400">Jenis Ternak</p>
-                            <p class="font-medium text-gray-700 dark:text-gray-300">{{ $trx->jenisTernak->jenis_ternak ?? '-' }}</p>
+                            <p class="capitalize font-medium text-gray-700 dark:text-gray-300">{{ $trx->jenisTernak->jenis_ternak ?? '-' }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-400">Harga/Ekor</p>
@@ -236,15 +236,187 @@
                         </div>
 
                         @if(in_array($st, ['pending', 'diproses']))
-                            <form action="{{ route('transaksi.cancel', $trx->id_transaksi) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan pesanan #TRX-{{ $trx->id_transaksi }}?')">
-                                @csrf
-                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-red-500 px-4 py-2 text-xs font-medium text-white hover:bg-red-600 transition">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                    Batalkan Pesanan
+                            @if($trx->metode_pembayaran === 'transfer' && !empty($trx->bukti_pembayaran))
+                                <div class="text-[10px] text-red-500 font-medium italic max-w-[200px] text-right">
+                                    *Pesanan transfer yang sudah dibayar tidak bisa dibatalkan.
+                                </div>
+                            @else
+                                <form action="{{ route('transaksi.cancel', $trx->id_transaksi) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan pesanan #TRX-{{ $trx->id_transaksi }}?')">
+                                    @csrf
+                                    <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-red-500 px-4 py-2 text-xs font-medium text-white hover:bg-red-600 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        Batalkan Pesanan
+                                    </button>
+                                </form>
+                            @endif
+                        @elseif($st === 'dikirim')
+                            <div x-data="{ showModalTerima: false }">
+                                <button type="button" @click="showModalTerima = true" class="inline-flex items-center gap-1.5 rounded-lg bg-green-500 px-4 py-2 text-xs font-medium text-white hover:bg-green-600 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Pesanan Diterima
                                 </button>
-                            </form>
+
+                                <template x-teleport="body">
+                                    <div x-show="showModalTerima" style="display: none;" class="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm" @click.self="showModalTerima = false">
+                                        <div x-show="showModalTerima" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="relative w-full max-w-[400px] rounded-3xl bg-white p-6 dark:bg-gray-900 text-center">
+                                            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-100 dark:bg-green-500/20">
+                                                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                            </div>
+                                            <h4 class="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">Pesanan Diterima?</h4>
+                                            <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Apakah Anda yakin telah menerima pesanan <strong>#TRX-{{ $trx->id_transaksi }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                                            
+                                            <form action="{{ route('transaksi.selesai', $trx->id_transaksi) }}" method="POST" class="flex justify-center gap-3">
+                                                @csrf
+                                                <button type="button" @click="showModalTerima = false" class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">Belum</button>
+                                                <button type="submit" class="rounded-lg bg-green-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-green-600">Ya, Sudah Diterima</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
                         @endif
                     </div>
+
+                    {{-- Bagian Survei (Jika is_survei = true) --}}
+                    @if($trx->is_survei)
+                        <div class="mt-5 border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <h4 class="text-sm font-semibold text-gray-800 dark:text-white mb-3">Informasi Survei</h4>
+
+                            @php
+                                $surveiAktif = $trx->survei->sortByDesc('id_survei')->first();
+                            @endphp
+
+                            @if($surveiAktif)
+                                <div class="rounded-lg border p-4 {{ strtolower($surveiAktif->status) === 'batal' ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800/30' : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700' }}">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800 dark:text-white">Jadwal: {{ \Carbon\Carbon::parse($surveiAktif->tgl_survei)->translatedFormat('d M Y, H:i') }}</p>
+                                            <p class="text-xs text-gray-500">{{ $surveiAktif->ket ?? 'Tidak ada keterangan khusus' }}</p>
+                                        </div>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                            {{ strtolower($surveiAktif->status) == 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-400' : '' }}
+                                            {{ strtolower($surveiAktif->status) == 'disetujui' ? 'bg-blue-100 text-blue-800 dark:bg-blue-500/10 dark:text-blue-400' : '' }}
+                                            {{ strtolower($surveiAktif->status) == 'selesai' ? 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-400' : '' }}
+                                            {{ strtolower($surveiAktif->status) == 'batal' ? 'bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-400' : '' }}
+                                        ">
+                                            {{ ucfirst($surveiAktif->status) }}
+                                        </span>
+                                    </div>
+
+                                    {{-- Pesan batal dari admin --}}
+                                    @if(strtolower($surveiAktif->status) === 'batal' && $surveiAktif->ket_admin)
+                                        <div class="mt-3 text-sm text-red-700 dark:text-red-400 border-t border-red-200 dark:border-red-800/30 pt-2">
+                                            <b>Alasan Pembatalan:</b> {{ $surveiAktif->ket_admin }}
+                                        </div>
+                                    @endif
+
+                                    {{-- Tombol Ajukan Ulang Survei jika batal dan belum lewat 7 hari --}}
+                                    @if(strtolower($surveiAktif->status) === 'batal' && $trx->batas_survei && \Carbon\Carbon::parse($trx->batas_survei)->isFuture() && $st !== 'batal')
+                                        <div class="mt-4 pt-3 border-t border-red-200 dark:border-red-800/30" 
+                                             x-data="{ 
+                                                 showFormResubmit: false,
+                                                 selectedDate: '',
+                                                 bookedTimes: [],
+                                                 fetchBookedTimes() {
+                                                     if (!this.selectedDate) return;
+                                                     fetch('/api/jadwal/cek?tanggal=' + this.selectedDate)
+                                                         .then(res => res.json())
+                                                         .then(data => {
+                                                             this.bookedTimes = data;
+                                                         });
+                                                 }
+                                             }">
+                                            <p class="text-xs text-red-600 dark:text-red-400 mb-2">Anda dapat mengajukan ulang jadwal survei maksimal hingga {{ \Carbon\Carbon::parse($trx->batas_survei)->translatedFormat('d M Y') }}. (Lewat dari itu pesanan otomatis batal)</p>
+                                            <button @click="showFormResubmit = !showFormResubmit" class="text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400">
+                                                Ajukan Ulang Survei &rarr;
+                                            </button>
+
+                                            <form x-show="showFormResubmit" x-collapse class="mt-3 flex gap-2" action="{{ route('transaksi.ajukan-survei', $trx->id_transaksi) }}" method="POST">
+                                                @csrf
+                                                <input type="text" name="tanggal_survei" required placeholder="Pilih Tanggal" 
+                                                    x-model="selectedDate"
+                                                    class="h-9 w-32 rounded border border-gray-300 text-xs px-2 dark:bg-gray-800 dark:border-gray-600 dark:text-white" 
+                                                    x-init="flatpickr($el, { 
+                                                        dateFormat: 'Y-m-d', 
+                                                        minDate: 'today', 
+                                                        maxDate: '{{ $trx->batas_survei }}',
+                                                        onChange: function(selectedDates, dateStr) {
+                                                            selectedDate = dateStr;
+                                                            fetchBookedTimes();
+                                                        }
+                                                    })">
+                                                
+                                                <select name="waktu_survei" required class="h-9 w-24 rounded border border-gray-300 text-xs px-2 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                                                    <template x-for="time in ['09:00', '11:00', '13:00', '15:00']" :key="time">
+                                                        <option :value="time" x-text="time" :disabled="bookedTimes.includes(time)"></option>
+                                                    </template>
+                                                </select>
+                                                <button type="submit" class="bg-brand-500 text-white rounded px-3 text-xs hover:bg-brand-600">Ajukan</button>
+                                            </form>
+                                        </div>
+                                    @endif
+
+                                    {{-- Form Upload Pembayaran jika Survei Selesai dan belum bayar --}}
+                                    @if(strtolower($surveiAktif->status) === 'selesai' && !$trx->bukti_pembayaran && $st !== 'batal')
+                                        <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                            @php
+                                                $sisaWaktu = \Carbon\Carbon::parse($surveiAktif->tgl_survei)->addHours(24);
+                                            @endphp
+                                            <div class="rounded-md bg-amber-50 p-3 mb-3 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-800/30 flex items-center justify-between"
+                                                 x-data="{ 
+                                                     deadline: new Date('{{ $sisaWaktu->toIso8601String() }}').getTime(),
+                                                     now: new Date().getTime(),
+                                                     timeLeft: 0,
+                                                     formatTime(ms) {
+                                                         if (ms <= 0) return 'Waktu Habis';
+                                                         let h = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                         let m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+                                                         let s = Math.floor((ms % (1000 * 60)) / 1000);
+                                                         return h + 'j ' + m + 'm ' + s + 's';
+                                                     },
+                                                     init() {
+                                                         this.timeLeft = this.deadline - this.now;
+                                                         setInterval(() => {
+                                                             this.now = new Date().getTime();
+                                                             this.timeLeft = this.deadline - this.now;
+                                                         }, 1000);
+                                                     }
+                                                 }">
+                                                <div>
+                                                    <p class="text-xs text-amber-800 dark:text-amber-400 font-medium"><i class="fas fa-exclamation-triangle mr-1"></i> Survei telah selesai! Silakan selesaikan pembayaran.</p>
+                                                    <p class="text-[10px] text-amber-700 dark:text-amber-500 mt-1">Batas waktu: {{ $sisaWaktu->translatedFormat('d M Y, H:i') }}</p>
+                                                </div>
+                                                <div class="text-right ml-3 flex-shrink-0">
+                                                    <p class="text-[10px] text-amber-700 dark:text-amber-500 mb-0.5">Sisa Waktu</p>
+                                                    <div class="bg-amber-100 dark:bg-amber-800/40 px-2 py-1 rounded text-xs font-bold text-amber-800 dark:text-amber-300 font-mono tracking-wider" x-text="formatTime(timeLeft)">
+                                                        --j --m --s
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <form action="{{ route('transaksi.upload-bukti', $trx->id_transaksi) }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-3">
+                                                @csrf
+                                                <div>
+                                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Metode Pembayaran</label>
+                                                    <select name="metode_pembayaran" required class="mt-1 block w-full rounded border border-gray-300 text-sm p-2 dark:bg-gray-800 dark:border-gray-600 dark:text-white" onchange="document.getElementById('upload_area_{{$trx->id_transaksi}}').style.display = this.value === 'transfer' ? 'block' : 'none'">
+                                                        <option value="transfer">Transfer Bank</option>
+                                                        <option value="cash">Cash on Delivery (COD)</option>
+                                                    </select>
+                                                </div>
+                                                <div id="upload_area_{{$trx->id_transaksi}}">
+                                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Bukti Transfer (Max 2MB)</label>
+                                                    <input type="file" name="bukti_pembayaran" accept="image/*" class="mt-1 block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                                                </div>
+                                                <button type="submit" class="self-start rounded bg-brand-500 px-4 py-2 text-xs font-medium text-white hover:bg-brand-600">Simpan & Selesai</button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                <p class="text-xs text-gray-500 italic">Data survei tidak ditemukan.</p>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
         @empty

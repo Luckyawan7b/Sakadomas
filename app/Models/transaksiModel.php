@@ -25,6 +25,14 @@ class transaksiModel extends Model
         'no_kurir',
         'id_jenis_ternak',
         'jenis_kelamin_pesanan',
+        'tgl_dikirim',
+        'batas_survei',
+        'is_survei',
+    ];
+
+    protected $casts = [
+        'is_survei' => 'boolean',
+        'tgl_dikirim' => 'datetime',
     ];
 
     public function akun()
@@ -40,5 +48,15 @@ class transaksiModel extends Model
     public function detailTransaksi()
     {
         return $this->hasMany(detailTransaksiModel::class, 'id_transaksi', 'id_transaksi');
+    }
+
+    public function survei()
+    {
+        return $this->hasMany(surveiModel::class, 'id_transaksi', 'id_transaksi');
+    }
+
+    public function keuangan()
+    {
+        return $this->hasMany(keuanganModel::class, 'id_transaksi', 'id_transaksi');
     }
 }

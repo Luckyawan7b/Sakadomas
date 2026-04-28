@@ -193,10 +193,10 @@ class MenuHelper
                     ],
                 ],
                 [
-                    'name' => 'Jadwal Survei',
+                    'name' => 'Manajemen Kunjungan',
                     'icon' => 'survei',
                     'path' => '/survei',
-                    'roles' => ['admin']
+                    'roles' => ['admin'],
                 ],
 
             ]
@@ -208,6 +208,7 @@ class MenuHelper
                     'name' => 'Transaksi',
                     'icon' => 'receipt',
                     'path' => '#',
+                    'roles' => ['admin'],
                     'subItems' => [
                         [
                             'name' => 'Data Transaksi',
@@ -255,7 +256,13 @@ class MenuHelper
                             'path' => '/transaksi/riwayat-saya',
                         ]
                     ],
-                ]
+                ],
+                [
+                    'name' => 'Jadwal Kunjungan',
+                    'icon' => 'survei',
+                    'path' => '/kunjungan',
+                    'roles' => ['pelanggan'],
+                ],
             ]
         ],
 

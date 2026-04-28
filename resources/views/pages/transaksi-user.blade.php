@@ -32,6 +32,24 @@
             waktuSurvei: "",
             tanggalSurvei: "",
             fileName: "",
+            bookedTimes: [],
+            loadingJadwal: false,
+
+            fetchBookedTimes() {
+                if (!this.tanggalSurvei) return;
+                this.loadingJadwal = true;
+                fetch("/api/jadwal/cek?tanggal=" + this.tanggalSurvei)
+                    .then(res => res.json())
+                    .then(data => {
+                        this.bookedTimes = data;
+                        if(this.bookedTimes.includes(this.waktuSurvei)) {
+                            this.waktuSurvei = "";
+                        }
+                    })
+                    .finally(() => {
+                        this.loadingJadwal = false;
+                    });
+            },
 
             get kategoriOptions() {
                 return [...new Set(this.rawData.map(item => item.nama_produk))];
@@ -57,6 +75,11 @@
             get totalHarga() {
                 return this.selectedItem ? this.selectedItem.harga * this.jumlah : 0;
             },
+            get maxSurveiDate() {
+                let d = new Date();
+                d.setDate(d.getDate() + 7);
+                return d.toISOString().split("T")[0];
+            },
             formatRupiah(angka) {
                 return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(angka);
             }
@@ -80,7 +103,7 @@
                             Produk</label>
                         <select x-model="selectedKategori" @change="selectedKelas = ''; selectedKey = ''; jumlah = 1"
                             required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white capitalize">
                             <option value="" disabled>-- Pilih Kategori (Breed + Usia) --</option>
                             <template x-for="kat in kategoriOptions" :key="kat">
                                 <option :value="kat" x-text="kat"></option>
@@ -166,12 +189,14 @@
                                     x-init="typeof flatpickr !== 'undefined' ? flatpickr($el, {
                                         dateFormat: 'Y-m-d',
                                         minDate: 'today',
+                                        maxDate: new Date().fp_incr(7),
                                         onChange: function(selectedDates, dateStr) {
                                             tanggalSurvei = dateStr;
+                                            fetchBookedTimes();
                                         }
                                     }) : null"
                                     class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                                    placeholder="Pilih Tanggal">
+                                    placeholder="Pilih Tanggal (maks 7 hari)">
                             </div>
 
                             {{-- Waktu Survei --}}
@@ -179,17 +204,22 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Waktu
                                     Survei <span class="text-red-500">*</span></label>
                                 <input type="hidden" name="waktu_survei" x-model="waktuSurvei" :required="isSurvei">
-                                <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                                <div class="grid grid-cols-2 gap-2 sm:grid-cols-4" :class="loadingJadwal ? 'opacity-50 pointer-events-none' : ''">
                                     <template x-for="time in ['09:00', '11:00', '13:00', '15:00']" :key="time">
-                                        <button type="button" @click="waktuSurvei = time"
-                                            :class="waktuSurvei === time ?
-                                                'bg-brand-500 text-white border-brand-500 shadow-md transform scale-105' :
-                                                'bg-white text-gray-700 border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-white/5'"
-                                            class="flex items-center justify-center rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-200 "
+                                        <button type="button"
+                                            @click="if(!bookedTimes.includes(time)) waktuSurvei = time"
+                                            :disabled="bookedTimes.includes(time) || loadingJadwal"
+                                            :class="{
+                                                'bg-brand-500 text-white border-brand-500 shadow-md transform scale-105': waktuSurvei === time,
+                                                'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600 dark:border-gray-700': bookedTimes.includes(time),
+                                                'bg-white text-gray-700 border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-white/5': waktuSurvei !== time && !bookedTimes.includes(time)
+                                            }"
+                                            class="flex items-center justify-center rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-200"
                                             x-text="time">
                                         </button>
                                     </template>
                                 </div>
+                                <p x-show="loadingJadwal" class="text-[10px] text-brand-600 mt-1 animate-pulse">Memeriksa ketersediaan...</p>
                             </div>
                         </div>
 
@@ -203,20 +233,22 @@
 
                         <div
                             class="rounded-md bg-amber-50 p-3 text-sm text-amber-800 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30">
-                            <i class="fas fa-info-circle mr-1"></i> Transaksi Anda akan diproses dan dikirim <b>setelah</b>
-                            survei kandang disetujui dan diselesaikan.
+                            <i class="fas fa-info-circle mr-1"></i> Jika Anda memilih survei, <b>metode pembayaran</b> akan ditentukan <b>setelah survei selesai</b>.
+                            Anda memiliki waktu 24 jam setelah survei selesai untuk melakukan pembayaran (transfer).
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- 3. Card Pembayaran --}}
-            <div
-                class="rounded-sm border border-gray-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-900 p-6">
+            {{-- 3. Card Pembayaran — HIDDEN jika survei --}}
+            <div x-show="!isSurvei" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 -translate-y-2"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                class="rounded-sm border border-gray-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-900 p-6"
+                style="display: none;" x-cloak>
                 <h3 class="font-medium text-black dark:text-white mb-5 border-b border-gray-200 dark:border-gray-700 pb-2">
                     Metode Pembayaran
                 </h3>
-                {{-- (Isi card pembayaran persis seperti sebelumnya) --}}
                 <div class="flex flex-col gap-5">
                     <div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -244,34 +276,29 @@
                         </div>
                     </div>
 
-                    {{-- <div x-show="metode === 'transfer'" x-transition class="rounded-lg bg-blue-50 p-4 border border-blue-100">
-                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Upload Bukti Transfer <span class="text-red-500">*</span></label>
-                        <input type="file" name="bukti_pembayaran" accept="image/*" :required="metode === 'transfer'" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm file:mr-4 file:rounded-md file:bg-brand-500 file:text-white">
-                    </div> --}}
-
                     <div x-show="metode === 'transfer'" x-transition class="rounded-lg bg-blue-50 p-4 border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/30">
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">
                             Upload Bukti Transfer <span class="text-red-500">*</span>
                         </label>
 
                         <div class="flex items-center gap-3">
-                            {{-- Tombol Kustom (Sebenarnya adalah Label) --}}
                             <label for="uploadBukti" class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-brand-600 hover:shadow-md">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                                 Pilih Gambar
                             </label>
 
-                            {{-- Input Asli (Disembunyikan) --}}
                             <input type="file" id="uploadBukti" x-ref="buktiTransfer" name="bukti_pembayaran" accept="image/*"
-                                :required="metode === 'transfer'"
+                                :required="!isSurvei && metode === 'transfer'"
                                 class="hidden"
-                                @change="fileName = $refs.buktiTransfer.files.length > 0 ? $refs.buktiTransfer.files    .name : ''">
+                                @change="fileName = $refs.buktiTransfer.files.length > 0 ? $refs.buktiTransfer.files[0].name : ''">
 
-                            {{-- Tampilan Nama File --}}
                             <span class="text-sm text-gray-600 dark:text-gray-400 italic truncate max-w-[200px] sm:max-w-xs"
                                 x-text="fileName ? fileName : 'Belum ada file dipilih'">
                             </span>
                         </div>
+                        <p class="mt-2.5 text-xs text-red-500 font-medium italic">
+                            * Perhatian: Pesanan dengan metode Transfer yang telah dikirimkan bukti pembayarannya tidak dapat dibatalkan.
+                        </p>
                     </div>
 
                     <div>
@@ -279,6 +306,19 @@
                             Pengiriman</label>
                         <textarea name="catatan" rows="3"
                             class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Info jika survei aktif --}}
+            <div x-show="isSurvei" x-transition
+                class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800/30 dark:bg-blue-900/20"
+                style="display: none;">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                    <div class="text-sm text-blue-800 dark:text-blue-300">
+                        <p class="font-semibold mb-1">Pembayaran Ditunda</p>
+                        <p>Karena Anda memilih opsi survei, metode pembayaran dan upload bukti transfer akan tersedia <b>setelah survei selesai</b>. Anda memiliki <b>24 jam</b> setelah survei selesai untuk menyelesaikan pembayaran (transfer).</p>
                     </div>
                 </div>
             </div>
@@ -308,6 +348,12 @@
                         <b>+ Opsi Survei Kandang</b><br>
                         Jadwal: <span x-text="tanggalSurvei ? tanggalSurvei : '...' "></span> Pukul <span
                             x-text="waktuSurvei ? waktuSurvei : '...' "></span>
+                        <p class="mt-1 text-[10px] opacity-75">Pembayaran akan dilakukan setelah survei selesai</p>
+                    </div>
+
+                    <div x-show="!isSurvei && metode"
+                        class="mt-2 mb-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                        <b>Metode Bayar:</b> <span x-text="metode === 'transfer' ? 'Transfer Bank' : 'Cash (COD)'"></span>
                     </div>
 
                     <div class="border-t pt-4">
@@ -318,7 +364,7 @@
                     </div>
                     <button type="submit"
                         class="w-full mt-6 bg-brand-500 text-white py-3 rounded-lg font-bold hover:bg-brand-600 transition">
-                        Konfirmasi Pesanan
+                        <span x-text="isSurvei ? 'Ajukan Pesanan + Survei' : 'Konfirmasi Pesanan'"></span>
                     </button>
                 </div>
 

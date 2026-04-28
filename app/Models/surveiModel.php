@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\akunModel;
+use App\Models\transaksiModel;
 
 class surveiModel extends Model
 {
@@ -15,11 +16,18 @@ class surveiModel extends Model
         'tgl_survei',
         'status',
         'ket',
-        'id_akun'
+        'ket_admin',
+        'id_akun',
+        'id_transaksi',
     ];
 
     public function akun()
     {
         return $this->belongsTo(akunModel::class, 'id_akun', 'id_akun');
+    }
+
+    public function transaksi()
+    {
+        return $this->belongsTo(transaksiModel::class, 'id_transaksi', 'id_transaksi');
     }
 }

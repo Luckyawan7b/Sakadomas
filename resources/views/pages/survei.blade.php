@@ -6,9 +6,12 @@
         filterStatus: 'semua'
     }">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 class="text-title-md2 font-bold text-black dark:text-white">
-                Jadwal Survei
-            </h2>
+            <div>
+                <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                    Manajemen Kunjungan
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Kelola semua jadwal kunjungan kandang dari pelanggan.</p>
+            </div>
 
             <div class="flex flex-wrap items-center gap-3">
                 <div class="relative">
@@ -59,7 +62,23 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('survei.store') }}" class="flex flex-col gap-5">
+                    <form method="POST" action="{{ route('survei.store') }}" class="flex flex-col gap-5"
+                        x-data="{ 
+                            selectedDate: '', 
+                            selectedTime: '', 
+                            bookedTimes: [],
+                            fetchBookedTimes() {
+                                if (!this.selectedDate) return;
+                                fetch('/api/jadwal/cek?tanggal=' + this.selectedDate)
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        this.bookedTimes = data;
+                                        if(this.bookedTimes.includes(this.selectedTime)) {
+                                            this.selectedTime = '';
+                                        }
+                                    });
+                            }
+                        }">
                         @csrf
 
                         @if (Auth::user()->role === 'admin')
@@ -174,7 +193,15 @@
                                     Survei</label>
                                 <div class="relative">
                                     <input type="text" name="tanggal_survei" value="{{ old('tanggal_survei') }}" required
-                                        x-init="flatpickr($el, { dateFormat: 'Y-m-d', locale: 'id' })"
+                                        x-model="selectedDate"
+                                        x-init="flatpickr($el, { 
+                                            dateFormat: 'Y-m-d', 
+                                            locale: 'id',
+                                            onChange: function(selectedDates, dateStr) {
+                                                selectedDate = dateStr;
+                                                fetchBookedTimes();
+                                            }
+                                        })"
                                         class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
                                         placeholder="Pilih Tanggal">
 
@@ -203,10 +230,14 @@
                                     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                                         <template x-for="time in ['09:00', '11:00', '13:00', '15:00']"
                                             :key="time">
-                                            <button type="button" @click="selectedTime = time"
-                                                :class="selectedTime === time ?
-                                                    'bg-brand-500 text-white border-brand-500 shadow-md transform scale-105' :
-                                                    'bg-white text-gray-700 border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
+                                            <button type="button" 
+                                                @click="if(!bookedTimes.includes(time)) selectedTime = time"
+                                                :disabled="bookedTimes.includes(time)"
+                                                :class="{
+                                                    'bg-brand-500 text-white border-brand-500 shadow-md transform scale-105': selectedTime === time,
+                                                    'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600 dark:border-gray-700': bookedTimes.includes(time),
+                                                    'bg-white text-gray-700 border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700': selectedTime !== time && !bookedTimes.includes(time)
+                                                }"
                                                 class="flex items-center justify-center rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-200"
                                                 x-text="time">
                                             </button>
@@ -261,7 +292,7 @@
         <div
             class="rounded-md border border-green-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-900 mb-8 mt-6">
             <div class="py-6 px-4 md:px-6 xl:px-7.5">
-                <h4 class="text-xl font-semibold text-black dark:text-white">Daftar Pengajuan Survei</h4>
+                <h4 class="text-xl font-semibold text-black dark:text-white">Daftar Jadwal Kunjungan</h4>
             </div>
 
             <div class="max-w-full overflow-x-auto">
@@ -271,8 +302,8 @@
                             <th class="py-4 px-4 font-medium text-black dark:text-white xl:px-6 w-16">No</th>
                             <th class="py-4 px-4 font-medium text-black dark:text-white xl:px-6">Tanggal & Waktu</th>
                             <th class="py-4 px-4 font-medium text-black dark:text-white xl:px-6">Pemohon</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white xl:px-6 min-w-[200px]">Keterangan
-                            </th>
+                            <th class="py-4 px-4 font-medium text-black dark:text-white xl:px-6">Tipe</th>
+                            <th class="py-4 px-4 font-medium text-black dark:text-white xl:px-6 min-w-[200px]">Keterangan</th>
                             <th class="py-4 px-4 font-medium text-black dark:text-white xl:px-6 text-center">Status</th>
                             <th class="py-4 px-4 font-medium text-black dark:text-white xl:px-6 text-center">Aksi</th>
                         </tr>
@@ -300,6 +331,19 @@
                                     <span class="text-xs text-gray-500">{{ $survei->akun->no_hp ?? '-' }}</span>
                                 </td>
                                 <td class="py-5 px-4 xl:px-6 text-gray-600 dark:text-gray-400 text-sm">
+                                    @if($survei->id_transaksi)
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                                            Pesanan #TRX-{{ $survei->id_transaksi }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-500/10 dark:text-green-400">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.414L11 9.586V6z" clip-rule="evenodd"/></svg>
+                                            Kunjungan Mandiri
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-5 px-4 xl:px-6 text-gray-600 dark:text-gray-400 text-sm">
                                     {{ $survei->ket ?: 'Tidak ada keterangan.' }}
                                 </td>
                                 <td class="py-5 px-4 xl:px-6 text-center">
@@ -324,27 +368,14 @@
                                 </td>
                                 <td class="py-5 px-4 xl:px-6 text-center">
                                     <div class="flex items-center justify-center space-x-3.5">
-                                        @if (Auth::user()->role === 'admin' || strtolower(trim($survei->status)) === 'pending')
-                                            <button @click="modalEdit = true" type="button"
-                                                class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-yellow-500 text-white shadow-theme-xs hover:bg-yellow-600">
-                                                Edit
-                                            </button>
-                                            <button @click="modalHapus = true" type="button"
-                                                class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-red-500 text-white shadow-theme-xs hover:bg-red-600">
-                                                Hapus
-                                            </button>
-                                        @else
-                                            <button disabled type="button"
-                                                title="Jadwal yang diproses tidak dapat diedit"
-                                                class="inline-flex items-center justify-center font-medium gap-2 rounded-lg px-4 py-2 text-sm bg-gray-200 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600">
-                                                Edit
-                                            </button>
-                                            <button disabled type="button"
-                                                title="Jadwal yang diproses tidak dapat dihapus"
-                                                class="inline-flex items-center justify-center font-medium gap-2 rounded-lg px-4 py-2 text-sm bg-gray-200 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600">
-                                                Hapus
-                                            </button>
-                                        @endif
+                                        <button @click="modalEdit = true" type="button"
+                                            class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-yellow-500 text-white shadow-theme-xs hover:bg-yellow-600">
+                                            Edit
+                                        </button>
+                                        <button @click="modalHapus = true" type="button"
+                                            class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-red-500 text-white shadow-theme-xs hover:bg-red-600">
+                                            Batalkan
+                                        </button>
                                     </div>
                                 </td>
 
@@ -360,14 +391,38 @@
 
                                             <div class="mb-6">
                                                 <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-                                                    Edit Jadwal Survei</h4>
-                                                <p class="text-sm text-gray-500 dark:text-gray-400">Perbarui data pengajuan
-                                                    survei.</p>
+                                                    Edit Jadwal Kunjungan</h4>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">Perbarui data kunjungan.</p>
                                             </div>
 
                                             <form method="POST"
                                                 action="{{ route('survei.update', $survei->id_survei) }}"
-                                                class="flex flex-col gap-5">
+                                                class="flex flex-col gap-5"
+                                                x-data="{ 
+                                                    selectedDate: '{{ old('tanggal_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('Y-m-d')) }}', 
+                                                    selectedTime: '{{ old('waktu_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('H:i')) }}', 
+                                                    bookedTimes: [],
+                                                    fetchBookedTimes() {
+                                                        if (!this.selectedDate) return;
+                                                        fetch('/api/jadwal/cek?tanggal=' + this.selectedDate)
+                                                            .then(res => res.json())
+                                                            .then(data => {
+                                                                this.bookedTimes = data;
+                                                                // Jangan reset jika waktu yang di-book adalah waktu asli saat ini (edit)
+                                                                let originalTime = '{{ \Carbon\Carbon::parse($survei->tgl_survei)->format('H:i') }}';
+                                                                if(this.bookedTimes.includes(this.selectedTime) && this.selectedTime !== originalTime) {
+                                                                    this.selectedTime = '';
+                                                                }
+                                                            });
+                                                    }
+                                                }"
+                                                x-init="
+                                                    $watch('modalEdit', val => { 
+                                                        if(val) { 
+                                                            fetchBookedTimes();
+                                                        } 
+                                                    })
+                                                ">
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="hidden" name="id_survei_edit"
@@ -387,8 +442,17 @@
                                                             Survei</label>
                                                         <div class="relative">
                                                             <input type="text" name="tanggal_survei"
-                                                                value="{{ old('tanggal_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('Y-m-d')) }}"
-                                                                required x-init="flatpickr($el, { dateFormat: 'Y-m-d', locale: 'id' })"
+                                                                x-model="selectedDate"
+                                                                required 
+                                                                x-init="flatpickr($el, { 
+                                                                    dateFormat: 'Y-m-d', 
+                                                                    minDate: 'today', 
+                                                                    maxDate: new Date().fp_incr(7),
+                                                                    onChange: function(selectedDates, dateStr) {
+                                                                        selectedDate = dateStr;
+                                                                        fetchBookedTimes();
+                                                                    }
+                                                                })"
                                                                 class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
                                                                 placeholder="Pilih Tanggal">
 
@@ -412,7 +476,7 @@
                                                         </label>
 
                                                         {{-- Container Alpine.js untuk mengelola pilihan jam --}}
-                                                        <div x-data="{ selectedTime: '{{ old('waktu_survei', '') }}' }">
+                                                        <div x-data="{ selectedTime: '{{ old('waktu_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('H:i')) }}' }">
                                                             {{-- Input Hidden untuk mengirim data ke Backend --}}
                                                             <input type="hidden" name="waktu_survei"
                                                                 x-model="selectedTime" required>
@@ -422,11 +486,11 @@
                                                                 <template
                                                                     x-for="time in ['09:00', '11:00', '13:00', '15:00']"
                                                                     :key="time">
-                                                                    <button type="button" @click="selectedTime = time"
+                                                                    <button type="button"
                                                                         :class="selectedTime === time ?
                                                                             'bg-brand-500 text-white border-brand-500 shadow-md transform scale-105' :
                                                                             'bg-white text-gray-700 border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'"
-                                                                        class="flex items-center justify-center rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-200"
+                                                                        class="flex items-center justify-center rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-200 opacity-70 cursor-not-allowed"
                                                                         x-text="time">
                                                                     </button>
                                                                 </template>
@@ -447,28 +511,29 @@
                                                         class="dark:bg-dark-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">{{ $survei->ket }}</textarea>
                                                 </div>
 
-                                                @if (Auth::user()->role === 'admin')
-                                                    <div>
+                                                    <div x-data="{ status: '{{ strtolower(trim($survei->status)) }}' }">
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Status
                                                             Persetujuan</label>
-                                                        <select name="status" required
+                                                        <select name="status" x-model="status" required
                                                             class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                                                            <option value="pending"
-                                                                {{ strtolower(trim($survei->status)) == 'pending' ? 'selected' : '' }}>
-                                                                Pending (Menunggu)</option>
-                                                            <option value="disetujui"
-                                                                {{ strtolower(trim($survei->status)) == 'disetujui' ? 'selected' : '' }}>
-                                                                Disetujui</option>
-                                                            <option value="selesai"
-                                                                {{ strtolower(trim($survei->status)) == 'selesai' ? 'selected' : '' }}>
-                                                                Selesai</option>
-                                                            <option value="batal"
-                                                                {{ strtolower(trim($survei->status)) == 'batal' ? 'selected' : '' }}>
-                                                                Dibatalkan</option>
+                                                            <option value="pending">Pending (Menunggu)</option>
+                                                            <option value="disetujui">Disetujui</option>
+                                                            <option value="selesai">Selesai</option>
+                                                            <option value="batal">Dibatalkan</option>
                                                         </select>
+
+                                                        {{-- Input Keterangan Batal (Hanya muncul jika status batal) --}}
+                                                        <div x-show="status === 'batal'" class="mt-4" x-transition>
+                                                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                                                Keterangan Batal <span class="text-red-500">*</span>
+                                                            </label>
+                                                            <textarea name="ket_admin" rows="3" placeholder="Berikan alasan mengapa kunjungan dibatalkan..."
+                                                                :required="status === 'batal'"
+                                                                class="dark:bg-dark-900 w-full rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm text-red-800 focus:border-red-500 focus:ring-3 focus:ring-red-500/10 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">{{ $survei->ket_admin }}</textarea>
+                                                            <p class="mt-1 text-xs text-red-500">Pesan ini akan ditampilkan kepada pelanggan.</p>
+                                                        </div>
                                                     </div>
-                                                @endif
 
                                                 <div class="flex items-center gap-3 mt-4 justify-end">
                                                     <button @click="modalEdit = false" type="button"
@@ -505,9 +570,9 @@
                                                 </svg>
                                             </div>
 
-                                            <h4 class="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">Hapus
+                                            <h4 class="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">Batalkan
                                                 Jadwal?</h4>
-                                            <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Yakin ingin menghapus
+                                            <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Yakin ingin membatalkan
                                                 jadwal survei tanggal
                                                 <strong>{{ \Carbon\Carbon::parse($survei->tgl_survei)->format('d-m-Y') }}</strong>?
                                             </p>
@@ -523,7 +588,7 @@
                                                 </button>
                                                 <button type="submit"
                                                     class="rounded-lg bg-red-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-600">
-                                                    Ya, Hapus!
+                                                    Ya, Batalkan!
                                                 </button>
                                             </form>
                                         </div>
@@ -532,8 +597,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-8 px-4 text-center text-gray-500 dark:text-gray-400">
-                                    Belum ada data pengajuan survei.
+                                <td colspan="7" class="py-8 px-4 text-center text-gray-500 dark:text-gray-400">
+                                    Belum ada data jadwal kunjungan.
                                 </td>
                             </tr>
                         @endforelse

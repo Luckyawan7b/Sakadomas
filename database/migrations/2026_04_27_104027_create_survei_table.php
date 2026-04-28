@@ -16,7 +16,9 @@ return new class extends Migration
             $table->dateTime('tgl_survei');
             $table->enum('status', ['pending', 'disetujui', 'selesai', 'batal'])->default('pending');
             $table->text('ket')->nullable();
+            $table->text('ket_admin')->nullable();
             $table->foreignId('id_akun')->constrained('akun', 'id_akun')->onDelete('cascade');
+            $table->foreignId('id_transaksi')->nullable()->constrained('transaksi', 'id_transaksi')->onDelete('set null');
         });
     }
 

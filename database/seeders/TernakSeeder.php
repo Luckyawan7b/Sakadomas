@@ -29,15 +29,31 @@ class TernakSeeder extends Seeder
         // Array untuk menyimpan penyakit acak
         $daftarPenyakit = ['Virus', 'Scabies', 'Mastitis', 'Stress', 'Kembung', 'Kaki Busuk'];
 
+        // --- TAMBAHAN LOGIKA KAMAR ---
+        // Ambil semua kamar yang ada di database
+        $kamars = DB::table('kamar')->get();
+        $kuotaKamar = [];
+
+        // Buat "tiket" kuota berdasarkan kapasitas masing-masing kamar
+        foreach ($kamars as $kamar) {
+            for ($k = 0; $k < $kamar->kapasitas; $k++) {
+                $kuotaKamar[] = $kamar->id_kamar;
+            }
+        }
+
+        // Acak urutan tiket agar ternak tersebar secara random di berbagai kamar
+        shuffle($kuotaKamar);
+        // ------------------------------
+
         for ($i = 1; $i <= $jumlahData; $i++) {
-            
+
             // --- BAGIAN A: BUAT DATA TERNAK ---
-            
+
             // 2. Acak Ras dan Jenis Kelamin
             $rasAcak = $klasifikasi[array_rand($klasifikasi)];
             $idJenisTernak = $mapJenisTernak[$rasAcak['breed_name']];
             $jenisKelamin = rand(0, 1) ? 'Jantan' : 'Betina';
-            
+
             // 3. Acak Usia saat ini (Misal antara 1 sampai 24 bulan)
             $usiaSekarang = rand(1, 24);
 
@@ -55,13 +71,17 @@ class TernakSeeder extends Seeder
 
             // 5. Acak Kelas Berat (Standard / Medium / Super) dari kategori usia tersebut
             $kelasBerat = $kategoriUsia['weight_classes'][array_rand($kategoriUsia['weight_classes'])];
-            
+
             // 6. Tentukan Berat dan Harga sesuai JSON
             $beratSekarang = rand($kelasBerat['min_weight'], $kelasBerat['max_weight']);
             $harga = $kelasBerat['prices'][$jenisKelamin];
 
+            // --- AMBIL 1 TIKET KAMAR UNTUK TERNAK INI ---
+            // array_pop akan mengambil dan menghapus 1 elemen terakhir dari array.
+            // Jika array kosong (kamar sudah penuh semua), kita set null.
+            $assignedIdKamar = count($kuotaKamar) > 0 ? array_pop($kuotaKamar) : null;
+
             // 7. Insert ke tabel ternak dan ambil ID-nya
-            // KODE BARU YANG BENAR:
             $idTernak = DB::table('ternak')->insertGetId([
                 'jenis_kelamin'   => strtolower($jenisKelamin),
                 'usia'            => $usiaSekarang,
@@ -72,14 +92,15 @@ class TernakSeeder extends Seeder
                 'last_update'     => $now->toDateString(),
                 'last_monitor'    => $now->toDateString(),
                 'id_jenis_ternak' => $idJenisTernak,
+                'id_kamar'        => $assignedIdKamar, // <--- DIMASUKKAN DI SINI
             ],  'id_ternak');
 
 
             // --- BAGIAN B: BUAT RIWAYAT MONITORING ---
-            
+
             // Simulasikan berat lahir (antara 2 sampai 4 kg)
             $beratLahir = rand(2, 4);
-            
+
             // Hitung rata-rata kenaikan berat per bulan
             $kenaikanPerBulan = ($beratSekarang - $beratLahir) / $usiaSekarang;
 
@@ -87,10 +108,10 @@ class TernakSeeder extends Seeder
 
             // Looping dari umur 0 (lahir) sampai umur sekarang
             for ($bulanKe = 0; $bulanKe <= $usiaSekarang; $bulanKe++) {
-                
+
                 // Kalkulasi berat pada bulan tersebut
                 $beratSimulasi = round($beratLahir + ($kenaikanPerBulan * $bulanKe));
-                
+
                 // Beri variasi sedikit pada berat di tengah-tengah pertumbuhan agar terlihat natural
                 if ($bulanKe > 0 && $bulanKe < $usiaSekarang) {
                     $beratSimulasi += rand(-1, 1);

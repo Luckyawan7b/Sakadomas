@@ -27,21 +27,18 @@ class DatabaseSeeder extends Seeder
             [
                 'id_jenis_ternak' => 3,
                 'jenis_ternak' => 'etawa'
-            ], 
+            ],
         ]);
 
         DB::table('kandang')->insert([
             [
-                'id_kandang' => 1,
                 'nomor_kandang' => 1,
                 'kapasitas' => 5
             ],
             [
-                'id_kandang' => 2,
                 'nomor_kandang' => 2,
                 'kapasitas' => 10
             ],
-            
         ]);
 
         $this->call([
@@ -60,6 +57,16 @@ class DatabaseSeeder extends Seeder
                 'no_hp'    => '081234567890',
                 'email'    => 'luckyawan7b@gmail.com',
                 'role'     => 'admin',
+                'id_desa'  => 99,
+            ],
+            [
+                'username' => 'Maikisah',
+                'password' => Hash::make('Admin123'),
+                'nama'     => 'Anisa Zakiyah',
+                'alamat'   => 'Jl. Dr Wahidin Gg 11 no 144',
+                'no_hp'    => '081234567890',
+                'email'    => 'anisazakiyah27@gmail.com',
+                'role'     => 'pelanggan',
                 'id_desa'  => 99,
             ],
         ]);
