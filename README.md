@@ -1,7 +1,7 @@
 # 🐄 SAKADOMAS - Smart Livestock Management System
 
 <p align="center">
-  <img src="tailadmin-laravel.png" alt="SAKADOMAS Logo" width="200px">
+  <img src="https://i.postimg.cc/Wp6PjkH2/2.png" alt="SAKADOMAS Logo" width="200px">
 </p>
 
 **SAKADOMAS** adalah sistem manajemen peternakan modern yang dirancang untuk mengotomatisasi dan mempermudah pengelolaan ternak, kandang, serta transaksi jual-beli ternak secara efisien dan transparan.
