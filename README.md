@@ -1,370 +1,125 @@
-## 📋 Requirements
-To set up TailAdmin Laravel, make sure your environment includes:
+# 🐄 SAKADOMAS - Smart Livestock Management System
 
-* **PHP 8.2+**
-* **Composer** (PHP dependency manager)
-* **Node.js 18+** and **npm** (for compiling frontend assets)
-* **Database** - Works with SQLite (default), MySQL, or PostgreSQL
+<p align="center">
+  <img src="tailadmin-laravel.png" alt="SAKADOMAS Logo" width="200px">
+</p>
 
-### Check Your Environment
+**SAKADOMAS** adalah sistem manajemen peternakan modern yang dirancang untuk mengotomatisasi dan mempermudah pengelolaan ternak, kandang, serta transaksi jual-beli ternak secara efisien dan transparan.
 
-Verify your installations:
+---
+
+## ✨ Fitur Utama
+
+### 👨‍💻 Role: Admin
+- **Dashboard Analytics**: Visualisasi data transaksi dan populasi ternak.
+- **Manajemen Akun**: Kontrol penuh terhadap data pengguna (pelanggan & staf).
+- **Manajemen Kandang & Kamar**: Pengorganisasian infrastruktur peternakan secara hierarkis.
+- **Inventori Ternak**: Monitoring data detail setiap hewan ternak, lokasi kandang, dan status kesehatan.
+- **Sistem Transaksi**: Pengelolaan pesanan, penugasan ternak ke pembeli, dan rekapitulasi data keuangan.
+- **Penjadwalan Kunjungan**: Verifikasi dan pengaturan jadwal survei dari calon pembeli.
+- **Monitoring**: Pelacakan kondisi harian operasional peternakan.
+
+### 👥 Role: Pelanggan
+- **Landing Page**: Informasi produk dan profil peternakan.
+- **Pemesanan Mandiri**: Melakukan pesanan ternak secara langsung melalui sistem.
+- **Riwayat Transaksi**: Melacak status pesanan, pembayaran, hingga konfirmasi penerimaan.
+- **Upload Bukti Bayar**: Integrasi sistem pembayaran yang transparan.
+- **Penjadwalan Kunjungan**: Mengajukan jadwal survei ke lokasi peternakan secara real-time.
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+| Komponen | Teknologi |
+| --- | --- |
+| **Framework** | [Laravel 11](https://laravel.com) |
+| **Frontend UI** | [TailAdmin](https://tailadmin.com) (Tailwind CSS & Alpine.js) |
+| **Database** | MySQL / PostgreSQL |
+| **Build Tool** | [Vite](https://vitejs.dev) |
+| **Language** | PHP 8.2+, JavaScript |
+
+---
+
+## 🚀 Panduan Instalasi
+
+### 1. Persyaratan Sistem
+- **PHP 8.2+**
+- **Composer**
+- **Node.js 18+ & NPM**
+- **MySQL/PostgreSQL**
+
+### 2. Langkah-Langkah Instalasi
 
 ```bash
-php -v
-composer -V
-node -v
-npm -v
-```
+# Clone repositori
+git clone https://github.com/Luckyawan7b/Sakadomas.git
+cd Sakadomas
 
-## 🚀 Quick Start Installation
-
-### Step 1: Clone the Repository
-
-```bash
-git clone https://github.com/TailAdmin/tailadmin-laravel.git
-cd tailadmin-laravel
-```
-
-### Step 2: Install PHP Dependencies
-
-```bash
+# Install dependensi PHP
 composer install
-```
 
-This command will install all Laravel dependencies defined in `composer.json`.
-
-### Step 3: Install Node.js Dependencies
-
-```bash
+# Install dependensi Frontend
 npm install
-```
 
-Or if you prefer yarn or pnpm:
-
-```bash
-# Using yarn
-yarn install
-
-# Using pnpm
-pnpm install
-```
-
-### Step 4: Environment Configuration
-
-Copy the example environment file:
-
-```bash
+# Salin file environment
 cp .env.example .env
-```
 
-**For Windows users:**
-
-```bash
-copy .env.example .env
-```
-
-**Or create it programmatically:**
-
-```bash
-php -r "file_exists('.env') || copy('.env.example', '.env');"
-```
-
-### Step 5: Generate Application Key
-
-```bash
+# Generate Application Key
 php artisan key:generate
-```
 
-This creates a unique encryption key for your application.
+# Konfigurasi Database di .env
+# Edit DB_DATABASE, DB_USERNAME, DB_PASSWORD sesuai database lokal Anda
 
-### Step 6: Configure Database
+# Jalankan Migrasi dan Seeder
+php artisan migrate --seed
 
-#### Option A: Using MySQL/PostgreSQL
-
-Update your `.env` file with your database credentials:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=tailadmin_db
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-```
-
-Create the database:
-
-```bash
-# MySQL
-mysql -u root -p -e "CREATE DATABASE tailadmin_db;"
-
-# PostgreSQL
-createdb tailadmin_db
-```
-
-Run migrations:
-
-```bash
-php artisan migrate
-```
-
-### Step 7: (Optional) Seed the Database
-
-If you want sample data:
-
-```bash
-php artisan db:seed
-```
-
-### Step 8: Storage Link
-
-Create a symbolic link for file storage:
-
-```bash
+# Hubungkan Storage
 php artisan storage:link
 ```
 
-## 🏃 Running the Application
+### 3. Menjalankan Aplikasi
 
-### Development Mode (Recommended)
-
-The easiest way to start development is using the built-in script:
+#### Mode Pengembangan (Development)
+Anda dapat menggunakan perintah tunggal jika sudah dikonfigurasi di `composer.json`:
 
 ```bash
+# Menjalankan server Laravel & Vite secara otomatis
 composer run dev
 ```
 
-This single command starts:
-- ✅ Laravel development server (http://localhost:8000)
-- ✅ Vite dev server for hot module reloading
-- ✅ Queue worker for background jobs
-- ✅ Log monitoring
+Atau jalankan secara terpisah di dua terminal berbeda:
 
-**Access your application at:** [http://localhost:8000](http://localhost:8000)
-
-### Manual Development Setup
-
-If you prefer to run services individually in separate terminal windows:
-
-**Terminal 1 - Laravel Server:**
 ```bash
+# Terminal 1: Server Laravel
 php artisan serve
-```
 
-**Terminal 2 - Frontend Assets:**
-```bash
+# Terminal 2: Vite Dev Server
 npm run dev
 ```
 
-### Building for Production
+Aplikasi dapat diakses di: `http://localhost:8000`
 
-#### Build Frontend Assets
+#### Mode Produksi (Production)
+Jika Anda ingin melakukan build asset untuk produksi:
 
 ```bash
+# Compile asset menggunakan Vite
 npm run build
 ```
 
-#### Optimize Laravel
+---
 
-```bash
-# Clear and cache configuration
-php artisan config:cache
+## 📁 Struktur Folder Utama
 
-# Cache routes
-php artisan route:cache
+- `app/Http/Controllers`: Logika bisnis aplikasi.
+- `app/Models`: Definisi skema database dan relasi.
+- `resources/views`: Template UI menggunakan Blade & Tailwind CSS.
+- `routes/web.php`: Definisi seluruh endpoint aplikasi.
+- `database/migrations`: Skema struktur tabel database.
 
-# Cache views
-php artisan view:cache
+---
 
-# Optimize autoloader
-composer install --optimize-autoloader --no-dev
-```
-
-#### Production Environment
-
-Update your `.env` for production:
-
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://yourdomain.com
-```
-
-
-## 🧪 Testing
-
-Run the test suite using Pest:
-
-```bash
-composer run test
-```
-
-Or manually:
-
-```bash
-php artisan test
-```
-
-Run with coverage:
-
-```bash
-php artisan test --coverage
-```
-
-Run specific tests:
-
-```bash
-php artisan test --filter=ExampleTest
-```
-
-## 📜 Available Commands
-
-### Composer Scripts
-
-```bash
-# Start development environment
-composer run dev
-
-# Run tests
-composer run test
-
-# Code formatting (if configured)
-composer run format
-
-# Static analysis (if configured)
-composer run analyze
-```
-
-### NPM Scripts
-
-```bash
-# Start Vite dev server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint JavaScript/TypeScript
-npm run lint
-
-# Format code
-npm run format
-```
-
-### Artisan Commands
-
-```bash
-# Start development server
-php artisan serve
-
-# Run migrations
-php artisan migrate
-
-# Rollback migrations
-php artisan migrate:rollback
-
-# Fresh migrations with seeding
-php artisan migrate:fresh --seed
-
-# Generate application key
-php artisan key:generate
-
-# Clear all caches
-php artisan optimize:clear
-
-# Cache everything for production
-php artisan optimize
-
-# Create symbolic link for storage
-php artisan storage:link
-
-# Start queue worker
-php artisan queue:work
-
-# List all routes
-php artisan route:list
-
-# Create a new controller
-php artisan make:controller YourController
-
-# Create a new model
-php artisan make:model YourModel -m
-
-# Create a new migration
-php artisan make:migration create_your_table
-```
-
-## 📁 Project Structure
-
-```
-tailadmin-laravel/
-├── app/                    # Application logic
-│   ├── Http/              # Controllers, Middleware, Requests
-│   ├── Models/            # Eloquent models
-│   └── Providers/         # Service providers
-├── bootstrap/             # Framework bootstrap files
-├── config/                # Configuration files
-├── database/              # Migrations, seeders, factories
-│   ├── migrations/
-│   ├── seeders/
-│   └── factories/
-├── public/                # Public assets (entry point)
-│   ├── build/            # Compiled assets (generated)
-│   └── index.php         # Application entry point
-├── resources/             # Views and raw assets
-│   ├── css/              # Stylesheets (Tailwind)
-│   ├── js/               # JavaScript files (Alpine.js)
-│   └── views/            # Blade templates
-├── routes/                # Route definitions
-│   ├── web.php           # Web routes
-│   ├── api.php           # API routes
-│   └── console.php       # Console routes
-├── storage/               # Logs, cache, uploads
-│   ├── app/
-│   ├── framework/
-│   └── logs/
-├── tests/                 # Pest test files
-│   ├── Feature/
-│   └── Unit/
-├── .env.example           # Example environment file
-├── artisan                # Artisan CLI
-├── composer.json          # PHP dependencies
-├── package.json           # Node dependencies
-├── vite.config.js         # Vite configuration
-└── tailwind.config.js     # Tailwind configuration
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### "Class not found" errors
-```bash
-composer dump-autoload
-```
-
-#### Permission errors on storage/bootstrap/cache
-```bash
-chmod -R 775 storage bootstrap/cache
-```
-
-#### NPM build errors
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-#### Clear all caches
-```bash
-php artisan optimize:clear
-```
-
-#### Database connection errors
-- Check `.env` database credentials
-- Ensure database server is running
-- Verify database exists
+<p align="center">
+  Dibuat dengan ❤️ oleh Tim SAKADOMAS
+</p>
 
