@@ -45,9 +45,7 @@ Route::middleware('guest')->group(function () {
 */
 Route::middleware('auth')->group(function () {
     // Dashboard & Global
-    Route::get('/dashboard', function () {
-        return view('pages.dashboard.ecommerce', ['title' => 'SMART-SAKA | SAKADOMAS']);
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Route::get('/', [LandingController::class, 'index'])->name('home');
 
