@@ -41,9 +41,25 @@ class monitorController extends Controller
         // Panggil data kandang, kamar, dan ternak untuk dropdown bertingkat
         $data_kandang = kandangModel::all();
         $data_kamar = kamarModel::all();
-        $data_ternak = ternakModel::orderBy('id_ternak', 'asc')->get();
+        $data_ternak = ternakModel::where('status_ternak', '!=', 'mati')
+            ->where('status_jual', '!=', 'terjual')
+            ->orderBy('id_ternak', 'asc')->get();
 
-        return view('pages.monitoring', compact('data_monitoring', 'data_ternak', 'data_kandang', 'data_kamar'));
+        // Statistics
+        $stat_total = monitorModel::count();
+        $stat_sakit = monitorModel::whereNotNull('penyakit')->where('penyakit', '!=', '')->count();
+
+        // Ternak yang belum di-monitor bulan ini
+        $bulanIni = Carbon::now()->startOfMonth()->toDateString();
+        $ternakSudahMonitor = monitorModel::where('tgl_monitoring', '>=', $bulanIni)
+            ->distinct('id_ternak')->pluck('id_ternak');
+        $ternakBelumMonitor = ternakModel::whereNotIn('id_ternak', $ternakSudahMonitor)
+            ->where('status_ternak', '!=', 'mati')
+            ->where('status_jual', '!=', 'terjual')
+            ->orderBy('id_ternak', 'asc')->get();
+        $stat_belum = $ternakBelumMonitor->count();
+
+        return view('pages.monitoring', compact('data_monitoring', 'data_ternak', 'data_kandang', 'data_kamar', 'stat_total', 'stat_sakit', 'stat_belum', 'ternakBelumMonitor'));
     }
 
     public function store(Request $request)
@@ -57,6 +73,19 @@ class monitorController extends Controller
         ]);
 
         $ternak = ternakModel::find($request->id_ternak);
+        
+        $tgl_monitoring = Carbon::parse($request->tgl_monitoring);
+        
+        // Cek apakah ternak sudah dimonitor pada bulan dan tahun yang sama
+        $existingMonitor = monitorModel::where('id_ternak', $request->id_ternak)
+            ->whereYear('tgl_monitoring', $tgl_monitoring->year)
+            ->whereMonth('tgl_monitoring', $tgl_monitoring->month)
+            ->first();
+
+        if ($existingMonitor) {
+            return redirect()->back()->withInput()->withErrors(['id_ternak' => 'Ternak #ID-' . $request->id_ternak . ' sudah di-monitor pada bulan ' . $tgl_monitoring->translatedFormat('F Y') . '. Silakan edit data riwayat yang sudah ada.']);
+        }
+
         $usia_baru = $ternak->usia; // Default usia saat ini
 
         if ($ternak) {

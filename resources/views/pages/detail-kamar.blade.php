@@ -221,20 +221,22 @@
                             </div>
                         </div>
 
-                        {{-- Actions (revealed on hover) --}}
-                        <div class="flex items-center gap-1.5 pt-1 border-t border-black/5 dark:border-white/5">
+                        {{-- Actions --}}
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-1.5 pt-3 sm:pt-1 border-t border-black/5 dark:border-white/5 mt-1">
                             <a href="{{ route('kamar.ternak', ['id_kandang' => $kandang->id_kandang, 'id_kamar' => $kamar->id_kamar]) }}"
-                                class="flex-1 text-center rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                class="flex-1 text-center rounded-lg sm:rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-2 sm:py-1.5 text-sm sm:text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                                 Lihat
                             </a>
-                            <button @click.stop="modalEdit = true" type="button"
-                                class="rounded-md bg-amber-100 dark:bg-amber-500/10 py-1.5 px-2.5 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-500/20 transition">
-                                Edit
-                            </button>
-                            <button @click.stop="modalHapus = true" type="button"
-                                class="rounded-md bg-red-100 dark:bg-red-500/10 py-1.5 px-2.5 text-xs font-medium text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/20 transition">
-                                Hapus
-                            </button>
+                            <div class="flex items-center gap-2 sm:gap-1.5">
+                                <button @click.stop="modalEdit = true" type="button"
+                                    class="flex-1 sm:flex-none rounded-lg sm:rounded-md bg-amber-100 dark:bg-amber-500/10 py-2 sm:py-1.5 px-3 sm:px-2.5 text-sm sm:text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-500/20 transition">
+                                    Edit
+                                </button>
+                                <button @click.stop="modalHapus = true" type="button"
+                                    class="flex-1 sm:flex-none rounded-lg sm:rounded-md bg-red-100 dark:bg-red-500/10 py-2 sm:py-1.5 px-3 sm:px-2.5 text-sm sm:text-xs font-medium text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/20 transition">
+                                    Hapus
+                                </button>
+                            </div>
                         </div>
 
                         {{-- MODAL EDIT --}}
@@ -338,17 +340,18 @@
         {{-- ===== LIST VIEW ===== --}}
         <div x-show="viewMode === 'list'" x-cloak>
             <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
-                <table class="w-full table-auto">
-                    <thead>
-                        <tr class="bg-gray-50 text-left dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800">
-                            <th class="py-4 px-4 font-medium text-black dark:text-white">No</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white">Kamar</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white text-center">Isi / Kapasitas</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white w-48">Progress</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white text-center">Status</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white text-center">Aksi</th>
-                        </tr>
-                    </thead>
+                <div class="max-w-full overflow-x-auto">
+                    <table class="w-full table-auto min-w-[700px]">
+                        <thead>
+                            <tr class="bg-gray-50 text-left dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800">
+                                <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm">No</th>
+                                <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm">Kamar</th>
+                                <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm text-center">Isi / Kapasitas</th>
+                                <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm w-48">Progress</th>
+                                <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm text-center">Status</th>
+                                <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm text-center">Aksi</th>
+                            </tr>
+                        </thead>
                     <tbody>
                         @forelse ($kamars as $index => $kamar)
                             @php
@@ -364,27 +367,33 @@
                             <tr x-data="{ statusKamar: '{{ $realStatus }}' }"
                                 x-show="filterStatus === 'semua' || filterStatus === statusKamar"
                                 class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                                <td class="py-3.5 px-4 text-gray-500">{{ $index + 1 }}</td>
-                                <td class="py-3.5 px-4 font-medium text-gray-800 dark:text-white">Kamar {{ $kamar->nomor_kamar }}</td>
-                                <td class="py-3.5 px-4 text-center text-sm">
+                                <td class="py-3.5 px-5 text-gray-500">{{ $index + 1 }}</td>
+                                <td class="py-3.5 px-5 font-medium text-gray-800 dark:text-white">Kamar {{ $kamar->nomor_kamar }}</td>
+                                <td class="py-3.5 px-5 text-center text-sm">
                                     <span class="font-bold {{ $jmlTernak >= $kapasitas ? 'text-red-500' : 'text-brand-500' }}">{{ $jmlTernak }}</span>
                                     <span class="text-gray-400">/ {{ $kapasitas }} Ekor</span>
                                 </td>
-                                <td class="py-3.5 px-4">
+                                <td class="py-3.5 px-5">
                                     <div class="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-800">
                                         <div class="{{ $realStatus === 'penuh' ? 'bg-red-500' : 'bg-brand-500' }} h-2 rounded-full" style="width: {{ min($persen, 100) }}%"></div>
                                     </div>
                                 </td>
-                                <td class="py-3.5 px-4 text-center">
+                                <td class="py-3.5 px-5 text-center">
                                     @if($realStatus === 'kosong')<span class="inline-flex rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">Kosong</span>
                                     @elseif($realStatus === 'terisi')<span class="inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700">Terisi</span>
                                     @elseif($realStatus === 'penuh')<span class="inline-flex rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700">Penuh</span>
                                     @else<span class="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">Karantina</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4 text-center">
-                                    <a href="{{ route('kamar.ternak', ['id_kandang' => $kandang->id_kandang, 'id_kamar' => $kamar->id_kamar]) }}"
-                                        class="inline-flex items-center gap-1 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-600 transition">Detail</a>
+                                <td class="py-3.5 px-5 text-center">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <a href="{{ route('kamar.ternak', ['id_kandang' => $kandang->id_kandang, 'id_kamar' => $kamar->id_kamar]) }}"
+                                            class="inline-flex items-center gap-1 rounded-lg bg-brand-500 px-3 py-2 text-xs font-medium text-white hover:bg-brand-600 transition">Detail</a>
+                                        <button @click="modalEdit = true" type="button"
+                                            class="inline-flex items-center rounded-lg bg-amber-100 dark:bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-200 transition">Edit</button>
+                                        <button @click="modalHapus = true" type="button"
+                                            class="inline-flex items-center rounded-lg bg-red-100 dark:bg-red-500/10 px-3 py-2 text-xs font-medium text-red-700 dark:text-red-400 hover:bg-red-200 transition">Hapus</button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -392,6 +401,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 

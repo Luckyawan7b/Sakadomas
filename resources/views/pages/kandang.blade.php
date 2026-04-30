@@ -91,7 +91,7 @@
         </template>
     </div>
 
-    {{-- ✅ UPGRADE: Card Grid dengan Progress Bar --}}
+    {{-- Card Kandang --}}
     @php
         use App\Models\kamarModel;
     @endphp

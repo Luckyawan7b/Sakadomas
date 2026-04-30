@@ -88,7 +88,12 @@ class ternakController extends Controller
         $data_kamar = kamarModel::with('kandang')->get();
         $data_jenis = jenisTernakModel::all();
 
-        return view('pages.ternak', compact('data_ternak', 'data_kandang', 'data_kamar', 'data_jenis'));
+        $stat_total = ternakModel::count();
+        $stat_siap_jual = ternakModel::where('status_jual', 'siap jual')->count();
+        $stat_sakit = ternakModel::where('status_ternak', 'sakit')->count();
+        $stat_terjual = ternakModel::where('status_jual', 'terjual')->count();
+
+        return view('pages.ternak', compact('data_ternak', 'data_kandang', 'data_kamar', 'data_jenis', 'stat_total', 'stat_siap_jual', 'stat_sakit', 'stat_terjual'));
     }
 
     public function store(Request $request)
