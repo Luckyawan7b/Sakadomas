@@ -19,6 +19,7 @@
                         <option value="semua">Semua Status</option>
                         <option value="kosong">Kosong</option>
                         <option value="terisi">Terisi</option>
+                        <option value="karantina">Karantina</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -97,11 +98,16 @@
             @php
                 $kamars = $kamar_grouped[$kandang->id_kandang] ?? collect();
 
-                // Hitung jumlah masing-masing status menggunakan PHP (Blade)
                 $kosongCount = 0;
                 $terisiCount = 0;
+                $karantinaCount = 0;
                 foreach($kamars as $k) {
-                    if(strtolower(trim($k->status)) == 'kosong') {
+                    $jmlTernak = $k->ternak_count ?? 0;
+                    $jmlSakit = $k->ternak_sakit_count ?? 0;
+                    
+                    if($jmlTernak > 0 && $jmlTernak == $jmlSakit) {
+                        $karantinaCount++;
+                    } elseif($jmlTernak == 0) {
                         $kosongCount++;
                     } else {
                         $terisiCount++;
@@ -131,10 +137,17 @@
                         </thead>
                         <tbody>
                             @forelse ($kamars as $index => $kamar)
+                                @php
+                                    $jmlTernak = $kamar->ternak_count ?? 0;
+                                    $jmlSakit = $kamar->ternak_sakit_count ?? 0;
+                                    if ($jmlTernak > 0 && $jmlTernak == $jmlSakit) $stts = 'karantina';
+                                    elseif ($jmlTernak == 0) $stts = 'kosong';
+                                    else $stts = 'terisi';
+                                @endphp
                                 <tr x-data="{
                                     modalEdit: {{ $errors->any() && old('_method') === 'PUT' && old('id_kamar_edit') == $kamar->id_kamar ? 'true' : 'false' }},
                                     modalHapus: false,
-                                    statusKamar: '{{ strtolower(trim($kamar->status)) }}'
+                                    statusKamar: '{{ $stts }}'
                                 }"
                                 x-show="filterStatus === 'semua' || filterStatus === statusKamar"
                                 x-transition:enter="transition ease-out duration-300"
@@ -149,12 +162,16 @@
                                         Kamar {{ $kamar->nomor_kamar }}
                                     </td>
                                     <td class="py-4 px-4 xl:px-6 text-center">
-                                        @if(strtolower(trim($kamar->status)) == 'kosong')
+                                        @if($stts === 'karantina')
+                                            <span class="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
+                                                Karantina
+                                            </span>
+                                        @elseif($stts === 'kosong')
                                             <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700 dark:bg-green-500/10 dark:text-green-400">
                                                 Kosong
                                             </span>
                                         @else
-                                            <span class="inline-flex rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700 dark:bg-orange-500/10 dark:text-orange-400">
+                                            <span class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
                                                 Terisi
                                             </span>
                                         @endif
@@ -277,7 +294,6 @@
                                 </tr>
                             @endforelse
 
-                            {{-- PESAN JIKA HASIL FILTER KOSONG (Dikontrol oleh Alpine.js) --}}
                             @if($kamars->isNotEmpty())
                                 <tr x-show="filterStatus === 'kosong' && {{ $kosongCount }} === 0" style="display: none;">
                                     <td colspan="4" class="py-6 px-4 text-center text-gray-500 dark:text-gray-400 italic">
@@ -287,6 +303,11 @@
                                 <tr x-show="filterStatus === 'terisi' && {{ $terisiCount }} === 0" style="display: none;">
                                     <td colspan="4" class="py-6 px-4 text-center text-gray-500 dark:text-gray-400 italic">
                                         Tidak ada kamar terisi di kandang ini.
+                                    </td>
+                                </tr>
+                                <tr x-show="filterStatus === 'karantina' && {{ $karantinaCount }} === 0" style="display: none;">
+                                    <td colspan="4" class="py-6 px-4 text-center text-gray-500 dark:text-gray-400 italic">
+                                        Tidak ada kamar karantina di kandang ini.
                                     </td>
                                 </tr>
                             @endif

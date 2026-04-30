@@ -52,7 +52,12 @@ class kandangController extends Controller
 
     public function delete($id)
     {
-        $kandang = kandangModel::findOrFail($id);
+        $kandang = kandangModel::withCount('kamar')->findOrFail($id);
+
+        if ($kandang->kamar_count > 0) {
+            return back()->with('error', 'Gagal menghapus! Kandang masih memiliki ' . $kandang->kamar_count . ' kamar. Hapus kamar terlebih dahulu.');
+        }
+
         $kandang->delete();
 
         return back()->with('success', 'Data kandang berhasil dihapus.');

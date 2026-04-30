@@ -253,12 +253,21 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const isDark = document.documentElement.classList.contains('dark');
-    const textColor = isDark ? '#9CA3AF' : '#6B7280';
-    const bgStroke = isDark ? '#1f2937' : '#ffffff';
+    const getChartTheme = () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        return {
+            isDark: isDark,
+            textColor: isDark ? '#9CA3AF' : '#6B7280',
+            bgStroke: isDark ? '#1f2937' : '#ffffff',
+            borderColor: isDark ? '#374151' : '#F3F4F6',
+            headingColor: isDark ? '#fff' : '#111827'
+        };
+    };
+
+    let theme = getChartTheme();
 
     // Donut Chart
-    new ApexCharts(document.querySelector("#chartPenjualan"), {
+    const chartPenjualan = new ApexCharts(document.querySelector("#chartPenjualan"), {
         series: [{{ $jual_siap }}, {{ $jual_terjual }}, {{ $jual_booking }}, {{ $jual_tidak }}],
         chart: { type: 'donut', height: 300, fontFamily: 'Inter, sans-serif' },
         colors: ['#10B981', '#3B82F6', '#F59E0B', '#6B7280'],
@@ -266,19 +275,20 @@ document.addEventListener('DOMContentLoaded', function() {
         legend: { show: false },
         plotOptions: {
             pie: { donut: { size: '72%', labels: { show: true,
-                name: { show: true, fontSize: '13px', color: textColor },
-                value: { show: true, fontSize: '26px', fontWeight: 700, color: isDark ? '#fff' : '#111827' },
-                total: { show: true, showAlways: true, label: 'Total', fontSize: '13px', color: textColor,
+                name: { show: true, fontSize: '13px', color: theme.textColor },
+                value: { show: true, fontSize: '26px', fontWeight: 700, color: theme.headingColor },
+                total: { show: true, showAlways: true, label: 'Total', fontSize: '13px', color: theme.textColor,
                     formatter: w => w.globals.seriesTotals.reduce((a, b) => a + b, 0)
                 }
             }}}
         },
         dataLabels: { enabled: false },
-        stroke: { show: true, colors: [bgStroke], width: 3 }
-    }).render();
+        stroke: { show: true, colors: [theme.bgStroke], width: 3 }
+    });
+    chartPenjualan.render();
 
     // Bar Chart
-    new ApexCharts(document.querySelector("#chartPendapatan"), {
+    const chartPendapatan = new ApexCharts(document.querySelector("#chartPendapatan"), {
         series: [{ name: 'Pendapatan', data: @json($tren_data) }],
         chart: { type: 'bar', height: 300, fontFamily: 'Inter, sans-serif', toolbar: { show: false } },
         colors: ['#465FFF'],
@@ -286,20 +296,47 @@ document.addEventListener('DOMContentLoaded', function() {
         dataLabels: { enabled: false },
         xaxis: {
             categories: @json($tren_labels),
-            labels: { style: { colors: textColor, fontSize: '11px' } },
+            labels: { style: { colors: theme.textColor, fontSize: '11px' } },
             axisBorder: { show: false }, axisTicks: { show: false }
         },
         yaxis: {
             labels: {
-                style: { colors: textColor, fontSize: '11px' },
+                style: { colors: theme.textColor, fontSize: '11px' },
                 formatter: v => { if(v >= 1e6) return (v/1e6).toFixed(1)+'jt'; if(v >= 1e3) return (v/1e3).toFixed(0)+'rb'; return v; }
             }
         },
-        grid: { borderColor: isDark ? '#374151' : '#F3F4F6', strokeDashArray: 4 },
+        grid: { borderColor: theme.borderColor, strokeDashArray: 4 },
         tooltip: {
             y: { formatter: v => 'Rp ' + v.toLocaleString('id-ID') }
         }
-    }).render();
+    });
+    chartPendapatan.render();
+
+    // MutationObserver to detect theme changes (dark mode toggle)
+    const observer = new MutationObserver(() => {
+        const newTheme = getChartTheme();
+        
+        // Update Donut Chart
+        chartPenjualan.updateOptions({
+            stroke: { colors: [newTheme.bgStroke] },
+            plotOptions: {
+                pie: { donut: { labels: {
+                    name: { color: newTheme.textColor },
+                    value: { color: newTheme.headingColor },
+                    total: { color: newTheme.textColor }
+                }}}
+            }
+        });
+
+        // Update Bar Chart
+        chartPendapatan.updateOptions({
+            xaxis: { labels: { style: { colors: newTheme.textColor } } },
+            yaxis: { labels: { style: { colors: newTheme.textColor } } },
+            grid: { borderColor: newTheme.borderColor }
+        });
+    });
+
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 });
 </script>
 

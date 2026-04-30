@@ -196,9 +196,13 @@ class ternakController extends Controller
     public function delete($id)
     {
         $ternak = ternakModel::findOrFail($id);
-        $ternak->delete();
+        
+        // Sempurnakan logika: bukan menghapus record, tapi mengeluarkan dari kamar
+        $ternak->update([
+            'id_kamar' => null
+        ]);
 
-        return back()->with('success', 'Data ternak berhasil dihapus.');
+        return back()->with('success', 'Ternak berhasil dikeluarkan dari kandang.');
     }
 
     public function detail($id)

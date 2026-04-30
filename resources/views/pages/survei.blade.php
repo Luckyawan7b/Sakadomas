@@ -63,9 +63,9 @@
                     @endif
 
                     <form method="POST" action="{{ route('survei.store') }}" class="flex flex-col gap-5"
-                        x-data="{ 
-                            selectedDate: '', 
-                            selectedTime: '', 
+                        x-data="{
+                            selectedDate: '',
+                            selectedTime: '',
                             bookedTimes: [],
                             fetchBookedTimes() {
                                 if (!this.selectedDate) return;
@@ -194,8 +194,8 @@
                                 <div class="relative">
                                     <input type="text" name="tanggal_survei" value="{{ old('tanggal_survei') }}" required
                                         x-model="selectedDate"
-                                        x-init="flatpickr($el, { 
-                                            dateFormat: 'Y-m-d', 
+                                        x-init="flatpickr($el, {
+                                            dateFormat: 'Y-m-d',
                                             locale: 'id',
                                             onChange: function(selectedDates, dateStr) {
                                                 selectedDate = dateStr;
@@ -230,7 +230,7 @@
                                     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                                         <template x-for="time in ['09:00', '11:00', '13:00', '15:00']"
                                             :key="time">
-                                            <button type="button" 
+                                            <button type="button"
                                                 @click="if(!bookedTimes.includes(time)) selectedTime = time"
                                                 :disabled="bookedTimes.includes(time)"
                                                 :class="{
@@ -372,10 +372,10 @@
                                             class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-yellow-500 text-white shadow-theme-xs hover:bg-yellow-600">
                                             Edit
                                         </button>
-                                        <button @click="modalHapus = true" type="button"
+                                        {{-- <button @click="modalHapus = true" type="button"
                                             class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-2 text-sm bg-red-500 text-white shadow-theme-xs hover:bg-red-600">
-                                            Batalkan
-                                        </button>
+                                            Hapus
+                                        </button> --}}
                                     </div>
                                 </td>
 
@@ -398,9 +398,9 @@
                                             <form method="POST"
                                                 action="{{ route('survei.update', $survei->id_survei) }}"
                                                 class="flex flex-col gap-5"
-                                                x-data="{ 
-                                                    selectedDate: '{{ old('tanggal_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('Y-m-d')) }}', 
-                                                    selectedTime: '{{ old('waktu_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('H:i')) }}', 
+                                                x-data="{
+                                                    selectedDate: '{{ old('tanggal_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('Y-m-d')) }}',
+                                                    selectedTime: '{{ old('waktu_survei', \Carbon\Carbon::parse($survei->tgl_survei)->format('H:i')) }}',
                                                     bookedTimes: [],
                                                     fetchBookedTimes() {
                                                         if (!this.selectedDate) return;
@@ -417,10 +417,10 @@
                                                     }
                                                 }"
                                                 x-init="
-                                                    $watch('modalEdit', val => { 
-                                                        if(val) { 
+                                                    $watch('modalEdit', val => {
+                                                        if(val) {
                                                             fetchBookedTimes();
-                                                        } 
+                                                        }
                                                     })
                                                 ">
                                                 @csrf
@@ -443,10 +443,10 @@
                                                         <div class="relative">
                                                             <input type="text" name="tanggal_survei"
                                                                 x-model="selectedDate"
-                                                                required 
-                                                                x-init="flatpickr($el, { 
-                                                                    dateFormat: 'Y-m-d', 
-                                                                    minDate: 'today', 
+                                                                required
+                                                                x-init="flatpickr($el, {
+                                                                    dateFormat: 'Y-m-d',
+                                                                    minDate: 'today',
                                                                     maxDate: new Date().fp_incr(7),
                                                                     onChange: function(selectedDates, dateStr) {
                                                                         selectedDate = dateStr;
