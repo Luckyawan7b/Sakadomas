@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\jenisTernakModel;
-use App\Models\kamarModel;
+use App\Models\JenisTernak;
+use App\Models\Kamar;
 
-class ternakModel extends Model
+class Ternak extends Model
 {
      protected $table = 'ternak';
     protected $primaryKey = 'id_ternak';
@@ -27,11 +27,12 @@ class ternakModel extends Model
 
     public function kamar()
     {
-        return $this->belongsTo(kamarModel::class, 'id_kamar', 'id_kamar');
+        return $this->belongsTo(Kamar::class, 'id_kamar', 'id_kamar');
     }
 
     public function jenis_ternak()
     {
-        return $this->belongsTo(jenisTernakModel::class, 'id_jenis_ternak', 'id_jenis_ternak');
+        return $this->belongsTo(JenisTernak::class, 'id_jenis_ternak', 'id_jenis_ternak');
     }
 }
+

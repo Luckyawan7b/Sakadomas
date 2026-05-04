@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class jenisTernakModel extends Model
+class JenisTernak extends Model
 {
     protected $table = 'jenis_ternak';
     protected $primaryKey = 'id_jenis_ternak';
@@ -15,3 +15,4 @@ class jenisTernakModel extends Model
     ];
 
 }
+

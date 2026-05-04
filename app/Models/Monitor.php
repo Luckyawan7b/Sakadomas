@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class monitorModel extends Model
+class Monitor extends Model
 {
     protected $table = 'monitoring';
     protected $primaryKey = 'id_monitoring';
@@ -20,6 +20,7 @@ class monitorModel extends Model
 
     public function ternak()
     {
-        return $this->belongsTo(ternakModel::class, 'id_ternak', 'id_ternak');
+        return $this->belongsTo(Ternak::class, 'id_ternak', 'id_ternak');
     }
 }
+

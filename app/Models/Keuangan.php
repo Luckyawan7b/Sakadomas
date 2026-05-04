@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class keuanganModel extends Model
+class Keuangan extends Model
 {
     protected $table = 'keuangan';
     protected $primaryKey = 'id_keuangan';
@@ -20,6 +20,7 @@ class keuanganModel extends Model
 
     public function transaksi()
     {
-        return $this->belongsTo(transaksiModel::class, 'id_transaksi', 'id_transaksi');
+        return $this->belongsTo(Transaksi::class, 'id_transaksi', 'id_transaksi');
     }
 }
+

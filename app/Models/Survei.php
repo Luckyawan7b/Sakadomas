@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\akunModel;
-use App\Models\transaksiModel;
+use App\Models\Akun;
+use App\Models\Transaksi;
 
-class surveiModel extends Model
+class Survei extends Model
 {
     protected $table = 'survei';
     protected $primaryKey = 'id_survei';
@@ -23,11 +23,12 @@ class surveiModel extends Model
 
     public function akun()
     {
-        return $this->belongsTo(akunModel::class, 'id_akun', 'id_akun');
+        return $this->belongsTo(Akun::class, 'id_akun', 'id_akun');
     }
 
     public function transaksi()
     {
-        return $this->belongsTo(transaksiModel::class, 'id_transaksi', 'id_transaksi');
+        return $this->belongsTo(Transaksi::class, 'id_transaksi', 'id_transaksi');
     }
 }
+

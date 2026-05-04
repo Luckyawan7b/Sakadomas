@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Models;
-use App\Models\kandangModel;
-use App\Models\ternakModel;
+use App\Models\Kandang;
+use App\Models\Ternak;
 use Illuminate\Database\Eloquent\Model;
 
-class kamarModel extends Model
+class Kamar extends Model
 {
     protected $table = 'kamar';
     protected $primaryKey = 'id_kamar';
@@ -20,11 +20,12 @@ class kamarModel extends Model
 
     public function kandang()
     {
-        return $this->belongsTo(kandangModel::class, 'id_kandang', 'id_kandang');
+        return $this->belongsTo(Kandang::class, 'id_kandang', 'id_kandang');
     }
     public function ternak(){
-        return $this->hasMany(ternakModel::class, 'id_kamar', 'id_kamar');
+        return $this->hasMany(Ternak::class, 'id_kamar', 'id_kamar');
     }
 
 
 }
+

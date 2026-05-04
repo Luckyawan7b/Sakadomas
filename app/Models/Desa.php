@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class desaModel extends Model
+class Desa extends Model
 {
     protected $table = 'desa';
     protected $primaryKey = 'id_desa';
@@ -17,6 +17,7 @@ class desaModel extends Model
 
     public function kecamatan()
     {
-        return $this->belongsTo(kecamatanModel::class, 'id_kecamatan', 'id_kecamatan');
+        return $this->belongsTo(Kecamatan::class, 'id_kecamatan', 'id_kecamatan');
     }
 }
+

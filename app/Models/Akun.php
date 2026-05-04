@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\desaModel;
+use App\Models\Desa;
 use App\Notifications\ResetPasswordNotification;
 
 
-class akunModel extends Authenticatable
+class Akun extends Authenticatable
 {
     use Notifiable;
     protected $table = 'akun';
@@ -33,7 +33,7 @@ class akunModel extends Authenticatable
 
     public function desa()
     {
-        return $this->belongsTo(desaModel::class, 'id_desa', 'id_desa');
+        return $this->belongsTo(Desa::class, 'id_desa', 'id_desa');
     }
 
     public function getAuthPassword()
@@ -46,3 +46,4 @@ class akunModel extends Authenticatable
         $this->notify(new ResetPasswordNotification($token));
     }
 }
+

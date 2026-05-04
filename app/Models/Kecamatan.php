@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class kecamatanModel extends Model
+class Kecamatan extends Model
 {
     protected $table = 'kecamatan';
     protected $primaryKey = 'id_kecamatan';
@@ -19,3 +19,4 @@ class kecamatanModel extends Model
         return $this->hasMany(Desa::class, 'id_kecamatan', 'id_kecamatan');
     }
 }
+
