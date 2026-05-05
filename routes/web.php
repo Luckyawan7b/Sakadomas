@@ -10,6 +10,7 @@ use App\Http\Controllers\TernakController;
 use App\Http\Controllers\MonitorController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\NotifikasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,10 @@ Route::middleware('auth')->group(function () {
 
     // API Publik yang butuh login
     Route::get('/api/jadwal/cek', [SurveiController::class, 'cekJadwal'])->name('jadwal.cek');
+
+    // FCM Push Notification Token
+    Route::post('/api/fcm/register', [App\Http\Controllers\Api\FcmTokenController::class, 'register'])->name('fcm.register');
+    Route::post('/api/fcm/remove', [App\Http\Controllers\Api\FcmTokenController::class, 'remove'])->name('fcm.remove');
 });
 
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {

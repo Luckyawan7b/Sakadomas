@@ -1,37 +1,58 @@
-{{-- Notification Dropdown Component --}}
 <div class="relative" x-data="{
     dropdownOpen: false,
-    notifying: true,
-    toggleDropdown() {
-        this.dropdownOpen = !this.dropdownOpen;
-        this.notifying = false;
+    hasPermission: ('Notification' in window) && Notification.permission === 'granted',
+    isLoading: false,
+    toastVisible: false,
+    toastMessage: {},
+    init() {
+        if(window.initFirebase) {
+            window.initFirebase().then(supported => {
+                if (supported) {
+                    if (Notification.permission !== 'denied') {
+                        window.requestPermissionAndToken().then(success => {
+                            this.hasPermission = success;
+                        });
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('fcm-message', (e) => {
+            this.toastMessage = e.detail.notification || {};
+            this.toastVisible = true;
+            setTimeout(() => {
+                this.toastVisible = false;
+            }, 6000);
+        });
     },
-    closeDropdown() {
-        this.dropdownOpen = false;
-    },
-    handleItemClick() {
-        console.log('Notification item clicked');
-        this.closeDropdown();
-    },
-    handleViewAllClick() {
-        console.log('View All Notifications clicked');
-        this.closeDropdown();
+    async toggleNotification() {
+        this.isLoading = true;
+        if (this.hasPermission) {
+            const success = await window.removeToken();
+            if(success) this.hasPermission = false;
+        } else {
+            const success = await window.requestPermissionAndToken();
+            if (success) {
+                this.hasPermission = true;
+            } else {
+                alert('Gagal mengaktifkan notifikasi. Pastikan Anda mengizinkan notifikasi pada pengaturan browser.');
+            }
+        }
+        this.isLoading = false;
     }
-}" @click.away="closeDropdown()">
+}" @click.away="dropdownOpen = false">
     <!-- Notification Button -->
     <button
         class="relative flex items-center justify-center text-gray-500 transition-colors bg-white border border-gray-200 rounded-full hover:text-dark-900 h-11 w-11 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-        @click="toggleDropdown()"
+        @click="dropdownOpen = !dropdownOpen"
         type="button"
     >
-        <!-- Notification Badge -->
+        <!-- Active indicator if permission is granted -->
         <span
-            x-show="notifying"
-            class="absolute right-0 top-0.5 z-1 h-2 w-2 rounded-full bg-orange-400"
+            x-show="hasPermission"
+            class="absolute right-0 top-0.5 z-1 h-2 w-2 rounded-full bg-success-500"
         >
-            <span
-                class="absolute inline-flex w-full h-full bg-orange-400 rounded-full opacity-75 -z-1 animate-ping"
-            ></span>
+            <span class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-success-500 -z-1 animate-ping"></span>
         </span>
 
         <!-- Bell Icon -->
@@ -52,7 +73,7 @@
         </svg>
     </button>
 
-    <!-- Dropdown Start -->
+    <!-- Dropdown -->
     <div
         x-show="dropdownOpen"
         x-transition:enter="transition ease-out duration-100"
@@ -61,162 +82,71 @@
         x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="transform opacity-100 scale-100"
         x-transition:leave-end="transform opacity-0 scale-95"
-        class="absolute -right-[240px] mt-[17px] flex h-[480px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark sm:w-[361px] lg:right-0"
+        class="absolute -right-20 mt-[17px] flex w-72 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark lg:right-0"
         style="display: none;"
     >
-        <!-- Dropdown Header -->
-        <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-100 dark:border-gray-800">
-            <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">Notification</h5>
-
-            <button @click="closeDropdown()" class="text-gray-500 dark:text-gray-400" type="button">
-                <svg
-                    class="fill-current"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
-                        fill=""
-                    />
-                </svg>
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100 dark:border-gray-800">
+            <h5 class="text-base font-semibold text-gray-800 dark:text-white/90">Notifikasi Browser</h5>
+            <button @click="dropdownOpen = false" class="text-gray-500 dark:text-gray-400 hover:text-gray-700">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
 
-        <!-- Notification List -->
-        <ul class="flex flex-col h-auto overflow-y-auto custom-scrollbar">
-            @php
-                $notifications = [
-                    [
-                        'id' => 1,
-                        'userName' => 'Terry Franci',
-                        'userImage' => '/images/user/user-02.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Nganter App',
-                        'type' => 'Project',
-                        'time' => '5 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 2,
-                        'userName' => 'Alex Johnson',
-                        'userImage' => '/images/user/user-03.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Nganter App',
-                        'type' => 'Project',
-                        'time' => '10 min ago',
-                        'status' => 'offline',
-                    ],
-                    [
-                        'id' => 3,
-                        'userName' => 'Sarah Williams',
-                        'userImage' => '/images/user/user-04.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Dashboard UI',
-                        'type' => 'Project',
-                        'time' => '15 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 4,
-                        'userName' => 'Mike Brown',
-                        'userImage' => '/images/user/user-05.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - E-commerce',
-                        'type' => 'Project',
-                        'time' => '20 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 5,
-                        'userName' => 'Emma Davis',
-                        'userImage' => '/images/user/user-06.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Mobile App',
-                        'type' => 'Project',
-                        'time' => '25 min ago',
-                        'status' => 'offline',
-                    ],
-                    [
-                        'id' => 6,
-                        'userName' => 'John Smith',
-                        'userImage' => '/images/user/user-07.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Landing Page',
-                        'type' => 'Project',
-                        'time' => '30 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 7,
-                        'userName' => 'Lisa Anderson',
-                        'userImage' => '/images/user/user-08.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Blog System',
-                        'type' => 'Project',
-                        'time' => '35 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 8,
-                        'userName' => 'David Wilson',
-                        'userImage' => '/images/user/user-09.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - CRM Dashboard',
-                        'type' => 'Project',
-                        'time' => '40 min ago',
-                        'status' => 'online',
-                    ],
-                ];
-            @endphp
+        <div class="flex flex-col items-center text-center">
+            <div class="mb-4">
+                <!-- Icon granted -->
+                <div x-show="hasPermission" class="flex items-center justify-center w-14 h-14 bg-success-50 rounded-full dark:bg-success-500/10">
+                    <svg class="w-7 h-7 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </div>
+                <!-- Icon denied/default -->
+                <div x-show="!hasPermission" class="flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full dark:bg-gray-800">
+                    <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.73 21a2 2 0 01-3.46 0m9.73-9.9c-.28-.27-.6-.5-.94-.71m-2.16-1.34A6.002 6.002 0 0010 5.341V5a2 2 0 10-4 0v.341c-.424.167-.822.385-1.18.647M4 17h16m-1-5.859V11c0-1.043.266-2.023.736-2.883M3 3l18 18"></path></svg>
+                </div>
+            </div>
 
-            @foreach ($notifications as $notification)
-                <li @click="handleItemClick()">
-                    <a
-                        class="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
-                        href="#"
-                    >
-                        <span class="relative block w-full h-10 rounded-full z-1 max-w-10">
-                            <img src="{{ $notification['userImage'] }}" alt="User" class="overflow-hidden rounded-full" />
-                            <span
-                                class="absolute bottom-0 right-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900 {{ $notification['status'] === 'online' ? 'bg-success-500' : 'bg-error-500' }}"
-                            ></span>
-                        </span>
+            <h6 class="text-sm font-semibold text-gray-800 dark:text-white/90 mb-1" x-text="hasPermission ? 'Notifikasi Diaktifkan' : 'Aktifkan Notifikasi'"></h6>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-5 leading-relaxed">
+                Dapatkan pemberitahuan real-time untuk status pesanan, kunjungan, dan update lainnya.
+            </p>
 
-                        <span class="block">
-                            <span class="mb-1.5 block text-theme-sm text-gray-500 dark:text-gray-400">
-                                <span class="font-medium text-gray-800 dark:text-white/90">
-                                    {{ $notification['userName'] }}
-                                </span>
-                                {{ $notification['action'] }}
-                                <span class="font-medium text-gray-800 dark:text-white/90">
-                                    {{ $notification['project'] }}
-                                </span>
-                            </span>
-
-                            <span class="flex items-center gap-2 text-gray-500 text-theme-xs dark:text-gray-400">
-                                <span>{{ $notification['type'] }}</span>
-                                <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
-                                <span>{{ $notification['time'] }}</span>
-                            </span>
-                        </span>
-                    </a>
-                </li>
-            @endforeach
-        </ul>
-
-        <!-- View All Button -->
-        <a
-            href="#"
-            class="mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-3 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
-            @click.prevent="handleViewAllClick()"
-        >
-            View All Notification
-        </a>
+            <button
+                @click="toggleNotification()"
+                :disabled="isLoading"
+                class="flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium text-white transition-colors rounded-lg shadow-theme-xs disabled:opacity-70 disabled:cursor-not-allowed"
+                :class="hasPermission ? 'bg-error-500 hover:bg-error-600' : 'bg-brand-500 hover:bg-brand-600'"
+            >
+                <svg x-show="isLoading" class="w-4 h-4 mr-2 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span x-text="hasPermission ? 'Matikan Notifikasi' : 'Aktifkan Sekarang'"></span>
+            </button>
+        </div>
     </div>
-    <!-- Dropdown End -->
+
+    <!-- Toast Notification Overlay (Appears on bottom right) -->
+    <template x-teleport="body">
+        <div x-show="toastVisible"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="transform translate-y-2 opacity-0"
+            x-transition:enter-end="transform translate-y-0 opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="transform translate-y-0 opacity-100"
+            x-transition:leave-end="transform translate-y-2 opacity-0"
+            class="fixed bottom-6 right-6 z-[999999] flex w-full max-w-sm overflow-hidden bg-white rounded-xl shadow-theme-lg dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pointer-events-auto"
+            style="display: none;"
+        >
+            <div class="flex items-center justify-center w-12 bg-brand-500">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            </div>
+
+            <div class="px-4 py-3 -mx-3">
+                <div class="mx-3">
+                    <span class="font-semibold text-brand-500 dark:text-brand-400 text-sm" x-text="toastMessage.title"></span>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1" x-text="toastMessage.body"></p>
+                </div>
+            </div>
+
+            <button @click="toastVisible = false" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </template>
 </div>

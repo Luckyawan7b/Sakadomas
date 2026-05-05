@@ -36,6 +36,11 @@ class Akun extends Authenticatable
         return $this->belongsTo(Desa::class, 'id_desa', 'id_desa');
     }
 
+    public function fcmTokens()
+    {
+        return $this->hasMany(FcmToken::class, 'id_akun', 'id_akun');
+    }
+
     public function getAuthPassword()
     {
         return $this->password;

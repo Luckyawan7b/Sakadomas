@@ -135,10 +135,10 @@
                                     {{-- Trigger button --}}
                                     <div x-ref="trigger" @click="toggle()"
                                         class="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus-within:border-brand-500 focus-within:ring-3 focus-within:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                                        <span x-text="selectedText || &#39;-- Ketik Nama / Username --&#39;"
-                                            :class="!selectedText ? & #39;text-gray-400 dark:text-gray-500&# 39;: & #39;&# 39;"></span>
+                                        <span x-text="selectedText || '-- Ketik Nama / Username --'"
+                                            :class="!selectedText ? 'text-gray-400 dark:text-gray-500' : ''"></span>
                                         <svg class="h-4 w-4 text-gray-500 transition-transform"
-                                            :class="open ? & #39;rotate-180&# 39;: & #39;&# 39;" fill="none"
+                                            :class="open ? 'rotate-180' : ''" fill="none"
                                             stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 9l-7 7-7-7"></path>
@@ -166,13 +166,10 @@
                                                 <template x-for="user in filteredUsers" :key="user.id_akun">
                                                     <li @click="selectUser(user)"
                                                         class="cursor-pointer rounded-md px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                                                        :class="selectedId == user.id_akun ? &
-                                                            #39;bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400&# 39;:
-                                                        &
-                                                        #39;&# 39;">
+                                                        :class="selectedId == user.id_akun ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400' : ''">
                                                         <div class="font-medium" x-text="user.nama"></div>
                                                         <div class="text-xs text-gray-500 dark:text-gray-400"
-                                                            x-text="&#39;@&#39; + user.username"></div>
+                                                            x-text="'@' + user.username"></div>
                                                     </li>
                                                 </template>
 
@@ -196,7 +193,7 @@
                                         x-model="selectedDate"
                                         x-init="flatpickr($el, {
                                             dateFormat: 'Y-m-d',
-                                            locale: 'id',
+                                            locale: 'en',
                                             onChange: function(selectedDates, dateStr) {
                                                 selectedDate = dateStr;
                                                 fetchBookedTimes();

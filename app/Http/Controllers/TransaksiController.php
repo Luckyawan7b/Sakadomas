@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Cloudinary\Cloudinary;
+use App\Services\FcmService;
 use App\Models\Transaksi;
 use App\Models\Ternak;
 use App\Models\Kandang;
@@ -162,6 +164,28 @@ class TransaksiController extends Controller
             $this->selesaikanTransaksi($transaksi);
         } elseif ($newStatus == 'batal') {
             $this->batalkanTransaksi($transaksi);
+        }
+
+        // Kirim push notification ke pelanggan
+        try {
+            $fcm = new FcmService();
+            match ($newStatus) {
+                'diproses'  => $fcm->sendToUser($transaksi->id_akun,
+                                    '📦 Pesanan Diproses',
+                                    'Pesanan #TRX-' . $transaksi->id_transaksi . ' sedang diproses oleh admin.'),
+                'dikirim'   => $fcm->sendToUser($transaksi->id_akun,
+                                    '🚚 Pesanan Dikirim',
+                                    'Pesanan #TRX-' . $transaksi->id_transaksi . ' sedang dalam perjalanan.'),
+                'selesai'   => $fcm->sendToUser($transaksi->id_akun,
+                                    '✅ Pesanan Selesai',
+                                    'Pesanan #TRX-' . $transaksi->id_transaksi . ' telah selesai.'),
+                'batal'     => $fcm->sendToUser($transaksi->id_akun,
+                                    '❌ Pesanan Dibatalkan',
+                                    'Pesanan #TRX-' . $transaksi->id_transaksi . ' telah dibatalkan oleh admin.'),
+                default     => null,
+            };
+        } catch (\Throwable $e) {
+            Log::error('FCM notification failed in updateAdmin: ' . $e->getMessage());
         }
 
         return back()->with('success', 'Status transaksi berhasil diperbarui.');
@@ -381,6 +405,17 @@ class TransaksiController extends Controller
             ]);
         }
 
+        // Kirim push notification ke semua admin
+        try {
+            $fcm = new FcmService();
+            $fcm->sendToAllAdmins(
+                '🛒 Pesanan Baru!',
+                Auth::user()->nama . ' membuat pesanan baru #TRX-' . $transaksi->id_transaksi . '.'
+            );
+        } catch (\Throwable $e) {
+            Log::error('FCM notification failed in storePesananUser: ' . $e->getMessage());
+        }
+
         return redirect()->route('transaksi.riwayat')->with('success', 'Pesanan berhasil dibuat! Menunggu konfirmasi dari Admin.');
     }
 
@@ -435,6 +470,17 @@ class TransaksiController extends Controller
         $this->batalkanTransaksi($transaksi);
         $transaksi->update(['status' => 'batal']);
 
+        // Kirim push notification ke admin
+        try {
+            $fcm = new FcmService();
+            $fcm->sendToAllAdmins(
+                '🚫 Pesanan Dibatalkan',
+                Auth::user()->nama . ' membatalkan pesanan #TRX-' . $id . '.'
+            );
+        } catch (\Throwable $e) {
+            Log::error('FCM notification failed in cancelPesananUser: ' . $e->getMessage());
+        }
+
         return back()->with('success', 'Pesanan #TRX-' . $id . ' berhasil dibatalkan.');
     }
 
@@ -451,6 +497,17 @@ class TransaksiController extends Controller
 
         $transaksi->update(['status' => 'selesai']);
         $this->selesaikanTransaksi($transaksi);
+
+        // Kirim push notification ke admin
+        try {
+            $fcm = new FcmService();
+            $fcm->sendToAllAdmins(
+                '✅ Pesanan Diterima',
+                Auth::user()->nama . ' mengkonfirmasi penerimaan pesanan #TRX-' . $id . '.'
+            );
+        } catch (\Throwable $e) {
+            Log::error('FCM notification failed in selesaiPesananUser: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Pesanan #TRX-' . $id . ' berhasil diselesaikan. Terima kasih!');
     }
@@ -486,6 +543,17 @@ class TransaksiController extends Controller
             'metode_pembayaran' => $request->metode_pembayaran,
             'bukti_pembayaran'  => $uploadedFileUrl,
         ]);
+
+        // Kirim push notification ke admin
+        try {
+            $fcm = new FcmService();
+            $fcm->sendToAllAdmins(
+                '💰 Bukti Pembayaran Masuk',
+                Auth::user()->nama . ' mengunggah bukti pembayaran untuk pesanan #TRX-' . $id . '.'
+            );
+        } catch (\Throwable $e) {
+            Log::error('FCM notification failed in uploadBuktiUser: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Bukti pembayaran berhasil diupload!');
     }

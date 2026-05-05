@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\FcmService;
 use App\Models\Survei;
 use App\Models\Akun;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class SurveiController extends Controller
@@ -110,6 +112,19 @@ class SurveiController extends Controller
             'id_transaksi' => $request->id_transaksi ?? null,
         ]);
 
+        // Kirim push notification ke pelanggan yang dijadwalkan
+        if ($id_akun != Auth::id()) {
+            try {
+                $fcm = new FcmService();
+                $fcm->sendToUser($id_akun,
+                    '📅 Kunjungan Dijadwalkan',
+                    'Admin menjadwalkan kunjungan Anda pada ' . \Carbon\Carbon::parse($tgl_survei_gabungan)->translatedFormat('d M Y H:i') . '.'
+                );
+            } catch (\Throwable $e) {
+                Log::error('FCM notification failed in storeAdmin: ' . $e->getMessage());
+            }
+        }
+
         return back()->with('success', 'Jadwal kunjungan berhasil dibuat.');
     }
 
@@ -139,6 +154,17 @@ class SurveiController extends Controller
             'id_akun' => Auth::id(),
             'id_transaksi' => null,
         ]);
+
+        // Kirim push notification ke admin
+        try {
+            $fcm = new FcmService();
+            $fcm->sendToAllAdmins(
+                '📋 Permintaan Kunjungan',
+                Auth::user()->nama . ' mengajukan kunjungan pada ' . \Carbon\Carbon::parse($tgl_survei_gabungan)->translatedFormat('d M Y H:i') . '.'
+            );
+        } catch (\Throwable $e) {
+            Log::error('FCM notification failed in storeUser: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Jadwal kunjungan berhasil diajukan!');
     }
@@ -180,6 +206,26 @@ class SurveiController extends Controller
         }
 
         $survei->update($dataUpdate);
+
+        // Kirim push notification ke pelanggan tentang update survei
+        try {
+            $fcm = new FcmService();
+            $statusMessages = [
+                'disetujui' => '✅ Kunjungan Disetujui',
+                'selesai'   => '🎉 Kunjungan Selesai',
+                'batal'     => '❌ Kunjungan Dibatalkan',
+            ];
+            if (isset($statusMessages[$request->status])) {
+                $bodyMsg = match ($request->status) {
+                    'disetujui' => 'Kunjungan Anda pada ' . \Carbon\Carbon::parse($tgl_survei_gabungan)->translatedFormat('d M Y H:i') . ' telah disetujui.',
+                    'selesai'   => 'Kunjungan Anda telah selesai. Terima kasih!',
+                    'batal'     => 'Kunjungan Anda dibatalkan.' . ($request->filled('ket_admin') ? ' Alasan: ' . $request->ket_admin : ''),
+                };
+                $fcm->sendToUser($survei->id_akun, $statusMessages[$request->status], $bodyMsg);
+            }
+        } catch (\Throwable $e) {
+            Log::error('FCM notification failed in updateAdmin survei: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Data kunjungan berhasil diperbarui.');
     }
@@ -285,6 +331,17 @@ class SurveiController extends Controller
             'id_akun'       => Auth::id(),
             'id_transaksi'  => $transaksi->id_transaksi,
         ]);
+
+        // Kirim push notification ke admin
+        try {
+            $fcm = new FcmService();
+            $fcm->sendToAllAdmins(
+                '🔄 Pengajuan Ulang Survei',
+                Auth::user()->nama . ' mengajukan ulang survei untuk transaksi #TRX-' . $transaksi->id_transaksi . '.'
+            );
+        } catch (\Throwable $e) {
+            Log::error('FCM notification failed in ajukanUlang: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Survei berhasil diajukan ulang!');
     }
