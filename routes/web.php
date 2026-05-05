@@ -19,6 +19,13 @@ use App\Http\Controllers\NotifikasiController;
 */
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
+// Firebase Service Worker (Dynamic to hide secrets)
+Route::get('/firebase-messaging-sw.js', function () {
+    return response()->view('service-worker', [
+        'config' => config('services.firebase')
+    ])->header('Content-Type', 'application/javascript');
+});
+
 Route::middleware('guest')->group(function () {
     // Auth Pages
     Route::get('/login', [AkunController::class, 'showLogin'])->name('login');

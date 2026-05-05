@@ -2,12 +2,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-    apiKey: "AIzaSyCp_JHo6eRkpwDKQkzpSSwyr06Xrp-reAc",
-    authDomain: "sakadomas-f4e73.firebaseapp.com",
-    projectId: "sakadomas-f4e73",
-    storageBucket: "sakadomas-f4e73.firebasestorage.app",
-    messagingSenderId: "583286260614",
-    appId: "1:583286260614:web:467bbb0ea2277d8dfe2207"
+    apiKey: "{{ $config['api_key'] }}",
+    authDomain: "{{ $config['auth_domain'] }}",
+    projectId: "{{ $config['project_id'] }}",
+    storageBucket: "{{ $config['storage_bucket'] }}",
+    messagingSenderId: "{{ $config['messaging_sender_id'] }}",
+    appId: "{{ $config['app_id'] }}"
 });
 
 const messaging = firebase.messaging();
