@@ -1,20 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\kamarModel;
-use App\Models\kandangModel;
-use App\Models\ternakModel;
-use App\Models\jenisTernakModel;
+use App\Models\Kamar;
+use App\Models\Kandang;
+use App\Models\Ternak;
+use App\Models\JenisTernak;
 use Illuminate\Validation\Rule;
 
 use Illuminate\Http\Request;
 
-class kamarController extends Controller
+class KamarController extends Controller
 {
     public function index()
     {
-        $data_kandang = kandangModel::all();
-        $kamar_grouped = kamarModel::with('kandang')
+        $data_kandang = Kandang::all();
+        $kamar_grouped = Kamar::with('kandang')
             ->withCount('ternak')
             ->withCount(['ternak as ternak_sakit_count' => function ($query) {
                 $query->where('status_ternak', 'sakit');
@@ -24,11 +24,11 @@ class kamarController extends Controller
         return view('pages.kamar', compact('data_kandang', 'kamar_grouped'));
     }
 
-    public function showKamar($id)
+    public function showKamar(string $id)
     {
-        $kandang = kandangModel::findOrFail($id);
-        $data_kandang = kandangModel::all();
-        $kamars = kamarModel::withCount('ternak')
+        $kandang = Kandang::findOrFail($id);
+        $data_kandang = Kandang::all();
+        $kamars = Kamar::withCount('ternak')
             ->withCount(['ternak as ternak_sakit_count' => function ($query) {
                 $query->where('status_ternak', 'sakit');
             }])
@@ -37,22 +37,22 @@ class kamarController extends Controller
         return view('pages.detail-kamar', compact('kandang', 'kamars', 'data_kandang'));
     }
 
-    public function showTernak($id_kandang, $id_kamar)
+    public function showTernak(string $id_kandang, string $id_kamar)
     {
-        $kandang = kandangModel::findOrFail($id_kandang);
-        $kamar = kamarModel::findOrFail($id_kamar);
+        $kandang = Kandang::findOrFail($id_kandang);
+        $kamar = Kamar::findOrFail($id_kamar);
 
-        $data_ternak = ternakModel::with('jenis_ternak')
+        $data_ternak = Ternak::with('jenis_ternak')
                                 ->where('id_kamar', $id_kamar)
                                 ->orderBy('id_ternak', 'desc')
                                 ->get();
 
-        $data_kandang = kandangModel::all();
-        $data_kamar = kamarModel::with('kandang')->get();
-        $data_jenis = jenisTernakModel::all();
+        $data_kandang = Kandang::all();
+        $data_kamar = Kamar::with('kandang')->get();
+        $data_jenis = JenisTernak::all();
 
         // ✅ FIX: Query dipindah dari Blade ke Controller (MVC compliance)
-        $ternak_kosong = ternakModel::with('jenis_ternak')
+        $ternak_kosong = Ternak::with('jenis_ternak')
                                     ->whereNull('id_kamar')
                                     ->where('status_jual', '!=', 'terjual')
                                     ->orderBy('id_ternak', 'asc')
@@ -82,8 +82,8 @@ class kamarController extends Controller
             'nomor_kamar.unique' => 'Nomor kamar ini sudah ada didalam kandang.'
         ]);
 
-        $kandang = kandangModel::findOrFail($request->id_kandang);
-        $jumlah_kamar_saat_ini = kamarModel::where('id_kandang', $request->id_kandang)->count();
+        $kandang = Kandang::findOrFail($request->id_kandang);
+        $jumlah_kamar_saat_ini = Kamar::where('id_kandang', $request->id_kandang)->count();
 
         if ($jumlah_kamar_saat_ini >= $kandang->kapasitas) {
             return back()->withErrors([
@@ -91,7 +91,7 @@ class kamarController extends Controller
             ])->withInput();
         }
 
-        kamarModel::create([
+        Kamar::create([
             'nomor_kamar' => $request->nomor_kamar,
             'kapasitas' => $request->kapasitas,
             'id_kandang' => $request->id_kandang,
@@ -118,15 +118,15 @@ class kamarController extends Controller
             'nomor_kamar.unique' => 'Nomor kamar ini sudah digunakan di kandang tersebut.'
         ]);
 
-        $kamar = kamarModel::withCount('ternak')
+        $kamar = Kamar::withCount('ternak')
             ->withCount(['ternak as ternak_sakit_count' => function ($query) {
                 $query->where('status_ternak', 'sakit');
             }])->findOrFail($id);
         $old_status = ($kamar->ternak_count > 0 && $kamar->ternak_count == $kamar->ternak_sakit_count) ? 'karantina' : 'aktif';
 
         if ($request->id_kandang != $kamar->id_kandang) {
-            $kandang_tujuan = kandangModel::findOrFail($request->id_kandang);
-            $jumlah_kamar_tujuan = kamarModel::where('id_kandang', $request->id_kandang)->count();
+            $kandang_tujuan = Kandang::findOrFail($request->id_kandang);
+            $jumlah_kamar_tujuan = Kamar::where('id_kandang', $request->id_kandang)->count();
 
             if ($jumlah_kamar_tujuan >= $kandang_tujuan->kapasitas) {
                 return back()->withErrors([
@@ -147,12 +147,12 @@ class kamarController extends Controller
 
         if ($statusInput === 'karantina') {
             if ($old_status !== 'karantina') {
-                ternakModel::where('id_kamar', $id)->update(['status_ternak' => 'sakit']);
+                Ternak::where('id_kamar', $id)->update(['status_ternak' => 'sakit']);
                 $message = 'Data kamar berhasil diperbarui. Kamar dikarantina dan semua ternak di dalamnya otomatis diubah menjadi Sakit.';
             }
         } elseif ($statusInput === 'aktif') {
             if ($old_status === 'karantina') {
-                ternakModel::where('id_kamar', $id)->update(['status_ternak' => 'sehat']);
+                Ternak::where('id_kamar', $id)->update(['status_ternak' => 'sehat']);
                 $message = 'Karantina dicabut. Status semua ternak di dalam kamar ini telah dikembalikan menjadi Sehat.';
             }
         }
@@ -162,7 +162,7 @@ class kamarController extends Controller
 
     public function delete($id)
     {
-        $kamar = kamarModel::withCount('ternak')->findOrFail($id);
+        $kamar = Kamar::withCount('ternak')->findOrFail($id);
 
         if ($kamar->ternak_count > 0) {
             return back()->with('error', 'Gagal menghapus! Kamar masih berisi ' . $kamar->ternak_count . ' ternak. Kosongkan kamar terlebih dahulu.');
@@ -173,3 +173,4 @@ class kamarController extends Controller
         return back()->with('success', 'Data kamar berhasil dihapus.');
     }
 }
+

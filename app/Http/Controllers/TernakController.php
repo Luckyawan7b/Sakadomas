@@ -3,30 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\ternakModel;
-use App\Models\kamarModel;
-use App\Models\kandangModel;
-use App\Models\jenisTernakModel;
+use App\Models\Ternak;
+use App\Models\Kamar;
+use App\Models\Kandang;
+use App\Models\JenisTernak;
 use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 
-class ternakController extends Controller
+class TernakController extends Controller
 {
     // public function index()
     // {
-    //     $data_ternak = ternakModel::with(['kamar.kandang', 'jenis_ternak'])
+    //     $data_ternak = Ternak::with(['kamar.kandang', 'jenis_ternak'])
     //                               ->orderBy('id_ternak', 'desc')
     //                               ->get();
 
-    //     $data_kamar = kamarModel::with('kandang')->get();
-    //     $data_jenis = jenisTernakModel::all();
+    //     $data_kamar = Kamar::with('kandang')->get();
+    //     $data_jenis = JenisTernak::all();
 
     //     return view('pages.ternak', compact('data_ternak', 'data_kamar', 'data_jenis'));
     // }
 
     public function index(Request $request)
     {
-        $query = ternakModel::with(['kamar.kandang', 'jenis_ternak'])
+        $query = Ternak::with(['kamar.kandang', 'jenis_ternak'])
                             ->orderBy('id_ternak', 'desc');
 
         // 1. Filter Lokasi Kandang (Baru)
@@ -84,14 +84,14 @@ class ternakController extends Controller
 
         $data_ternak = $query->paginate(10);
 
-        $data_kandang = kandangModel::all();
-        $data_kamar = kamarModel::with('kandang')->get();
-        $data_jenis = jenisTernakModel::all();
+        $data_kandang = Kandang::all();
+        $data_kamar = Kamar::with('kandang')->get();
+        $data_jenis = JenisTernak::all();
 
-        $stat_total = ternakModel::count();
-        $stat_siap_jual = ternakModel::where('status_jual', 'siap jual')->count();
-        $stat_sakit = ternakModel::where('status_ternak', 'sakit')->count();
-        $stat_terjual = ternakModel::where('status_jual', 'terjual')->count();
+        $stat_total = Ternak::count();
+        $stat_siap_jual = Ternak::where('status_jual', 'siap jual')->count();
+        $stat_sakit = Ternak::where('status_ternak', 'sakit')->count();
+        $stat_terjual = Ternak::where('status_jual', 'terjual')->count();
 
         return view('pages.ternak', compact('data_ternak', 'data_kandang', 'data_kamar', 'data_jenis', 'stat_total', 'stat_siap_jual', 'stat_sakit', 'stat_terjual'));
     }
@@ -114,8 +114,8 @@ class ternakController extends Controller
         ]);
 
         if ($request->id_kamar) {
-            $kamar = kamarModel::findOrFail($request->id_kamar);
-            $jumlah_isi_kamar = ternakModel::where('id_kamar', $request->id_kamar)->count();
+            $kamar = Kamar::findOrFail($request->id_kamar);
+            $jumlah_isi_kamar = Ternak::where('id_kamar', $request->id_kamar)->count();
 
             if ($jumlah_isi_kamar >= $kamar->kapasitas) {
                 return back()->withErrors([
@@ -132,7 +132,7 @@ class ternakController extends Controller
         );
 
 
-        ternakModel::create([
+        Ternak::create([
             'id_jenis_ternak' => $request->id_jenis_ternak,
             'id_kamar' => $request->id_kamar,
             'jenis_kelamin' => $request->jenis_kelamin,
@@ -167,12 +167,12 @@ class ternakController extends Controller
             'status_jual' => 'required|in:tidak dijual,siap jual,booking,terjual',
         ]);
 
-        $ternak = ternakModel::findOrFail($id);
+        $ternak = Ternak::findOrFail($id);
 
         // 3. LOGIKA BARU: Cek kapasitas HANYA jika pindah kamar
         if ($request->id_kamar && $request->id_kamar != $ternak->id_kamar) {
-            $kamar_tujuan = kamarModel::findOrFail($request->id_kamar);
-            $jumlah_isi_tujuan = ternakModel::where('id_kamar', $request->id_kamar)->count();
+            $kamar_tujuan = Kamar::findOrFail($request->id_kamar);
+            $jumlah_isi_tujuan = Ternak::where('id_kamar', $request->id_kamar)->count();
 
             // Jika jumlah penghuni di kamar tujuan sudah mencapai batasnya
             if ($jumlah_isi_tujuan >= $kamar_tujuan->kapasitas) {
@@ -200,7 +200,7 @@ class ternakController extends Controller
 
     public function delete($id)
     {
-        $ternak = ternakModel::findOrFail($id);
+        $ternak = Ternak::findOrFail($id);
         
         // Sempurnakan logika: bukan menghapus record, tapi mengeluarkan dari kamar
         $ternak->update([
@@ -212,17 +212,17 @@ class ternakController extends Controller
 
     public function detail($id)
     {
-        $ternak = ternakModel::with(['kamar.kandang', 'jenis_ternak'])->findOrFail($id);
+        $ternak = Ternak::with(['kamar.kandang', 'jenis_ternak'])->findOrFail($id);
 
         // 1. Ambil Data Riwayat Penyakit (Hanya yang sakit)
-        $riwayat_penyakit = \App\Models\monitorModel::where('id_ternak', $id)
+        $riwayat_penyakit = \App\Models\Monitor::where('id_ternak', $id)
                             ->whereNotNull('penyakit')
                             ->where('penyakit', '!=', '')
                             ->orderBy('tgl_monitoring', 'desc')
                             ->get();
 
         // 2. Ambil Semua Data Monitoring untuk Grafik
-        $monitoring = \App\Models\monitorModel::where('id_ternak', $id)
+        $monitoring = \App\Models\Monitor::where('id_ternak', $id)
                             ->orderBy('usia', 'asc')
                             ->get();
 
@@ -283,7 +283,7 @@ class ternakController extends Controller
         if (!File::exists($jsonPath)) return 0;
 
         $data = json_decode(File::get($jsonPath), true);
-        $jenisTernak = \App\Models\jenisTernakModel::find($id_jenis_ternak);
+        $jenisTernak = \App\Models\JenisTernak::find($id_jenis_ternak);
         $namaJenis = $jenisTernak ? $jenisTernak->jenis_ternak : '';
 
         // Mapping nama jenis dari DB ke JSON
@@ -320,3 +320,4 @@ class ternakController extends Controller
 
 
 }
+

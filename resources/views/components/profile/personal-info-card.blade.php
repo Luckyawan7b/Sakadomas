@@ -1,6 +1,6 @@
 @php
-    $kecamatan = \App\Models\kecamatanModel::all();
-    $desa = \App\Models\desaModel::all();
+    $kecamatan = \App\Models\Kecamatan::all();
+    $desa = \App\Models\Desa::all();
 @endphp
 
 <div x-data='{
@@ -209,3 +209,4 @@
         </div>
     </template>
 </div>
+

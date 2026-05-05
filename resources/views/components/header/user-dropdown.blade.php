@@ -87,7 +87,7 @@
                         </path>
                     </svg>
                 </span>
-                Sign out
+                Logout
             </button>
         </form>
         {{-- </form> --}}

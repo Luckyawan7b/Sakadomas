@@ -27,7 +27,7 @@
                 <a href="{{ route('home') }}"
                     class="flex items-center text-white/80 hover:text-white transition-colors bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm pointer-events-auto">
                     <span class="material-symbols-outlined mr-2 text-sm" aria-hidden="true">arrow_back</span>
-                    <span class="font-manrope text-sm font-medium">Kembali ke Dashboard</span>
+                    <span class="font-manrope text-sm font-medium">Kembali ke Halaman Utama</span>
                 </a>
             </div>
 
@@ -77,9 +77,9 @@
 
             <div class="max-w-md w-full mx-auto py-20">
 
-                <div class="md:hidden mb-12">
+                {{-- <div class="md:hidden mb-12">
                     <span class="font-noto-serif text-2xl font-bold text-primary tracking-tighter">Smart-Saka</span>
-                </div>
+                </div> --}}
 
                 <div class="mb-12">
                     <h1 class="font-noto-serif text-4xl font-bold text-on-surface mb-3 tracking-tight">Selamat Datang</h1>
@@ -96,7 +96,7 @@
                     </div>
                 @endif
 
-                {{-- ALERT ERROR (Diambil dari integrasi sistem lama) --}}
+                {{-- ALERT ERROR --}}
                 @if ($errors->any())
                     <div class="mb-6 flex items-start gap-2 p-4 rounded-xl bg-red-100 border border-red-400 text-red-700 text-sm font-medium"
                         role="alert">

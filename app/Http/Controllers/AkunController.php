@@ -6,27 +6,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
-use App\Models\akunModel;
-use App\Models\kecamatanModel;
-use App\Models\desaModel;
+use App\Models\Akun;
+use App\Models\Kecamatan;
+use App\Models\Desa;
 
-class akunController extends Controller
+class AkunController extends Controller
 {
     public function getKecamatan()
     {
-        $kecamatan = kecamatanModel::all();
+        $kecamatan = Kecamatan::all();
         return response()->json($kecamatan);
     }
 
     public function getDesaByKecamatan($id_kecamatan)
     {
-        $desa = desaModel::where('id_kecamatan', $id_kecamatan)->get();
+        $desa = Desa::where('id_kecamatan', $id_kecamatan)->get();
         return response()->json($desa);
     }
 
     public function showRegister()
     {
-        $kecamatan = kecamatanModel::all();
+        $kecamatan = Kecamatan::all();
         return view('auth.register', ['title' => 'Register | SMART-SAKA'], compact('kecamatan'));
         // return view('pages.auth.signup', ['title' => 'Register | SMART-SAKA'], compact('kecamatan'));
     }
@@ -42,6 +42,7 @@ class akunController extends Controller
             'no_hp'    => 'required|string|min:10|max:15',
             'id_desa'  => 'required|integer|exists:desa,id_desa'
         ], [
+            'required'           => ':attribute wajib diisi.',
             'username.alpha_num' => 'Username hanya boleh berisi huruf dan angka tanpa spasi atau simbol.',
             'username.min'       => 'Username minimal harus terdiri dari 4 karakter.',
             'email.unique'       => 'Email sudah terdaftar.',
@@ -53,7 +54,7 @@ class akunController extends Controller
             'no_hp.min'          => 'Nomor HP minimal harus terdiri dari 10 angka.'
         ]);
 
-        akunModel::create([
+        Akun::create([
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'nama'     => $request->nama,
@@ -69,22 +70,24 @@ class akunController extends Controller
 
     public function showLogin()
     {
-        return view('auth.login',['title' => 'Login | SMART-SAKA']);
+        return view('auth.login', ['title' => 'Login | SMART-SAKA']);
         // return view('pages.auth.signin',['title' => 'Login | SMART-SAKA']);
     }
 
-   public function login(Request $request)
+    public function login(Request $request)
     {
         $request->validate([
             'login' => 'required|string',
             'password' => 'required|string',
+        ],[
+            'required'           => ':attribute wajib diisi.',
         ]);
 
         $input = $request->input('login');
 
         $fieldType = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        $user = akunModel::where($fieldType, $input)->first();
+        $user = Akun::where($fieldType, $input)->first();
 
         if (!$user) {
             return back()->withErrors([
@@ -111,7 +114,6 @@ class akunController extends Controller
             'password' => 'Password yang Anda masukkan salah.',
         ])->onlyInput('login');
     }
-
     // Memproses logout
     public function logout(Request $request)
     {
@@ -125,18 +127,18 @@ class akunController extends Controller
     public function index(Request $request)
     {
         // 1. Buat kerangka Query dasar (Hanya ambil yang rolenya 'user')
-        $query = akunModel::with('desa.kecamatan')
-                          ->where('role', 'pelanggan')
-                          ->orderBy('id_akun', 'desc');
+        $query = Akun::with('desa.kecamatan')
+            ->where('role', 'pelanggan')
+            ->orderBy('id_akun', 'desc');
 
         // 2. Jika ada inputan pencarian di URL (?q=...)
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where(function ($w) use ($q) {
                 $w->where('nama', 'LIKE', "%{$q}%")
-                  ->orWhere('username', 'LIKE', "%{$q}%")
-                  ->orWhere('email', 'LIKE', "%{$q}%")
-                  ->orWhere('no_hp', 'LIKE', "%{$q}%");
+                    ->orWhere('username', 'LIKE', "%{$q}%")
+                    ->orWhere('email', 'LIKE', "%{$q}%")
+                    ->orWhere('no_hp', 'LIKE', "%{$q}%");
             });
         }
 
@@ -144,21 +146,21 @@ class akunController extends Controller
         $data_akun = $query->paginate(10);
 
         // Ambil data untuk modal tambah/edit
-        $kecamatan = \App\Models\kecamatanModel::all();
-        $desa = \App\Models\desaModel::all();
+        $kecamatan = \App\Models\Kecamatan::all();
+        $desa = \App\Models\Desa::all();
 
         return view('pages.akun', compact('data_akun', 'kecamatan', 'desa'));
     }
     // IKI GET BY ID
     public function show($id)
     {
-        $akun = akunModel::findOrFail($id);
+        $akun = Akun::findOrFail($id);
         return view('pages.akun', compact('akun'));
     }
 
     public function edit($id)
     {
-        $akun = akunModel::findOrFail($id);
+        $akun = Akun::findOrFail($id);
         return view('pages.akun', compact('akun'));
     }
 
@@ -172,6 +174,7 @@ class akunController extends Controller
             'id_desa'  => 'required|integer|exists:desa,id_desa',
             'alamat'   => 'required|string|min:5',
         ], [
+            'required'           => ':attribute wajib diisi.',
             'username.alpha_num' => 'Username hanya boleh berisi huruf dan angka tanpa spasi atau simbol.',
             'username.min'       => 'Username minimal harus 4 karakter.',
             'nama.min'           => 'Nama minimal harus 3 karakter.',
@@ -179,7 +182,7 @@ class akunController extends Controller
             'no_hp.min'          => 'Nomor HP minimal harus 10 angka.'
         ]);
 
-        $akun = akunModel::findOrFail($id);
+        $akun = Akun::findOrFail($id);
         $akun->update([
             'nama'     => $request->nama,
             'username' => $request->username,
@@ -213,6 +216,7 @@ class akunController extends Controller
             'id_desa'  => 'required|integer|exists:desa,id_desa',
             'alamat'   => 'required|string|min:5',
         ], [
+            'required'           => ':attribute wajib diisi.',
             'username.alpha_num' => 'Username hanya boleh berisi huruf dan angka tanpa spasi atau simbol.',
             'username.min'       => 'Username minimal harus 4 karakter.',
             'nama.min'           => 'Nama minimal harus 3 karakter.',
@@ -221,7 +225,7 @@ class akunController extends Controller
             'no_hp.max'          => 'Nomor telepon maksimal 15 angka.'
         ]);
 
-        $akun = akunModel::findOrFail($user->id_akun);
+        $akun = Akun::findOrFail($user->id_akun);
         $akun->update([
             'nama'     => $request->nama,
             'username' => $request->username,
@@ -246,15 +250,16 @@ class akunController extends Controller
             'no_hp'    => 'required|string|min:10|max:15',
             'id_desa'  => 'required|integer|exists:desa,id_desa'
         ], [
+            'required' => ':attribute wajib diisi.',
             'username.alpha_num' => 'Username hanya boleh berisi huruf dan angka tanpa spasi atau simbol.',
             'username.min'       => 'Username minimal harus 4 karakter.',
             'password.regex'     => 'Password harus mengandung setidaknya 1 huruf besar, 1 huruf kecil, dan 1 angka.',
             'nama.min'           => 'Nama minimal harus 3 karakter.',
             'alamat.min'         => 'Alamat minimal harus 5 karakter.',
-            'no_hp.min'          => 'Nomor HP minimal harus 10 angka.'
+            'no_hp.min'          => 'Nomor HP minimal harus 10 angka.',
         ]);
 
-        akunModel::create([
+        Akun::create([
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'nama'     => $request->nama,
@@ -275,6 +280,7 @@ class akunController extends Controller
             // 'password_baru' => 'required|string|min:6|confirmed',
             'password_baru' => ['required', 'string', 'min:6', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
         ], [
+            'required'           => ':attribute wajib diisi.',
             'password_baru.confirmed' => 'Konfirmasi password baru tidak cocok.',
             'password_baru.min' => 'Password baru minimal harus 6 karakter.',
             'password_baru.regex' => 'Password baru harus mengandung setidaknya 1 huruf besar, 1 huruf kecil, dan 1 angka.',
@@ -286,7 +292,7 @@ class akunController extends Controller
             return back()->withErrors(['password_lama' => 'Password lama yang Anda masukkan salah.']);
         }
 
-        $akun = akunModel::findOrFail($user->id_akun);
+        $akun = Akun::findOrFail($user->id_akun);
         $akun->update([
             'password' => Hash::make($request->password_baru)
         ]);
@@ -299,12 +305,13 @@ class akunController extends Controller
         $request->validate([
             'password_baru' => ['required', 'string', 'min:6', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
         ], [
+            'required'           => ':attribute wajib diisi.',
             'password_baru.confirmed' => 'Konfirmasi password baru tidak cocok.',
             'password_baru.min' => 'Password baru minimal harus 6 karakter.',
             'password_baru.regex' => 'Password baru harus mengandung setidaknya 1 huruf besar, 1 huruf kecil, dan 1 angka.'
         ]);
 
-        $akun = akunModel::findOrFail($id);
+        $akun = Akun::findOrFail($id);
         $akun->update([
             'password' => Hash::make($request->password_baru)
         ]);
@@ -357,6 +364,7 @@ class akunController extends Controller
             // 'password' => 'required|string|min:6|confirmed',
             'password' => ['required', 'string', 'min:6', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
         ], [
+            'required'           => ':attribute wajib diisi.',
             'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
             'password.min' => 'Password minimal harus 6 karakter.',
             'password.regex' => 'Password harus mengandung setidaknya 1 huruf besar, 1 huruf kecil, dan 1 angka.'

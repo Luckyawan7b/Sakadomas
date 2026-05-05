@@ -292,6 +292,16 @@
                                 if(t) {
                                     $refs.beratInputBelum.value = t.berat;
                                 }
+                            },
+                            labelTernak(t) {
+                                let label = "#ID-" + t.id_ternak;
+                                if (t.kamar && t.kamar.kandang) {
+                                    label += " — Kandang " + t.kamar.kandang.nomor_kandang + " · Kamar " + t.kamar.nomor_kamar;
+                                } else {
+                                    label += " — Belum ada kandang";
+                                }
+                                label += " (" + t.berat + " Kg)";
+                                return label;
                             }
                         }'>
                         @csrf
@@ -303,7 +313,7 @@
                                         class="dark:bg-gray-900 h-11 w-full rounded-lg border border-brand-300 bg-brand-50/30 px-4 py-2 text-sm text-gray-800 focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-brand-500/50 dark:bg-brand-500/5 dark:text-white dark:focus:border-brand-500 ring-1 ring-brand-500/20">
                                         <option value="" disabled>Pilih Ternak...</option>
                                         <template x-for="t in ternakBelum" :key="t.id_ternak">
-                                            <option :value="t.id_ternak" x-text="'#ID-' + t.id_ternak + ' (' + t.berat + ' Kg)'"></option>
+                                            <option :value="t.id_ternak" x-text="labelTernak(t)"></option>
                                         </template>
                                     </select>
                                 </div>

@@ -3,19 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\kandangModel;
+use App\Models\Kandang;
 
 
-class kandangController extends Controller
+class KandangController extends Controller
 {
     public function index()
     {
-        $data_kandang = kandangModel::all();
+        $data_kandang = Kandang::all();
 
         return view('pages.kandang', compact('data_kandang'));
     }
 
-    
+
 
     public function store(Request $request)
     {
@@ -23,10 +23,12 @@ class kandangController extends Controller
             'nomor_kandang' => 'required|integer|min:1|unique:kandang,nomor_kandang',
             'kapasitas' => 'required|integer|min:1',
         ], [
+            'required' => ':attribute wajib diisi.',
+            'min' => ':attribute minimal 1.',
             'nomor_kandang.unique' => 'Nomor kandang sudah terdaftar, silakan gunakan nomor lain.'
         ]);
 
-        kandangModel::create([
+        Kandang::create([
             'nomor_kandang' => $request->nomor_kandang,
             'kapasitas' => $request->kapasitas,
         ]);
@@ -41,7 +43,7 @@ class kandangController extends Controller
             'kapasitas' => 'required|integer|min:1',
         ],['nomor_kandang.unique' => 'Nomor kandang sudah terdaftar, silakan gunakan nomor lain.']);
 
-        $kandang = kandangModel::findOrFail($id);
+        $kandang = Kandang::findOrFail($id);
         $kandang->update([
             'nomor_kandang' => $request->nomor_kandang,
             'kapasitas' => $request->kapasitas,
@@ -52,7 +54,7 @@ class kandangController extends Controller
 
     public function delete($id)
     {
-        $kandang = kandangModel::withCount('kamar')->findOrFail($id);
+        $kandang = Kandang::withCount('kamar')->findOrFail($id);
 
         if ($kandang->kamar_count > 0) {
             return back()->with('error', 'Gagal menghapus! Kandang masih memiliki ' . $kandang->kamar_count . ' kamar. Hapus kamar terlebih dahulu.');
@@ -63,3 +65,4 @@ class kandangController extends Controller
         return back()->with('success', 'Data kandang berhasil dihapus.');
     }
 }
+

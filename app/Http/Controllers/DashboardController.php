@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\ternakModel;
-use App\Models\transaksiModel;
-use App\Models\surveiModel;
-use App\Models\keuanganModel;
-use App\Models\monitorModel;
-use App\Models\kandangModel;
-use App\Models\kamarModel;
-use App\Models\jenisTernakModel;
+use App\Models\Ternak;
+use App\Models\Transaksi;
+use App\Models\Survei;
+use App\Models\Keuangan;
+use App\Models\Monitor;
+use App\Models\Kandang;
+use App\Models\Kamar;
+use App\Models\JenisTernak;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -20,22 +20,22 @@ class DashboardController extends Controller
         // ========================================
         // 1. KARTU METRIK UTAMA
         // ========================================
-        $total_ternak = ternakModel::count();
-        $ternak_sehat = ternakModel::where('status_ternak', 'sehat')->count();
-        $ternak_sakit = ternakModel::where('status_ternak', 'sakit')->count();
+        $total_ternak = Ternak::count();
+        $ternak_sehat = Ternak::where('status_ternak', 'sehat')->count();
+        $ternak_sakit = Ternak::where('status_ternak', 'sakit')->count();
 
         // Transaksi baru (status = pending)
-        $transaksi_baru = transaksiModel::where('status', 'pending')->count();
+        $transaksi_baru = Transaksi::where('status', 'pending')->count();
 
         // Pendapatan bulan ini (dari tabel keuangan, jenis_keuangan = pemasukan)
-        $pendapatan_bulan_ini = keuanganModel::whereMonth('tanggal', Carbon::now()->month)
+        $pendapatan_bulan_ini = Keuangan::whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->where('jenis_keuangan', 'pemasukan')
             ->sum('nominal');
 
         // Fallback: jika keuangan belum dipakai, ambil dari transaksi selesai
         if ($pendapatan_bulan_ini == 0) {
-            $pendapatan_bulan_ini = transaksiModel::where('status', 'selesai')
+            $pendapatan_bulan_ini = Transaksi::where('status', 'selesai')
                 ->whereMonth('tgl_transaksi', Carbon::now()->month)
                 ->whereYear('tgl_transaksi', Carbon::now()->year)
                 ->sum('total_harga');
@@ -44,10 +44,10 @@ class DashboardController extends Controller
         // ========================================
         // 2. DISTRIBUSI STATUS PENJUALAN (Donut Chart)
         // ========================================
-        $jual_siap = ternakModel::where('status_jual', 'siap jual')->count();
-        $jual_booking = ternakModel::where('status_jual', 'booking')->count();
-        $jual_terjual = ternakModel::where('status_jual', 'terjual')->count();
-        $jual_tidak = ternakModel::where('status_jual', 'tidak dijual')->count();
+        $jual_siap = Ternak::where('status_jual', 'siap jual')->count();
+        $jual_booking = Ternak::where('status_jual', 'booking')->count();
+        $jual_terjual = Ternak::where('status_jual', 'terjual')->count();
+        $jual_tidak = Ternak::where('status_jual', 'tidak dijual')->count();
 
         // ========================================
         // 3. TREN PENDAPATAN 6 BULAN TERAKHIR (Bar Chart)
@@ -60,7 +60,7 @@ class DashboardController extends Controller
             $date = Carbon::now()->subMonths($i);
             $tren_labels[] = $namaBulan[$date->month - 1] . ' ' . $date->format('y');
 
-            $pendapatan = transaksiModel::where('status', 'selesai')
+            $pendapatan = Transaksi::where('status', 'selesai')
                 ->whereMonth('tgl_transaksi', $date->month)
                 ->whereYear('tgl_transaksi', $date->year)
                 ->sum('total_harga');
@@ -74,17 +74,21 @@ class DashboardController extends Controller
         $awalBulanIni = Carbon::now()->startOfMonth()->toDateString();
 
         // Ternak yang belum dimonitor bulan ini
-        $ternak_belum_monitor = ternakModel::where(function ($q) use ($awalBulanIni) {
-                $q->whereNull('last_monitor')
-                  ->orWhere('last_monitor', '<', $awalBulanIni);
-            })
-            ->whereNotIn('status_jual', ['terjual'])
+        $ternakSudahMonitor = Monitor::where('tgl_monitoring', '>=', $awalBulanIni)
+            ->distinct('id_ternak')
+            ->pluck('id_ternak');
+            
+        $ternak_belum_monitor = Ternak::whereNotIn('id_ternak', $ternakSudahMonitor)
+            ->where('status_ternak', '!=', 'mati')
+            ->where('status_jual', '!=', 'terjual')
             ->with(['kamar.kandang', 'jenis_ternak'])
-            ->orderBy('last_monitor', 'asc')
+            ->orderBy('id_ternak', 'asc')
             ->get();
 
         $total_belum_monitor = $ternak_belum_monitor->count();
-        $total_aktif = ternakModel::whereNotIn('status_jual', ['terjual'])->count();
+        $total_aktif = Ternak::whereNotIn('status_jual', ['terjual'])
+            ->where('status_ternak', '!=', 'mati')
+            ->count();
         $persen_sudah_monitor = $total_aktif > 0
             ? round((($total_aktif - $total_belum_monitor) / $total_aktif) * 100)
             : 100;
@@ -92,7 +96,7 @@ class DashboardController extends Controller
         // ========================================
         // 5. PESANAN BUTUH PENUGASAN
         // ========================================
-        $pesanan_butuh_assign = transaksiModel::whereIn('status', ['pending', 'diproses'])
+        $pesanan_butuh_assign = Transaksi::whereIn('status', ['pending', 'diproses'])
             ->withCount('detailTransaksi')
             ->with(['akun', 'jenisTernak'])
             ->orderBy('tgl_transaksi', 'desc')
@@ -105,7 +109,7 @@ class DashboardController extends Controller
         // ========================================
         // 6. KUNJUNGAN MENDATANG
         // ========================================
-        $kunjungan_mendatang = surveiModel::whereIn('status', ['pending', 'disetujui'])
+        $kunjungan_mendatang = Survei::whereIn('status', ['pending', 'disetujui'])
             ->where('tgl_survei', '>=', Carbon::today()->toDateString())
             ->with('akun')
             ->orderBy('tgl_survei', 'asc')
@@ -115,7 +119,7 @@ class DashboardController extends Controller
         // ========================================
         // 7. TRANSAKSI TERBARU (5 terakhir)
         // ========================================
-        $transaksi_terbaru = transaksiModel::with(['akun', 'jenisTernak'])
+        $transaksi_terbaru = Transaksi::with(['akun', 'jenisTernak'])
             ->orderBy('tgl_transaksi', 'desc')
             ->take(5)
             ->get();
@@ -142,3 +146,4 @@ class DashboardController extends Controller
         ))->with('title', 'SMART-SAKA | Dashboard');
     }
 }
+

@@ -33,7 +33,7 @@
         <div class="absolute top-8 left-8 z-30">
             <a href="{{ route('home') }}" class="flex items-center text-white/80 hover:text-white transition-colors bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm pointer-events-auto">
                 <span class="material-symbols-outlined mr-2 text-sm" aria-hidden="true">arrow_back</span>
-                <span class="font-manrope text-sm font-medium">Kembali ke Dashboard</span>
+                <span class="font-manrope text-sm font-medium">Kembali ke Halaman Utama</span>
             </a>
         </div>
 

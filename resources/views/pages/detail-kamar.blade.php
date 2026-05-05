@@ -143,7 +143,7 @@
                         <div class="flex items-center gap-3 mt-2 justify-end">
                             <button @click="modalTambah = false" type="button"
                                 class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">Batal</button>
-                            <button type="submit" class="rounded-lg bg-green-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-green-600">Simpan Kamar</button>
+                            <button type="submit" class="rounded-lg bg-green-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-green-600">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -288,7 +288,7 @@
                                         <div class="flex items-center gap-3 mt-2 justify-end">
                                             <button @click="modalEdit = false" type="button"
                                                 class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">Batal</button>
-                                            <button type="submit" class="rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-600">Simpan</button>
+                                            <button type="submit" class="rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-600">Simpan Perubahan</button>
                                         </div>
                                     </form>
                                 </div>

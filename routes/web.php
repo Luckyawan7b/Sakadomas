@@ -2,13 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\akunController;
-use App\Http\Controllers\kandangController;
-use App\Http\Controllers\kamarController;
-use App\Http\Controllers\surveiController;
-use App\Http\Controllers\ternakController;
-use App\Http\Controllers\monitorController;
-use App\Http\Controllers\transaksiController;
+use App\Http\Controllers\AkunController;
+use App\Http\Controllers\KandangController;
+use App\Http\Controllers\KamarController;
+use App\Http\Controllers\SurveiController;
+use App\Http\Controllers\TernakController;
+use App\Http\Controllers\MonitorController;
+use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LandingController;
 
 /*
@@ -20,20 +20,20 @@ Route::get('/', [LandingController::class, 'index'])->name('home');
 
 Route::middleware('guest')->group(function () {
     // Auth Pages
-    Route::get('/login', [akunController::class, 'showLogin'])->name('login');
-    Route::post('/login', [akunController::class, 'login'])->name('login.post');
+    Route::get('/login', [AkunController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AkunController::class, 'login'])->name('login.post');
 
-    Route::get('/register', [akunController::class, 'showRegister'])->name('register');
-    Route::post('/register', [akunController::class, 'register'])->name('register.post');
+    Route::get('/register', [AkunController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AkunController::class, 'register'])->name('register.post');
 
     // Lupa Password
-    Route::get('/lupa-password', [akunController::class, 'showForgotPassword'])->name('password.request');
-    Route::post('/lupa-password', [akunController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/lupa-password', [AkunController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/lupa-password', [AkunController::class, 'sendResetLink'])->name('password.email');
 
-    Route::get('/reset-password/{token}', [akunController::class, 'showResetPassword'])->name('password.reset');
-    Route::post('/reset-password', [akunController::class, 'submitResetPassword'])->name('password.update');
+    Route::get('/reset-password/{token}', [AkunController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/reset-password', [AkunController::class, 'submitResetPassword'])->name('password.update');
 
-    Route::get('/api/desa/{id_kecamatan}', [akunController::class, 'getDesaByKecamatan']);
+    Route::get('/api/desa/{id_kecamatan}', [AkunController::class, 'getDesaByKecamatan']);
 
 });
 
@@ -50,47 +50,47 @@ Route::middleware('auth')->group(function () {
     // Route::get('/', [LandingController::class, 'index'])->name('home');
 
 
-    Route::post('/logout', [akunController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AkunController::class, 'logout'])->name('logout');
 
-    Route::get('/profile', [akunController::class, 'profile'])->name('profile');
-    Route::put('/profile/update', [akunController::class, 'updateProfile'])->name('profile.update');
-    Route::put('/profile/password', [akunController::class, 'updatePassword'])->name('profile.password');
+    Route::get('/profile', [AkunController::class, 'profile'])->name('profile');
+    Route::put('/profile/update', [AkunController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [AkunController::class, 'updatePassword'])->name('profile.password');
 
 
 
-    Route::get('/transaksi/create', [transaksiController::class, 'createPesananUser'])->name('transaksi.create');
-    Route::post('/transaksi/create/store', [transaksiController::class, 'storePesananUser'])->name('transaksi.create.store');
-    Route::get('/transaksi/riwayat-saya', [transaksiController::class, 'riwayatUser'])->name('transaksi.riwayat');
+    Route::get('/transaksi/create', [TransaksiController::class, 'createPesananUser'])->name('transaksi.create');
+    Route::post('/transaksi/create/store', [TransaksiController::class, 'storePesananUser'])->name('transaksi.create.store');
+    Route::get('/transaksi/riwayat-saya', [TransaksiController::class, 'riwayatUser'])->name('transaksi.riwayat');
 
 
 
     // User: Batalkan pesanan
-    Route::post('/transaksi/{id}/cancel', [transaksiController::class, 'cancelPesananUser'])->name('transaksi.cancel');
+    Route::post('/transaksi/{id}/cancel', [TransaksiController::class, 'cancelPesananUser'])->name('transaksi.cancel');
 
     // User: Selesaikan pesanan (konfirmasi terima)
-    Route::post('/transaksi/{id}/selesai', [transaksiController::class, 'selesaiPesananUser'])->name('transaksi.selesai');
+    Route::post('/transaksi/{id}/selesai', [TransaksiController::class, 'selesaiPesananUser'])->name('transaksi.selesai');
 
     // User: Upload bukti pembayaran setelah survei selesai
-    Route::post('/transaksi/{id}/upload-bukti', [transaksiController::class, 'uploadBuktiUser'])->name('transaksi.upload-bukti');
+    Route::post('/transaksi/{id}/upload-bukti', [TransaksiController::class, 'uploadBuktiUser'])->name('transaksi.upload-bukti');
 
     // User: Ajukan ulang survei yang dibatalkan
-    Route::post('/transaksi/{id}/ajukan-survei', [surveiController::class, 'ajukanUlang'])->name('transaksi.ajukan-survei');
+    Route::post('/transaksi/{id}/ajukan-survei', [SurveiController::class, 'ajukanUlang'])->name('transaksi.ajukan-survei');
 
     // Admin: Assign & remove ternak dari detail_transaksi
-    Route::post('/transaksi/{id}/assign', [transaksiController::class, 'assignTernakAdmin'])->name('transaksi.assign');
-    Route::delete('/transaksi/detail/{id}', [transaksiController::class, 'removeDetailTernakAdmin'])->name('transaksi.detail.remove');
+    Route::post('/transaksi/{id}/assign', [TransaksiController::class, 'assignTernakAdmin'])->name('transaksi.assign');
+    Route::delete('/transaksi/detail/{id}', [TransaksiController::class, 'removeDetailTernakAdmin'])->name('transaksi.detail.remove');
 
 
     // API Publik yang butuh login
-    Route::get('/api/jadwal/cek', [surveiController::class, 'cekJadwal'])->name('jadwal.cek');
+    Route::get('/api/jadwal/cek', [SurveiController::class, 'cekJadwal'])->name('jadwal.cek');
 });
 
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     // Kunjungan Mandiri Pelanggan
-    Route::get('/kunjungan', [surveiController::class, 'indexUser'])->name('kunjungan.index');
-    Route::post('/kunjungan/store', [surveiController::class, 'storeUser'])->name('kunjungan.store');
-    Route::put('/kunjungan/{id}', [surveiController::class, 'updateUser'])->name('kunjungan.update');
-    Route::delete('/kunjungan/{id}', [surveiController::class, 'deleteUser'])->name('kunjungan.delete');
+    Route::get('/kunjungan', [SurveiController::class, 'indexUser'])->name('kunjungan.index');
+    Route::post('/kunjungan/store', [SurveiController::class, 'storeUser'])->name('kunjungan.store');
+    Route::put('/kunjungan/{id}', [SurveiController::class, 'updateUser'])->name('kunjungan.update');
+    Route::delete('/kunjungan/{id}', [SurveiController::class, 'deleteUser'])->name('kunjungan.delete');
 });
 
 /*
@@ -102,54 +102,55 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Manajemen Kunjungan (Survei) — Admin
-    Route::get('/survei', [surveiController::class, 'indexAdmin'])->name('survei.index');
-    Route::post('/survei', [surveiController::class, 'storeAdmin'])->name('survei.store');
-    Route::put('/survei/{id}', [surveiController::class, 'updateAdmin'])->name('survei.update');
-    Route::delete('/survei/{id}', [surveiController::class, 'deleteAdmin'])->name('survei.delete');
-    Route::get('/data-akun', [akunController::class, 'index'])->name('akun.index');
-    Route::get('/data-akun/{id}', [akunController::class, 'show'])->name('akun.show');
-    Route::post('/data-akun', [akunController::class, 'store'])->name('akun.store');
-    Route::get('/data-akun/{id}/edit', [akunController::class, 'edit'])->name('akun.edit');
-    Route::put('/data-akun/{id}', [akunController::class, 'update'])->name('akun.update');
-    Route::put('/data-akun/{id}/reset-password', [akunController::class, 'resetPassword'])->name('akun.reset-password');
+    Route::get('/survei', [SurveiController::class, 'indexAdmin'])->name('survei.index');
+    Route::post('/survei', [SurveiController::class, 'storeAdmin'])->name('survei.store');
+    Route::put('/survei/{id}', [SurveiController::class, 'updateAdmin'])->name('survei.update');
+    Route::delete('/survei/{id}', [SurveiController::class, 'deleteAdmin'])->name('survei.delete');
+    Route::get('/data-akun', [AkunController::class, 'index'])->name('akun.index');
+    Route::get('/data-akun/{id}', [AkunController::class, 'show'])->name('akun.show');
+    Route::post('/data-akun', [AkunController::class, 'store'])->name('akun.store');
+    Route::get('/data-akun/{id}/edit', [AkunController::class, 'edit'])->name('akun.edit');
+    Route::put('/data-akun/{id}', [AkunController::class, 'update'])->name('akun.update');
+    Route::put('/data-akun/{id}/reset-password', [AkunController::class, 'resetPassword'])->name('akun.reset-password');
 
     // Manajemen Kandang & Kamar
-    Route::get('/kandang', [kandangController::class, 'index'])->name('kandang.index');
-    Route::post('/kandang', [kandangController::class, 'store'])->name('kandang.store');
-    Route::put('/kandang/{id}', [kandangController::class, 'update'])->name('kandang.update');
-    Route::delete('/kandang/{id}', [kandangController::class, 'delete'])->name('kandang.delete');
+    Route::get('/kandang', [KandangController::class, 'index'])->name('kandang.index');
+    Route::post('/kandang', [KandangController::class, 'store'])->name('kandang.store');
+    Route::put('/kandang/{id}', [KandangController::class, 'update'])->name('kandang.update');
+    Route::delete('/kandang/{id}', [KandangController::class, 'delete'])->name('kandang.delete');
 
-    Route::get('/kandang/{id}/kamar', [kamarController::class, 'showKamar'])->name('kandang.kamar');
-    Route::get('/kamar', [kamarController::class, 'index'])->name('kamar.index');
-    Route::post('/kamar', [kamarController::class, 'store'])->name('kamar.store');
-    Route::put('/kamar/{id}', [kamarController::class, 'update'])->name('kamar.update');
-    Route::delete('/kamar/{id}', [kamarController::class, 'delete'])->name('kamar.delete');
-    Route::get('/kandang/{id_kandang}/kamar/{id_kamar}/ternak', [kamarController::class, 'showTernak'])->name('kamar.ternak');
+    Route::get('/kandang/{id}/kamar', [KamarController::class, 'showKamar'])->name('kandang.kamar');
+    Route::get('/kamar', [KamarController::class, 'index'])->name('kamar.index');
+    Route::post('/kamar', [KamarController::class, 'store'])->name('kamar.store');
+    Route::put('/kamar/{id}', [KamarController::class, 'update'])->name('kamar.update');
+    Route::delete('/kamar/{id}', [KamarController::class, 'delete'])->name('kamar.delete');
+    Route::get('/kandang/{id_kandang}/kamar/{id_kamar}/ternak', [KamarController::class, 'showTernak'])->name('kamar.ternak');
 
 
 
     // Manajemen Ternak
-    Route::get('/ternak', [ternakController::class, 'index'])->name('ternak.index');
-    Route::post('/ternak', [ternakController::class, 'store'])->name('ternak.store');
-    Route::put('/ternak/{id}', [ternakController::class, 'update'])->name('ternak.update');
-    Route::delete('/ternak/{id}', [ternakController::class, 'delete'])->name('ternak.delete');
-    Route::get('/ternak/{id}/detail', [ternakController::class, 'detail'])->name('ternak.detail');
+    Route::get('/ternak', [TernakController::class, 'index'])->name('ternak.index');
+    Route::post('/ternak', [TernakController::class, 'store'])->name('ternak.store');
+    Route::put('/ternak/{id}', [TernakController::class, 'update'])->name('ternak.update');
+    Route::delete('/ternak/{id}', [TernakController::class, 'delete'])->name('ternak.delete');
+    Route::get('/ternak/{id}/detail', [TernakController::class, 'detail'])->name('ternak.detail');
 
     // Monitoring
-    Route::get('/monitoring', [monitorController::class, 'index'])->name('monitoring.index');
-    Route::post('/monitoring', [monitorController::class, 'store'])->name('monitoring.store');
-    Route::put('/monitoring/{id}', [monitorController::class, 'update'])->name('monitoring.update');
-    Route::delete('/monitoring/{id}', [monitorController::class, 'delete'])->name('monitoring.delete');
+    Route::get('/monitoring', [MonitorController::class, 'index'])->name('monitoring.index');
+    Route::post('/monitoring', [MonitorController::class, 'store'])->name('monitoring.store');
+    Route::put('/monitoring/{id}', [MonitorController::class, 'update'])->name('monitoring.update');
+    Route::delete('/monitoring/{id}', [MonitorController::class, 'delete'])->name('monitoring.delete');
 
     // Transaksi
-    Route::get('/transaksi', [transaksiController::class, 'indexAdmin'])->name('transaksi.index');
-    Route::post('/transaksi/tambah', [transaksiController::class, 'storeAdmin'])->name('transaksi.store');
-    Route::put('/transaksi/update/{id}', [transaksiController::class, 'updateAdmin'])->name('transaksi.update');
-    Route::delete('/transaksi/hapus/{id}', [transaksiController::class, 'deleteAdmin'])->name('transaksi.delete');
-    Route::get('/transaksi/rekap', [transaksiController::class, 'rekapAdmin'])->name('transaksi.rekap');
+    Route::get('/transaksi', [TransaksiController::class, 'indexAdmin'])->name('transaksi.index');
+    Route::post('/transaksi/tambah', [TransaksiController::class, 'storeAdmin'])->name('transaksi.store');
+    Route::put('/transaksi/update/{id}', [TransaksiController::class, 'updateAdmin'])->name('transaksi.update');
+    Route::delete('/transaksi/hapus/{id}', [TransaksiController::class, 'deleteAdmin'])->name('transaksi.delete');
+    Route::get('/transaksi/rekap', [TransaksiController::class, 'rekapAdmin'])->name('transaksi.rekap');
 
 
 });
+
 
 
 

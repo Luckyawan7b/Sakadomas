@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\monitorModel;
-use App\Models\ternakModel;
-use App\Models\kandangModel;
-use App\Models\kamarModel;
+use App\Models\Monitor;
+use App\Models\Ternak;
+use App\Models\Kandang;
+use App\Models\Kamar;
 use Carbon\Carbon;
 
-class monitorController extends Controller
+class MonitorController extends Controller
 {
     public function index(Request $request)
     {
-        $query = monitorModel::join('ternak', 'monitoring.id_ternak', '=', 'ternak.id_ternak')
+        $query = Monitor::join('ternak', 'monitoring.id_ternak', '=', 'ternak.id_ternak')
                              ->select('monitoring.*', 'ternak.id_kamar', 'ternak.id_jenis_ternak')
                              ->orderBy('tgl_monitoring', 'desc');
 
@@ -39,21 +39,22 @@ class monitorController extends Controller
         $data_monitoring = $query->paginate(10);
 
         // Panggil data kandang, kamar, dan ternak untuk dropdown bertingkat
-        $data_kandang = kandangModel::all();
-        $data_kamar = kamarModel::all();
-        $data_ternak = ternakModel::where('status_ternak', '!=', 'mati')
+        $data_kandang = Kandang::all();
+        $data_kamar = Kamar::all();
+        $data_ternak = Ternak::where('status_ternak', '!=', 'mati')
             ->where('status_jual', '!=', 'terjual')
             ->orderBy('id_ternak', 'asc')->get();
 
         // Statistics
-        $stat_total = monitorModel::count();
-        $stat_sakit = monitorModel::whereNotNull('penyakit')->where('penyakit', '!=', '')->count();
+        $stat_total = Monitor::count();
+        $stat_sakit = Monitor::whereNotNull('penyakit')->where('penyakit', '!=', '')->count();
 
         // Ternak yang belum di-monitor bulan ini
         $bulanIni = Carbon::now()->startOfMonth()->toDateString();
-        $ternakSudahMonitor = monitorModel::where('tgl_monitoring', '>=', $bulanIni)
+        $ternakSudahMonitor = Monitor::where('tgl_monitoring', '>=', $bulanIni)
             ->distinct('id_ternak')->pluck('id_ternak');
-        $ternakBelumMonitor = ternakModel::whereNotIn('id_ternak', $ternakSudahMonitor)
+        $ternakBelumMonitor = Ternak::with('kamar.kandang')
+            ->whereNotIn('id_ternak', $ternakSudahMonitor)
             ->where('status_ternak', '!=', 'mati')
             ->where('status_jual', '!=', 'terjual')
             ->orderBy('id_ternak', 'asc')->get();
@@ -72,12 +73,12 @@ class monitorController extends Controller
             'penyakit' => 'nullable|string',
         ]);
 
-        $ternak = ternakModel::find($request->id_ternak);
+        $ternak = Ternak::find($request->id_ternak);
         
         $tgl_monitoring = Carbon::parse($request->tgl_monitoring);
         
         // Cek apakah ternak sudah dimonitor pada bulan dan tahun yang sama
-        $existingMonitor = monitorModel::where('id_ternak', $request->id_ternak)
+        $existingMonitor = Monitor::where('id_ternak', $request->id_ternak)
             ->whereYear('tgl_monitoring', $tgl_monitoring->year)
             ->whereMonth('tgl_monitoring', $tgl_monitoring->month)
             ->first();
@@ -121,7 +122,7 @@ class monitorController extends Controller
             );
 
             // 1. Simpan ke tabel monitoring (dengan usia yang terhitung otomatis)
-            monitorModel::create([
+            Monitor::create([
                 'id_ternak' => $request->id_ternak,
                 'tgl_monitoring' => $request->tgl_monitoring,
                 'usia' => $usia_baru,
@@ -149,7 +150,7 @@ class monitorController extends Controller
             'penyakit' => 'nullable|string',
         ]);
 
-        $monitor = monitorModel::findOrFail($id);
+        $monitor = Monitor::findOrFail($id);
 
         $monitor->update([
             'tgl_monitoring' => $request->tgl_monitoring,
@@ -162,7 +163,7 @@ class monitorController extends Controller
 
     public function delete($id)
     {
-        $monitor = monitorModel::findOrFail($id);
+        $monitor = Monitor::findOrFail($id);
         $monitor->delete();
 
         return back()->with('success', 'Data monitoring berhasil dihapus.');
@@ -174,7 +175,7 @@ class monitorController extends Controller
     if (!\Illuminate\Support\Facades\File::exists($jsonPath)) return 0;
 
     $data = json_decode(\Illuminate\Support\Facades\File::get($jsonPath), true);
-    $jenisTernak = \App\Models\jenisTernakModel::find($id_jenis_ternak);
+    $jenisTernak = \App\Models\JenisTernak::find($id_jenis_ternak);
     $namaJenisDb = strtolower($jenisTernak->jenis_ternak ?? '');
 
     // Mapping nama dari DB ke Breed Name di JSON
@@ -216,3 +217,4 @@ class monitorController extends Controller
     return 0; // Return 0 jika di luar batas JSON
 }
 }
+

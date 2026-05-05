@@ -1,7 +1,7 @@
 @php
     // Mengambil data ternak yang belum memiliki kandang (id_kamar = null) secara otomatis
     if (!isset($ternak_kosong)) {
-        $ternak_kosong = \App\Models\ternakModel::with('jenis_ternak')->whereNull('id_kamar')->get();
+        $ternak_kosong = \App\Models\Ternak::with('jenis_ternak')->whereNull('id_kamar')->get();
     }
 @endphp
 
@@ -354,7 +354,7 @@
                                     class="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">Batal</button>
                                 <button type="submit"
                                     class="rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-600">Simpan
-                                    Ternak</button>
+                                </button>
                             </div>
                         </form>
 
@@ -908,3 +908,4 @@
         </div>
     </div>
 @endsection
+

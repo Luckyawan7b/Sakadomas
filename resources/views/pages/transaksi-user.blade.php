@@ -305,7 +305,7 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Catatan
                             Pengiriman</label>
                         <textarea name="catatan" rows="3"
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm"></textarea>
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm dark:text-white"></textarea>
                     </div>
                 </div>
             </div>

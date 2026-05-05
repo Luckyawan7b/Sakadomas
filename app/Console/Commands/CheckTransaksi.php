@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\transaksiModel;
-use App\Models\surveiModel;
-use App\Models\ternakModel;
-use App\Models\keuanganModel;
+use App\Models\Transaksi;
+use App\Models\Survei;
+use App\Models\Ternak;
+use App\Models\Keuangan;
 use Carbon\Carbon;
 
 class CheckTransaksi extends Command
@@ -23,7 +23,7 @@ class CheckTransaksi extends Command
         // ============================================================
         // 1. AUTO-CANCEL: Survei selesai + belum bayar 24 jam (transfer)
         // ============================================================
-        $transaksiSurveiSelesai = transaksiModel::with(['detailTransaksi', 'survei'])
+        $transaksiSurveiSelesai = Transaksi::with(['detailTransaksi', 'survei'])
             ->where('is_survei', true)
             ->where('status', 'pending')
             ->whereNull('bukti_pembayaran')
@@ -43,7 +43,7 @@ class CheckTransaksi extends Command
             if ($now->diffInHours($tglSelesai) >= 24) {
                 // Batalkan transaksi
                 foreach ($trx->detailTransaksi as $detail) {
-                    ternakModel::where('id_ternak', $detail->id_ternak)
+                    Ternak::where('id_ternak', $detail->id_ternak)
                         ->update(['status_jual' => 'siap jual']);
                 }
                 $trx->update(['status' => 'batal']);
@@ -55,7 +55,7 @@ class CheckTransaksi extends Command
         // ============================================================
         // 2. AUTO-CANCEL: Survei batal + tidak re-submit 24 jam + belum bayar
         // ============================================================
-        $transaksiSurveiBatal = transaksiModel::with(['detailTransaksi', 'survei'])
+        $transaksiSurveiBatal = Transaksi::with(['detailTransaksi', 'survei'])
             ->where('is_survei', true)
             ->where('status', 'pending')
             ->whereNull('bukti_pembayaran')
@@ -74,7 +74,7 @@ class CheckTransaksi extends Command
             $tglBatal = Carbon::parse($surveiBatalTerakhir->tgl_survei);
             if ($now->diffInHours($tglBatal) >= 24) {
                 foreach ($trx->detailTransaksi as $detail) {
-                    ternakModel::where('id_ternak', $detail->id_ternak)
+                    Ternak::where('id_ternak', $detail->id_ternak)
                         ->update(['status_jual' => 'siap jual']);
                 }
                 $trx->update(['status' => 'batal']);
@@ -86,7 +86,7 @@ class CheckTransaksi extends Command
         // ============================================================
         // 3. AUTO-COMPLETE: Pengiriman sudah 24 jam
         // ============================================================
-        $transaksiDikirim = transaksiModel::with('detailTransaksi')
+        $transaksiDikirim = Transaksi::with('detailTransaksi')
             ->where('status', 'dikirim')
             ->whereNotNull('tgl_dikirim')
             ->get();
@@ -98,13 +98,13 @@ class CheckTransaksi extends Command
                 $trx->update(['status' => 'selesai']);
 
                 foreach ($trx->detailTransaksi as $detail) {
-                    ternakModel::where('id_ternak', $detail->id_ternak)->update([
+                    Ternak::where('id_ternak', $detail->id_ternak)->update([
                         'status_jual' => 'terjual',
                         'id_kamar'    => null,
                     ]);
                 }
 
-                keuanganModel::create([
+                Keuangan::create([
                     'ket'            => 'Pemasukan otomatis dari transaksi #TRX-' . $trx->id_transaksi,
                     'tanggal'        => $now->toDateString(),
                     'nominal'        => $trx->total_harga,
@@ -121,3 +121,4 @@ class CheckTransaksi extends Command
         return Command::SUCCESS;
     }
 }
+

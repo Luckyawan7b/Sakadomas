@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\surveiModel;
-use App\Models\akunModel;
-use App\Models\transaksiModel;
+use App\Models\Survei;
+use App\Models\Akun;
+use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-class surveiController extends Controller
+class SurveiController extends Controller
 {
     // ================================================================
     // HELPER: Cek Bentrokan Jadwal
@@ -17,7 +17,7 @@ class surveiController extends Controller
     private function cekBentrokanJadwal($tanggal, $waktu, $ignoreId = null)
     {
         $tgl_survei_gabungan = $tanggal . ' ' . $waktu . ':00';
-        $query = surveiModel::where('tgl_survei', $tgl_survei_gabungan)
+        $query = Survei::where('tgl_survei', $tgl_survei_gabungan)
                             ->where('status', '!=', 'batal');
 
         if ($ignoreId) {
@@ -40,7 +40,7 @@ class surveiController extends Controller
             return response()->json([]);
         }
 
-        $jadwalTerisi = surveiModel::whereDate('tgl_survei', $tanggal)
+        $jadwalTerisi = Survei::whereDate('tgl_survei', $tanggal)
                             ->where('status', '!=', 'batal')
                             ->pluck('tgl_survei')
                             ->map(function ($date) {
@@ -55,8 +55,8 @@ class surveiController extends Controller
     // ================================================================
     public function indexAdmin()
     {
-        $data_survei = surveiModel::with(['akun', 'transaksi'])->orderBy('tgl_survei', 'desc')->get();
-        $data_akun = akunModel::where('role', 'pelanggan')
+        $data_survei = Survei::with(['akun', 'transaksi'])->orderBy('tgl_survei', 'desc')->get();
+        $data_akun = Akun::where('role', 'pelanggan')
                               ->select('id_akun', 'nama', 'username')
                               ->get();
 
@@ -70,7 +70,7 @@ class surveiController extends Controller
     {
         $user = Auth::user();
 
-        $data_survei = surveiModel::with(['akun'])
+        $data_survei = Survei::with(['akun'])
                         ->where('id_akun', $user->id_akun)
                         ->whereNull('id_transaksi')
                         ->orderBy('tgl_survei', 'desc')
@@ -102,7 +102,7 @@ class surveiController extends Controller
 
         $tgl_survei_gabungan = $request->tanggal_survei . ' ' . $request->waktu_survei . ':00';
 
-        surveiModel::create([
+        Survei::create([
             'tgl_survei' => $tgl_survei_gabungan,
             'status' => 'pending',
             'ket' => $request->ket,
@@ -132,7 +132,7 @@ class surveiController extends Controller
 
         $tgl_survei_gabungan = $request->tanggal_survei . ' ' . $request->waktu_survei . ':00';
 
-        surveiModel::create([
+        Survei::create([
             'tgl_survei' => $tgl_survei_gabungan,
             'status' => 'pending',
             'ket' => $request->ket,
@@ -148,7 +148,7 @@ class surveiController extends Controller
     // ================================================================
     public function updateAdmin(Request $request, $id)
     {
-        $survei = surveiModel::findOrFail($id);
+        $survei = Survei::findOrFail($id);
 
         $maxDate = Carbon::now()->addDays(7)->toDateString();
 
@@ -189,7 +189,7 @@ class surveiController extends Controller
     // ================================================================
     public function updateUser(Request $request, $id)
     {
-        $survei = surveiModel::where('id_akun', Auth::id())
+        $survei = Survei::where('id_akun', Auth::id())
                     ->whereNull('id_transaksi')
                     ->findOrFail($id);
 
@@ -224,7 +224,7 @@ class surveiController extends Controller
     // ================================================================
     public function deleteAdmin($id)
     {
-        $survei = surveiModel::findOrFail($id);
+        $survei = Survei::findOrFail($id);
         $survei->delete();
 
         return back()->with('success', 'Data kunjungan berhasil dihapus.');
@@ -235,7 +235,7 @@ class surveiController extends Controller
     // ================================================================
     public function deleteUser($id)
     {
-        $survei = surveiModel::where('id_akun', Auth::id())
+        $survei = Survei::where('id_akun', Auth::id())
                     ->whereNull('id_transaksi')
                     ->findOrFail($id);
 
@@ -253,7 +253,7 @@ class surveiController extends Controller
     // ================================================================
     public function ajukanUlang(Request $request, $id)
     {
-        $transaksi = transaksiModel::where('id_akun', Auth::id())->findOrFail($id);
+        $transaksi = Transaksi::where('id_akun', Auth::id())->findOrFail($id);
 
         // Cek batas survei
         if ($transaksi->batas_survei && Carbon::parse($transaksi->batas_survei)->isPast()) {
@@ -278,7 +278,7 @@ class surveiController extends Controller
 
         $tgl_survei_gabungan = $request->tanggal_survei . ' ' . $request->waktu_survei . ':00';
 
-        surveiModel::create([
+        Survei::create([
             'tgl_survei'    => $tgl_survei_gabungan,
             'status'        => 'pending',
             'ket'           => $request->ket_survei ?? 'Pengajuan ulang survei untuk transaksi #TRX-' . $transaksi->id_transaksi,
@@ -289,3 +289,4 @@ class surveiController extends Controller
         return back()->with('success', 'Survei berhasil diajukan ulang!');
     }
 }
+

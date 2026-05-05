@@ -67,7 +67,7 @@
                         @csrf
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Nomor Kandang</label>
-                            <input type="number" name="nomor_kandang" required placeholder="Contoh: 3"
+                            <input type="number" name="nomor_kandang" required min="1" placeholder="Contoh: 3"
                                 class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                         </div>
                         <div>
@@ -93,13 +93,13 @@
 
     {{-- Card Kandang --}}
     @php
-        use App\Models\kamarModel;
+        use App\Models\Kamar;
     @endphp
 
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
         @forelse ($data_kandang as $kandang)
             @php
-                $jumlah_kamar = kamarModel::where('id_kandang', $kandang->id_kandang)->count();
+                $jumlah_kamar = Kamar::where('id_kandang', $kandang->id_kandang)->count();
                 $persen = $kandang->kapasitas > 0 ? round(($jumlah_kamar / $kandang->kapasitas) * 100) : 0;
 
                 if ($persen >= 100) {
@@ -224,7 +224,7 @@
                                     <button @click="modalEdit = false" type="button"
                                         class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 sm:w-auto">Batal</button>
                                     <button type="submit"
-                                        class="rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-600 sm:w-auto">Simpan</button>
+                                        class="rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-600 sm:w-auto">Simpan Perubahan</button>
                                 </div>
                             </form>
                         </div>
@@ -269,3 +269,4 @@
         @endforelse
     </div>
 @endsection
+

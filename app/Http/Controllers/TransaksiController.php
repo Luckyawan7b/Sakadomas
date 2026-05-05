@@ -5,16 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Cloudinary\Cloudinary;
-use App\Models\transaksiModel;
-use App\Models\ternakModel;
-use App\Models\kandangModel;
-use App\Models\kamarModel;
-use App\Models\surveiModel;
-use App\Models\detailTransaksiModel;
-use App\Models\keuanganModel;
+use App\Models\Transaksi;
+use App\Models\Ternak;
+use App\Models\Kandang;
+use App\Models\Kamar;
+use App\Models\Survei;
+use App\Models\DetailTransaksi;
+use App\Models\Keuangan;
 use Carbon\Carbon;
 
-class transaksiController extends Controller
+class TransaksiController extends Controller
 {
     private function uploadKeCloudinary($file): string
     {
@@ -38,18 +38,18 @@ class transaksiController extends Controller
     /**
      * Helper: Selesaikan transaksi (ternak terjual, keluar kandang, catat keuangan)
      */
-    private function selesaikanTransaksi(transaksiModel $transaksi): void
+    private function selesaikanTransaksi(Transaksi $transaksi): void
     {
         // Update status ternak → terjual, keluarkan dari kandang
         foreach ($transaksi->detailTransaksi as $detail) {
-            ternakModel::where('id_ternak', $detail->id_ternak)->update([
+            Ternak::where('id_ternak', $detail->id_ternak)->update([
                 'status_jual' => 'terjual',
                 'id_kamar'    => null,
             ]);
         }
 
         // Buat record keuangan
-        keuanganModel::create([
+        Keuangan::create([
             'ket'             => 'Pemasukan dari transaksi #TRX-' . $transaksi->id_transaksi,
             'tanggal'         => Carbon::now()->toDateString(),
             'nominal'         => $transaksi->total_harga,
@@ -61,10 +61,10 @@ class transaksiController extends Controller
     /**
      * Helper: Batalkan transaksi (kembalikan ternak ke siap jual)
      */
-    private function batalkanTransaksi(transaksiModel $transaksi): void
+    private function batalkanTransaksi(Transaksi $transaksi): void
     {
         foreach ($transaksi->detailTransaksi as $detail) {
-            ternakModel::where('id_ternak', $detail->id_ternak)->update([
+            Ternak::where('id_ternak', $detail->id_ternak)->update([
                 'status_jual' => 'siap jual',
             ]);
         }
@@ -75,18 +75,18 @@ class transaksiController extends Controller
     // ================================================================
     public function indexAdmin()
     {
-        $data_transaksi = transaksiModel::with(['akun', 'jenisTernak', 'detailTransaksi.ternak.jenis_ternak', 'survei'])
+        $data_transaksi = Transaksi::with(['akun', 'jenisTernak', 'detailTransaksi.ternak.jenis_ternak', 'survei'])
             ->whereIn('status', ['pending', 'diproses', 'dikirim'])
             ->orderBy('tgl_transaksi', 'desc')
             ->paginate(10);
 
-        $data_ternak = ternakModel::with(['jenis_ternak', 'kamar'])
+        $data_ternak = Ternak::with(['jenis_ternak', 'kamar'])
             ->where('status_jual', 'siap jual')
             ->where('status_ternak', 'sehat')
             ->get();
 
-        $data_kandang = kandangModel::all();
-        $data_kamar = kamarModel::all();
+        $data_kandang = Kandang::all();
+        $data_kamar = Kamar::all();
 
         return view('pages.transaksi', compact('data_transaksi', 'data_ternak', 'data_kandang', 'data_kamar'));
     }
@@ -113,7 +113,7 @@ class transaksiController extends Controller
             $uploadedFileUrl = $this->uploadKeCloudinary($request->file('bukti_pembayaran'));
         }
 
-        transaksiModel::create([
+        Transaksi::create([
             'id_akun'               => Auth::id(),
             'id_jenis_ternak'       => $request->id_jenis_ternak,
             'jenis_kelamin_pesanan' => $request->jenis_kelamin_pesanan,
@@ -141,7 +141,7 @@ class transaksiController extends Controller
             'no_kurir' => 'nullable|string|max:20',
         ]);
 
-        $transaksi = transaksiModel::with('detailTransaksi')->findOrFail($id);
+        $transaksi = Transaksi::with('detailTransaksi')->findOrFail($id);
         $newStatus = $request->status;
 
         $updateData = [
@@ -172,7 +172,7 @@ class transaksiController extends Controller
     // ================================================================
     public function deleteAdmin($id)
     {
-        $transaksi = transaksiModel::findOrFail($id);
+        $transaksi = Transaksi::findOrFail($id);
         $transaksi->delete();
 
         return back()->with('success', 'Data transaksi berhasil dihapus.');
@@ -183,7 +183,7 @@ class transaksiController extends Controller
     // ================================================================
     public function rekapAdmin(Request $request)
     {
-        $query = transaksiModel::with(['akun', 'jenisTernak'])->orderBy('tgl_transaksi', 'desc');
+        $query = Transaksi::with(['akun', 'jenisTernak'])->orderBy('tgl_transaksi', 'desc');
 
         if ($request->filled('tgl_awal')) {
             $query->whereDate('tgl_transaksi', '>=', $request->tgl_awal);
@@ -216,7 +216,7 @@ class transaksiController extends Controller
     // ================================================================
     public function createPesananUser()
     {
-        $ternak_tersedia = ternakModel::with('jenis_ternak')
+        $ternak_tersedia = Ternak::with('jenis_ternak')
             ->where('status_jual', 'siap jual')
             ->where('status_ternak', 'sehat')
             ->get();
@@ -323,7 +323,7 @@ class transaksiController extends Controller
         // 1.5. Validasi Bentrok Jadwal Survei
         if ($isSurvei) {
             $tgl_survei_gabungan = $request->tanggal_survei . ' ' . $request->waktu_survei . ':00';
-            $bentrok = \App\Models\surveiModel::where('tgl_survei', $tgl_survei_gabungan)
+            $bentrok = \App\Models\Survei::where('tgl_survei', $tgl_survei_gabungan)
                 ->where('status', '!=', 'batal')
                 ->exists();
             if ($bentrok) {
@@ -334,7 +334,7 @@ class transaksiController extends Controller
         // 2. Cek ketersediaan stok
         $harga_per_ekor = $request->total_harga / $request->total_jumlah;
 
-        $stok_tersedia = ternakModel::where('id_jenis_ternak', $request->id_jenis_ternak)
+        $stok_tersedia = Ternak::where('id_jenis_ternak', $request->id_jenis_ternak)
             ->where('jenis_kelamin', $request->jenis_kelamin_pesanan)
             ->where('harga', $harga_per_ekor)
             ->where('status_jual', 'siap jual')
@@ -353,7 +353,7 @@ class transaksiController extends Controller
 
         // 4. Buat Transaksi
         $now = Carbon::now();
-        $transaksi = transaksiModel::create([
+        $transaksi = Transaksi::create([
             'id_akun'               => Auth::id(),
             'id_jenis_ternak'       => $request->id_jenis_ternak,
             'jenis_kelamin_pesanan' => $request->jenis_kelamin_pesanan,
@@ -372,7 +372,7 @@ class transaksiController extends Controller
         // 5. Buat Survei jika diminta
         if ($isSurvei) {
             $tgl_survei_gabungan = $request->tanggal_survei . ' ' . $request->waktu_survei . ':00';
-            surveiModel::create([
+            Survei::create([
                 'tgl_survei'    => $tgl_survei_gabungan,
                 'status'        => 'pending',
                 'ket'           => $request->ket_survei ?? 'Survei untuk transaksi #TRX-' . $transaksi->id_transaksi,
@@ -389,7 +389,7 @@ class transaksiController extends Controller
     // ================================================================
     public function riwayatUser(Request $request)
     {
-        $query = transaksiModel::with(['jenisTernak', 'detailTransaksi.ternak.jenis_ternak', 'survei'])
+        $query = Transaksi::with(['jenisTernak', 'detailTransaksi.ternak.jenis_ternak', 'survei'])
             ->where('id_akun', Auth::id())
             ->orderBy('tgl_transaksi', 'desc');
 
@@ -404,7 +404,7 @@ class transaksiController extends Controller
 
         $data_transaksi = $query->paginate(10);
 
-        $allUserTrx = transaksiModel::where('id_akun', Auth::id());
+        $allUserTrx = Transaksi::where('id_akun', Auth::id());
         $stats = [
             'total'     => (clone $allUserTrx)->count(),
             'pending'   => (clone $allUserTrx)->where('status', 'pending')->count(),
@@ -422,7 +422,7 @@ class transaksiController extends Controller
     // ================================================================
     public function cancelPesananUser($id)
     {
-        $transaksi = transaksiModel::with('detailTransaksi')->where('id_akun', Auth::id())->findOrFail($id);
+        $transaksi = Transaksi::with('detailTransaksi')->where('id_akun', Auth::id())->findOrFail($id);
 
         if (in_array($transaksi->status, ['dikirim', 'selesai', 'batal'])) {
             return back()->withErrors(['cancel' => 'Pesanan tidak bisa dibatalkan karena sudah ' . $transaksi->status . '.']);
@@ -443,7 +443,7 @@ class transaksiController extends Controller
     // ================================================================
     public function selesaiPesananUser($id)
     {
-        $transaksi = transaksiModel::with('detailTransaksi')->where('id_akun', Auth::id())->findOrFail($id);
+        $transaksi = Transaksi::with('detailTransaksi')->where('id_akun', Auth::id())->findOrFail($id);
 
         if ($transaksi->status !== 'dikirim') {
             return back()->withErrors(['selesai' => 'Pesanan hanya bisa diselesaikan jika berstatus dikirim.']);
@@ -460,7 +460,7 @@ class transaksiController extends Controller
     // ================================================================
     public function uploadBuktiUser(Request $request, $id)
     {
-        $transaksi = transaksiModel::with('survei')->where('id_akun', Auth::id())->findOrFail($id);
+        $transaksi = Transaksi::with('survei')->where('id_akun', Auth::id())->findOrFail($id);
 
         // Pastikan transaksi adalah survei dan ada survei yang sudah selesai
         if (!$transaksi->is_survei) {
@@ -499,7 +499,7 @@ class transaksiController extends Controller
             'id_ternak' => 'required|exists:ternak,id_ternak',
         ]);
 
-        $transaksi = transaksiModel::with('detailTransaksi')->findOrFail($id);
+        $transaksi = Transaksi::with('detailTransaksi')->findOrFail($id);
 
         if ($transaksi->detailTransaksi->count() >= $transaksi->total_jumlah) {
             return back()->withErrors(['assign' => 'Semua slot ternak sudah terisi.']);
@@ -509,9 +509,9 @@ class transaksiController extends Controller
             return back()->withErrors(['assign' => 'Ternak ini sudah di-assign ke transaksi ini.']);
         }
 
-        $ternak = ternakModel::findOrFail($request->id_ternak);
+        $ternak = Ternak::findOrFail($request->id_ternak);
 
-        detailTransaksiModel::create([
+        DetailTransaksi::create([
             'sub_jumlah'   => 1,
             'sub_total'    => $ternak->harga,
             'id_ternak'    => $ternak->id_ternak,
@@ -529,10 +529,10 @@ class transaksiController extends Controller
     // ================================================================
     public function removeDetailTernakAdmin($id)
     {
-        $detail = detailTransaksiModel::findOrFail($id);
+        $detail = DetailTransaksi::findOrFail($id);
 
         // Kembalikan status ternak
-        ternakModel::where('id_ternak', $detail->id_ternak)->update(['status_jual' => 'siap jual']);
+        Ternak::where('id_ternak', $detail->id_ternak)->update(['status_jual' => 'siap jual']);
 
         $detail->delete();
 
@@ -540,3 +540,4 @@ class transaksiController extends Controller
     }
 
 }
+
