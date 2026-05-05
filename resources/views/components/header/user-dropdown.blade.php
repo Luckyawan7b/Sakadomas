@@ -57,7 +57,7 @@
                                 fill="currentColor"
                             />
                         </svg>',
-                        'path' => 'profile',
+                        'path' => route('profile'),
                     ],
                 ];
             @endphp
