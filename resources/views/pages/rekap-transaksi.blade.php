@@ -171,8 +171,14 @@
                                 </td>
 
                                 <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
-                                    <span class="font-bold text-green-600 dark:text-green-400">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span><br>
-                                    <span class="text-xs text-gray-500 capitalize">{{ $transaksi->metode_pembayaran }}</span>
+                                    <span class="font-bold text-green-600 dark:text-green-400">Rp {{ number_format($transaksi->total_harga + $transaksi->ongkir, 0, ',', '.') }}</span><br>
+                                    <span class="text-xs text-gray-500 capitalize">{{ $transaksi->metode_pembayaran ?? '-' }}</span>
+                                    @if($transaksi->ongkir > 0)
+                                        <br><span class="text-xs text-brand-500">(+Ongkir Rp {{ number_format($transaksi->ongkir, 0, ',', '.') }})</span>
+                                    @endif
+                                    @if($transaksi->metode_pengiriman === 'ambil_sendiri')
+                                        <br><span class="inline-flex items-center gap-0.5 mt-0.5 text-[10px] font-medium text-green-600 dark:text-green-400">🏠 Ambil Sendiri</span>
+                                    @endif
                                 </td>
 
                                 <td class="py-4 px-4 text-center">

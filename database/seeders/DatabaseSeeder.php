@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
             DesaSeeder::class,
             KamarSeeder::class,
             TernakSeeder::class,
+            JarakSeeder::class,
         ]);
 
         DB::table('akun')->insert([

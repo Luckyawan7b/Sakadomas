@@ -20,7 +20,7 @@ class DashboardController extends Controller
         // ========================================
         // 1. KARTU METRIK UTAMA
         // ========================================
-        $total_ternak = Ternak::count();
+        $total_ternak = Ternak::where('status_ternak', '!=', 'mati')->where('status_jual', '!=', 'terjual')->count();
         $ternak_sehat = Ternak::where('status_ternak', 'sehat')->count();
         $ternak_sakit = Ternak::where('status_ternak', 'sakit')->count();
 
@@ -77,7 +77,7 @@ class DashboardController extends Controller
         $ternakSudahMonitor = Monitor::where('tgl_monitoring', '>=', $awalBulanIni)
             ->distinct('id_ternak')
             ->pluck('id_ternak');
-            
+
         $ternak_belum_monitor = Ternak::whereNotIn('id_ternak', $ternakSudahMonitor)
             ->where('status_ternak', '!=', 'mati')
             ->where('status_jual', '!=', 'terjual')

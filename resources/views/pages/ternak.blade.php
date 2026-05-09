@@ -5,6 +5,32 @@
         modalTambah: {{ $errors->any() && !old('_method') ? 'true' : 'false' }},
         modalFilter: false
     }">
+        {{-- Flash Messages --}}
+        @if(session('success'))
+            <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)"
+                 class="mb-4 flex items-center justify-between rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 border border-green-200">
+                <div class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    {{ session('success') }}
+                </div>
+                <button @click="show = false" class="text-green-500 hover:text-green-700">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 5000)"
+                 class="mb-4 flex items-center justify-between rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 border border-red-200">
+                <div class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    {{ session('error') }}
+                </div>
+                <button @click="show = false" class="text-red-500 hover:text-red-700">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        @endif
+
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 class="text-title-md2 font-bold text-black dark:text-white">
                 Manajemen Data Ternak
@@ -286,6 +312,8 @@
                             x-data='{
                             selectedKandang: "{{ old('id_kandang', '') }}",
                             selectedKamar: "{{ old('id_kamar', '') }}",
+                            jenisKelamin: "{{ old('jenis_kelamin', 'jantan') }}",
+                            statusTernak: "{{ old('status_ternak', 'sehat') }}",
                             semuaKamar: @json($data_kamar),
                             get kamarTersedia() {
                                 return this.semuaKamar.filter(k => k.id_kandang == this.selectedKandang);
@@ -352,12 +380,10 @@
                             <div>
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Jenis
                                     Kelamin</label>
-                                <select name="jenis_kelamin" required
+                                <select name="jenis_kelamin" required x-model="jenisKelamin" @change="if(jenisKelamin === 'jantan' && statusTernak === 'hamil') statusTernak = 'sehat'"
                                     class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
-                                    <option value="jantan" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                        {{ old('jenis_kelamin') == 'jantan' ? 'selected' : '' }}>Jantan</option>
-                                    <option value="betina" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                        {{ old('jenis_kelamin') == 'betina' ? 'selected' : '' }}>Betina</option>
+                                    <option value="jantan" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Jantan</option>
+                                    <option value="betina" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Betina</option>
                                 </select>
                             </div>
 
@@ -385,16 +411,12 @@
                             <div>
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Status
                                     Kesehatan</label>
-                                <select name="status_ternak" required
+                                <select name="status_ternak" required x-model="statusTernak"
                                     class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
-                                    <option value="sehat" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                        {{ old('status_ternak') == 'sehat' ? 'selected' : '' }}>Sehat</option>
-                                    <option value="sakit" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                        {{ old('status_ternak') == 'sakit' ? 'selected' : '' }}>Sakit</option>
-                                    <option value="hamil" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                        {{ old('status_ternak') == 'hamil' ? 'selected' : '' }}>Hamil</option>
-                                    <option value="mati" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                        {{ old('status_ternak') == 'mati' ? 'selected' : '' }}>Mati</option>
+                                    <option value="sehat" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Sehat</option>
+                                    <option value="sakit" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Sakit</option>
+                                    <option value="hamil" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" x-show="jenisKelamin === 'betina'">Hamil</option>
+                                    <option value="mati" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Mati</option>
                                 </select>
                             </div>
 
@@ -583,10 +605,12 @@
                                                         {{ $errors->first() }}</div>
                                                 @endif
 
-                                                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"
-                                                    x-data='{
-                                                        selectedKandang: "{{ old('id_kandang', $ternak->kamar->id_kandang ?? 'kosong') }}",
-                                                        selectedKamar: "{{ old('id_kamar', $ternak->id_kamar ?? 'kosong') }}",
+                                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"
+                                                        x-data='{
+                                                            selectedKandang: "{{ old('id_kandang', $ternak->kamar->id_kandang ?? 'kosong') }}",
+                                                            selectedKamar: "{{ old('id_kamar', $ternak->id_kamar ?? 'kosong') }}",
+                                                            jenisKelamin: "{{ old('jenis_kelamin', $ternak->jenis_kelamin) }}",
+                                                            statusTernak: "{{ old('status_ternak', $ternak->status_ternak) }}",
                                                         semuaKamar: @json($data_kamar),
                                                         get kamarTersedia() {
                                                             if (this.selectedKandang === "kosong") return [];
@@ -641,15 +665,13 @@
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kelamin</label>
-                                                        <select name="jenis_kelamin" required
+                                                        <select name="jenis_kelamin" required x-model="jenisKelamin" @change="if(jenisKelamin === 'jantan' && statusTernak === 'hamil') statusTernak = 'sehat'"
                                                             class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
                                                             <option value="jantan"
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                                                {{ $ternak->jenis_kelamin == 'jantan' ? 'selected' : '' }}>
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
                                                                 Jantan</option>
                                                             <option value="betina"
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                                                {{ $ternak->jenis_kelamin == 'betina' ? 'selected' : '' }}>
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
                                                                 Betina</option>
                                                         </select>
                                                     </div>
@@ -685,23 +707,20 @@
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kesehatan</label>
-                                                        <select name="status_ternak" required
+                                                        <select name="status_ternak" required x-model="statusTernak"
                                                             class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
                                                             <option value="sehat"
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                                                {{ $ternak->status_ternak == 'sehat' ? 'selected' : '' }}>
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
                                                                 Sehat</option>
                                                             <option value="sakit"
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                                                {{ $ternak->status_ternak == 'sakit' ? 'selected' : '' }}>
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
                                                                 Sakit</option>
                                                             <option value="hamil"
                                                                 class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                                                {{ $ternak->status_ternak == 'hamil' ? 'selected' : '' }}>
+                                                                x-show="jenisKelamin === 'betina'">
                                                                 Hamil</option>
                                                             <option value="mati"
-                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
-                                                                {{ $ternak->status_ternak == 'mati' ? 'selected' : '' }}>
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
                                                                 Mati</option>
                                                         </select>
                                                     </div>

@@ -94,12 +94,12 @@
         <nav aria-label="Tautan cepat">
             <h3 class="font-semibold text-cream-50 mb-5 text-sm tracking-wider uppercase">Tautan Cepat</h3>
             <ul class="space-y-3">
-                <li><a href="#beranda"    class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Beranda</a></li>
-                <li><a href="#tentang"    class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Tentang Kami</a></li>
-                <li><a href="#katalog"    class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Katalog Domba</a></li>
-                <li><a href="#keunggulan" class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Mengapa Kami</a></li>
-                <li><a href="#faq"        class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">FAQ</a></li>
-                <li><a href="#testimoni"  class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Testimoni</a></li>
+                <li><a href="{{ route('home') }}"    class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Beranda</a></li>
+                <li><a href="{{ route('home') }}#tentang"    class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Tentang Kami</a></li>
+                <li><a href="{{ route('katalog') }}"    class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Katalog Domba</a></li>
+                <li><a href="{{ route('home') }}#keunggulan" class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Mengapa Kami</a></li>
+                <li><a href="{{ route('home') }}#faq"        class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">FAQ</a></li>
+                <li><a href="{{ route('home') }}#testimoni"  class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Testimoni</a></li>
             </ul>
         </nav>
 

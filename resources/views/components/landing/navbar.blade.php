@@ -34,21 +34,25 @@
 
             {{-- ── Desktop Navigation ── --}}
             <ul class="hidden md:flex items-center gap-1" role="list">
-                <li><a href="/#beranda"
+                <li><a href="{{ route('home') }}"
                         class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Beranda</a>
                 </li>
-                {{-- <li><a href="/#tentang"
-                        class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Tentang
-                        Kami</a></li> --}}
-                <li><a href="/#katalog"
+                <li><a href="{{ route('katalog') }}"
                         class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Katalog
                         Domba</a></li>
-                <li><a href="/#faq"
+                <li><a href="{{ route('home') }}#faq"
                         class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">FAQ</a>
                 </li>
-                {{-- <li><a href="/#testimoni"
-                        class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Testimoni</a>
-                </li> --}}
+                @auth
+                    @if(Auth::user()->role === 'pelanggan')
+                    <li><a href="{{ route('transaksi.create') }}"
+                            class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Buat Pesanan</a>
+                    </li>
+                    <li><a href="{{ route('transaksi.riwayat') }}"
+                            class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Riwayat</a>
+                    </li>
+                    @endif
+                @endauth
             </ul>
 
             {{-- ── CTA + Hamburger ── --}}
@@ -168,18 +172,21 @@
         class="md:hidden border-t border-olive-100 bg-cream-50/98 backdrop-blur-md" @click.away="open = false"
         role="navigation" aria-label="Menu mobile">
         <div class="px-5 py-4 flex flex-col gap-1">
-            <a href="/#beranda" @click="open = false"
+            <a href="{{ route('home') }}" @click="open = false"
                 class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Beranda</a>
-            <a href="/#tentang" @click="open = false"
-                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Tentang
-                Kami</a>
-            <a href="/#katalog" @click="open = false"
+            <a href="{{ route('katalog') }}" @click="open = false"
                 class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Katalog
                 Domba</a>
-            <a href="/#faq" @click="open = false"
+            <a href="{{ route('home') }}#faq" @click="open = false"
                 class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">FAQ</a>
-            <a href="/#testimoni" @click="open = false"
-                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Testimoni</a>
+            @auth
+                @if(Auth::user()->role === 'pelanggan')
+                <a href="{{ route('transaksi.create') }}" @click="open = false"
+                    class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Buat Pesanan</a>
+                <a href="{{ route('transaksi.riwayat') }}" @click="open = false"
+                    class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Riwayat</a>
+                @endif
+            @endauth
 
             <div class="h-px bg-olive-100 my-2"></div>
 

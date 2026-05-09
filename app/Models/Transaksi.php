@@ -28,6 +28,8 @@ class Transaksi extends Model
         'tgl_dikirim',
         'batas_survei',
         'is_survei',
+        'metode_pengiriman',
+        'ongkir',
     ];
 
     protected $casts = [

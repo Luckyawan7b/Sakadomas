@@ -1,0 +1,1721 @@
+{
+  "data": [
+    {
+      "ternak": {
+        "id_ternak": 1,
+        "jenis_kelamin": "Jantan",
+        "usia": 14,
+        "berat": 40,
+        "harga": 2000000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-20",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-01-24"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-02-23"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-03-25"},
+        {"usia": 3, "berat": 9, "penyakit": null, "tgl_monitoring": "2025-04-24"},
+        {"usia": 4, "berat": 12, "penyakit": null, "tgl_monitoring": "2025-05-24"},
+        {"usia": 5, "berat": 15, "penyakit": null, "tgl_monitoring": "2025-06-23"},
+        {"usia": 6, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-07-23"},
+        {"usia": 7, "berat": 20, "penyakit": null, "tgl_monitoring": "2025-08-22"},
+        {"usia": 8, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-09-21"},
+        {"usia": 9, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-10-21"},
+        {"usia": 10, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-11-20"},
+        {"usia": 11, "berat": 31, "penyakit": null, "tgl_monitoring": "2025-12-20"},
+        {"usia": 12, "berat": 34, "penyakit": null, "tgl_monitoring": "2026-01-19"},
+        {"usia": 13, "berat": 37, "penyakit": null, "tgl_monitoring": "2026-02-18"},
+        {"usia": 14, "berat": 40, "penyakit": null, "tgl_monitoring": "2026-03-20"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 2,
+        "jenis_kelamin": "Betina",
+        "usia": 5,
+        "berat": 25,
+        "harga": 1250000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-22",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-10-23"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-11-22"},
+        {"usia": 2, "berat": 12, "penyakit": null, "tgl_monitoring": "2025-12-22"},
+        {"usia": 3, "berat": 17, "penyakit": null, "tgl_monitoring": "2026-01-21"},
+        {"usia": 4, "berat": 21, "penyakit": null, "tgl_monitoring": "2026-02-20"},
+        {"usia": 5, "berat": 25, "penyakit": null, "tgl_monitoring": "2026-03-22"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 3,
+        "jenis_kelamin": "Jantan",
+        "usia": 5,
+        "berat": 33,
+        "harga": 1650000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-03",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-11-04"},
+        {"usia": 1, "berat": 11, "penyakit": null, "tgl_monitoring": "2025-12-04"},
+        {"usia": 2, "berat": 18, "penyakit": null, "tgl_monitoring": "2026-01-03"},
+        {"usia": 3, "berat": 23, "penyakit": null, "tgl_monitoring": "2026-02-02"},
+        {"usia": 4, "berat": 28, "penyakit": null, "tgl_monitoring": "2026-03-04"},
+        {"usia": 5, "berat": 33, "penyakit": null, "tgl_monitoring": "2026-04-03"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 4,
+        "jenis_kelamin": "Betina",
+        "usia": 16,
+        "berat": 100,
+        "harga": 5000000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-02",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-12-08"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2025-01-07"},
+        {"usia": 2, "berat": 14, "penyakit": null, "tgl_monitoring": "2025-02-06"},
+        {"usia": 3, "berat": 21, "penyakit": null, "tgl_monitoring": "2025-03-08"},
+        {"usia": 4, "berat": 27, "penyakit": null, "tgl_monitoring": "2025-04-07"},
+        {"usia": 5, "berat": 32, "penyakit": null, "tgl_monitoring": "2025-05-07"},
+        {"usia": 6, "berat": 40, "penyakit": null, "tgl_monitoring": "2025-06-06"},
+        {"usia": 7, "berat": 46, "penyakit": null, "tgl_monitoring": "2025-07-06"},
+        {"usia": 8, "berat": 52, "penyakit": null, "tgl_monitoring": "2025-08-05"},
+        {"usia": 9, "berat": 58, "penyakit": null, "tgl_monitoring": "2025-09-04"},
+        {"usia": 10, "berat": 64, "penyakit": null, "tgl_monitoring": "2025-10-04"},
+        {"usia": 11, "berat": 70, "penyakit": null, "tgl_monitoring": "2025-11-03"},
+        {"usia": 12, "berat": 76, "penyakit": null, "tgl_monitoring": "2025-12-03"},
+        {"usia": 13, "berat": 83, "penyakit": null, "tgl_monitoring": "2026-01-02"},
+        {"usia": 14, "berat": 89, "penyakit": null, "tgl_monitoring": "2026-02-01"},
+        {"usia": 15, "berat": 95, "penyakit": null, "tgl_monitoring": "2026-03-03"},
+        {"usia": 16, "berat": 100, "penyakit": null, "tgl_monitoring": "2026-04-02"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 5,
+        "jenis_kelamin": "Jantan",
+        "usia": 9,
+        "berat": 59,
+        "harga": 2950000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-12",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-06-15"},
+        {"usia": 1, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-07-15"},
+        {"usia": 2, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-08-14"},
+        {"usia": 3, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-09-13"},
+        {"usia": 4, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-10-13"},
+        {"usia": 5, "berat": 34, "penyakit": null, "tgl_monitoring": "2025-11-12"},
+        {"usia": 6, "berat": 41, "penyakit": null, "tgl_monitoring": "2025-12-12"},
+        {"usia": 7, "berat": 47, "penyakit": null, "tgl_monitoring": "2026-01-11"},
+        {"usia": 8, "berat": 53, "penyakit": null, "tgl_monitoring": "2026-02-10"},
+        {"usia": 9, "berat": 59, "penyakit": null, "tgl_monitoring": "2026-03-12"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 6,
+        "jenis_kelamin": "Betina",
+        "usia": 4,
+        "berat": 21,
+        "harga": 1050000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-07",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-12-08"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2026-01-07"},
+        {"usia": 2, "berat": 12, "penyakit": null, "tgl_monitoring": "2026-02-06"},
+        {"usia": 3, "berat": 17, "penyakit": null, "tgl_monitoring": "2026-03-08"},
+        {"usia": 4, "berat": 21, "penyakit": null, "tgl_monitoring": "2026-04-07"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 7,
+        "jenis_kelamin": "Jantan",
+        "usia": 23,
+        "berat": 115,
+        "harga": 5750000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-30",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2024-05-09"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2024-06-08"},
+        {"usia": 2, "berat": 14, "penyakit": null, "tgl_monitoring": "2024-07-08"},
+        {"usia": 3, "berat": 18, "penyakit": null, "tgl_monitoring": "2024-08-07"},
+        {"usia": 4, "berat": 23, "penyakit": null, "tgl_monitoring": "2024-09-06"},
+        {"usia": 5, "berat": 28, "penyakit": null, "tgl_monitoring": "2024-10-06"},
+        {"usia": 6, "berat": 32, "penyakit": null, "tgl_monitoring": "2024-11-05"},
+        {"usia": 7, "berat": 38, "penyakit": null, "tgl_monitoring": "2024-12-05"},
+        {"usia": 8, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-01-04"},
+        {"usia": 9, "berat": 46, "penyakit": null, "tgl_monitoring": "2025-02-03"},
+        {"usia": 10, "berat": 51, "penyakit": null, "tgl_monitoring": "2025-03-05"},
+        {"usia": 11, "berat": 56, "penyakit": null, "tgl_monitoring": "2025-04-04"},
+        {"usia": 12, "berat": 62, "penyakit": null, "tgl_monitoring": "2025-05-04"},
+        {"usia": 13, "berat": 66, "penyakit": null, "tgl_monitoring": "2025-06-03"},
+        {"usia": 14, "berat": 70, "penyakit": null, "tgl_monitoring": "2025-07-03"},
+        {"usia": 15, "berat": 75, "penyakit": null, "tgl_monitoring": "2025-08-02"},
+        {"usia": 16, "berat": 79, "penyakit": null, "tgl_monitoring": "2025-09-01"},
+        {"usia": 17, "berat": 84, "penyakit": null, "tgl_monitoring": "2025-10-01"},
+        {"usia": 18, "berat": 88, "penyakit": null, "tgl_monitoring": "2025-10-31"},
+        {"usia": 19, "berat": 94, "penyakit": null, "tgl_monitoring": "2025-11-30"},
+        {"usia": 20, "berat": 99, "penyakit": null, "tgl_monitoring": "2025-12-30"},
+        {"usia": 21, "berat": 104, "penyakit": null, "tgl_monitoring": "2026-01-29"},
+        {"usia": 22, "berat": 109, "penyakit": null, "tgl_monitoring": "2026-02-28"},
+        {"usia": 23, "berat": 115, "penyakit": null, "tgl_monitoring": "2026-03-30"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 8,
+        "jenis_kelamin": "Jantan",
+        "usia": 7,
+        "berat": 22,
+        "harga": 1100000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-31",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-09-02"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-10-02"},
+        {"usia": 2, "berat": 8, "penyakit": null, "tgl_monitoring": "2025-11-01"},
+        {"usia": 3, "berat": 11, "penyakit": "Scabies (Kudis)", "tgl_monitoring": "2025-12-01"},
+        {"usia": 4, "berat": 14, "penyakit": null, "tgl_monitoring": "2025-12-31"},
+        {"usia": 5, "berat": 17, "penyakit": null, "tgl_monitoring": "2026-01-30"},
+        {"usia": 6, "berat": 20, "penyakit": null, "tgl_monitoring": "2026-03-01"},
+        {"usia": 7, "berat": 22, "penyakit": null, "tgl_monitoring": "2026-03-31"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 9,
+        "jenis_kelamin": "Betina",
+        "usia": 6,
+        "berat": 30,
+        "harga": 1500000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-30",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-10-01"},
+        {"usia": 1, "berat": 8, "penyakit": null, "tgl_monitoring": "2025-10-31"},
+        {"usia": 2, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-11-30"},
+        {"usia": 3, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-12-30"},
+        {"usia": 4, "berat": 21, "penyakit": null, "tgl_monitoring": "2026-01-29"},
+        {"usia": 5, "berat": 26, "penyakit": null, "tgl_monitoring": "2026-02-28"},
+        {"usia": 6, "berat": 30, "penyakit": null, "tgl_monitoring": "2026-03-30"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 10,
+        "jenis_kelamin": "Jantan",
+        "usia": 3,
+        "berat": 15,
+        "harga": 750000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-20",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-12-20"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2026-01-19"},
+        {"usia": 2, "berat": 11, "penyakit": null, "tgl_monitoring": "2026-02-18"},
+        {"usia": 3, "berat": 15, "penyakit": null, "tgl_monitoring": "2026-03-20"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 11,
+        "jenis_kelamin": "Betina",
+        "usia": 11,
+        "berat": 55,
+        "harga": 2750000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-04",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-05-09"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-06-08"},
+        {"usia": 2, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-07-08"},
+        {"usia": 3, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-08-07"},
+        {"usia": 4, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-09-06"},
+        {"usia": 5, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-10-06"},
+        {"usia": 6, "berat": 31, "penyakit": null, "tgl_monitoring": "2025-11-05"},
+        {"usia": 7, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-12-05"},
+        {"usia": 8, "berat": 41, "penyakit": null, "tgl_monitoring": "2026-01-04"},
+        {"usia": 9, "berat": 46, "penyakit": null, "tgl_monitoring": "2026-02-03"},
+        {"usia": 10, "berat": 50, "penyakit": null, "tgl_monitoring": "2026-03-05"},
+        {"usia": 11, "berat": 55, "penyakit": null, "tgl_monitoring": "2026-04-04"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 12,
+        "jenis_kelamin": "Jantan",
+        "usia": 8,
+        "berat": 22,
+        "harga": 1100000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-14",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-07-17"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-08-16"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-09-15"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-10-15"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-11-14"},
+        {"usia": 5, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-12-14"},
+        {"usia": 6, "berat": 18, "penyakit": null, "tgl_monitoring": "2026-01-13"},
+        {"usia": 7, "berat": 20, "penyakit": null, "tgl_monitoring": "2026-02-12"},
+        {"usia": 8, "berat": 22, "penyakit": null, "tgl_monitoring": "2026-03-14"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 13,
+        "jenis_kelamin": "Betina",
+        "usia": 21,
+        "berat": 130,
+        "harga": 6500000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-06",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-07-15"},
+        {"usia": 1, "berat": 10, "penyakit": null, "tgl_monitoring": "2024-08-14"},
+        {"usia": 2, "berat": 17, "penyakit": null, "tgl_monitoring": "2024-09-13"},
+        {"usia": 3, "berat": 22, "penyakit": null, "tgl_monitoring": "2024-10-13"},
+        {"usia": 4, "berat": 29, "penyakit": "Mastitis", "tgl_monitoring": "2024-11-12"},
+        {"usia": 5, "berat": 36, "penyakit": null, "tgl_monitoring": "2024-12-12"},
+        {"usia": 6, "berat": 43, "penyakit": null, "tgl_monitoring": "2025-01-11"},
+        {"usia": 7, "berat": 48, "penyakit": null, "tgl_monitoring": "2025-02-10"},
+        {"usia": 8, "berat": 53, "penyakit": null, "tgl_monitoring": "2025-03-12"},
+        {"usia": 9, "berat": 60, "penyakit": null, "tgl_monitoring": "2025-04-11"},
+        {"usia": 10, "berat": 66, "penyakit": null, "tgl_monitoring": "2025-05-11"},
+        {"usia": 11, "berat": 73, "penyakit": null, "tgl_monitoring": "2025-06-10"},
+        {"usia": 12, "berat": 79, "penyakit": null, "tgl_monitoring": "2025-07-10"},
+        {"usia": 13, "berat": 85, "penyakit": null, "tgl_monitoring": "2025-08-09"},
+        {"usia": 14, "berat": 91, "penyakit": null, "tgl_monitoring": "2025-09-08"},
+        {"usia": 15, "berat": 97, "penyakit": null, "tgl_monitoring": "2025-10-08"},
+        {"usia": 16, "berat": 102, "penyakit": null, "tgl_monitoring": "2025-11-07"},
+        {"usia": 17, "berat": 107, "penyakit": null, "tgl_monitoring": "2025-12-07"},
+        {"usia": 18, "berat": 113, "penyakit": null, "tgl_monitoring": "2026-01-06"},
+        {"usia": 19, "berat": 118, "penyakit": "Scabies (Kudis)", "tgl_monitoring": "2026-02-05"},
+        {"usia": 20, "berat": 125, "penyakit": null, "tgl_monitoring": "2026-03-07"},
+        {"usia": 21, "berat": 130, "penyakit": null, "tgl_monitoring": "2026-04-06"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 14,
+        "jenis_kelamin": "Betina",
+        "usia": 5,
+        "berat": 15,
+        "harga": 750000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-26",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-10-27"},
+        {"usia": 1, "berat": 5, "penyakit": null, "tgl_monitoring": "2025-11-26"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-12-26"},
+        {"usia": 3, "berat": 9, "penyakit": null, "tgl_monitoring": "2026-01-25"},
+        {"usia": 4, "berat": 12, "penyakit": null, "tgl_monitoring": "2026-02-24"},
+        {"usia": 5, "berat": 15, "penyakit": null, "tgl_monitoring": "2026-03-26"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 15,
+        "jenis_kelamin": "Jantan",
+        "usia": 16,
+        "berat": 45,
+        "harga": 2250000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-18",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2024-11-23"},
+        {"usia": 1, "berat": 5, "penyakit": null, "tgl_monitoring": "2024-12-23"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-01-22"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-02-21"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-03-23"},
+        {"usia": 5, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-04-22"},
+        {"usia": 6, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-05-22"},
+        {"usia": 7, "berat": 20, "penyakit": "Kaki Busuk (Foot Rot)", "tgl_monitoring": "2025-06-21"},
+        {"usia": 8, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-07-21"},
+        {"usia": 9, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-08-20"},
+        {"usia": 10, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-09-19"},
+        {"usia": 11, "berat": 32, "penyakit": null, "tgl_monitoring": "2025-10-19"},
+        {"usia": 12, "berat": 34, "penyakit": null, "tgl_monitoring": "2025-11-18"},
+        {"usia": 13, "berat": 37, "penyakit": null, "tgl_monitoring": "2025-12-18"},
+        {"usia": 14, "berat": 40, "penyakit": null, "tgl_monitoring": "2026-01-17"},
+        {"usia": 15, "berat": 43, "penyakit": null, "tgl_monitoring": "2026-02-16"},
+        {"usia": 16, "berat": 45, "penyakit": null, "tgl_monitoring": "2026-03-18"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 16,
+        "jenis_kelamin": "Jantan",
+        "usia": 1,
+        "berat": 10,
+        "harga": 500000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-22",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2026-02-20"},
+        {"usia": 1, "berat": 10, "penyakit": null, "tgl_monitoring": "2026-03-22"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 17,
+        "jenis_kelamin": "Jantan",
+        "usia": 7,
+        "berat": 39,
+        "harga": 1950000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-14",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-08-16"},
+        {"usia": 1, "berat": 8, "penyakit": null, "tgl_monitoring": "2025-09-15"},
+        {"usia": 2, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-10-15"},
+        {"usia": 3, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-11-14"},
+        {"usia": 4, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-12-14"},
+        {"usia": 5, "berat": 29, "penyakit": null, "tgl_monitoring": "2026-01-13"},
+        {"usia": 6, "berat": 33, "penyakit": null, "tgl_monitoring": "2026-02-12"},
+        {"usia": 7, "berat": 39, "penyakit": null, "tgl_monitoring": "2026-03-14"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 18,
+        "jenis_kelamin": "Betina",
+        "usia": 3,
+        "berat": 10,
+        "harga": 500000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-24",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-12-24"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2026-01-23"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2026-02-22"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2026-03-24"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 19,
+        "jenis_kelamin": "Jantan",
+        "usia": 17,
+        "berat": 50,
+        "harga": 2500000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-18",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2024-10-24"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-11-23"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2024-12-23"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-01-22"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-02-21"},
+        {"usia": 5, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-03-23"},
+        {"usia": 6, "berat": 19, "penyakit": null, "tgl_monitoring": "2025-04-22"},
+        {"usia": 7, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-05-22"},
+        {"usia": 8, "berat": 24, "penyakit": null, "tgl_monitoring": "2025-06-21"},
+        {"usia": 9, "berat": 27, "penyakit": null, "tgl_monitoring": "2025-07-21"},
+        {"usia": 10, "berat": 30, "penyakit": null, "tgl_monitoring": "2025-08-20"},
+        {"usia": 11, "berat": 33, "penyakit": null, "tgl_monitoring": "2025-09-19"},
+        {"usia": 12, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-10-19"},
+        {"usia": 13, "berat": 39, "penyakit": null, "tgl_monitoring": "2025-11-18"},
+        {"usia": 14, "berat": 41, "penyakit": null, "tgl_monitoring": "2025-12-18"},
+        {"usia": 15, "berat": 44, "penyakit": null, "tgl_monitoring": "2026-01-17"},
+        {"usia": 16, "berat": 46, "penyakit": null, "tgl_monitoring": "2026-02-16"},
+        {"usia": 17, "berat": 50, "penyakit": null, "tgl_monitoring": "2026-03-18"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 20,
+        "jenis_kelamin": "Jantan",
+        "usia": 13,
+        "berat": 77,
+        "harga": 3850000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-17",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-02-20"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2025-03-22"},
+        {"usia": 2, "berat": 14, "penyakit": null, "tgl_monitoring": "2025-04-21"},
+        {"usia": 3, "berat": 19, "penyakit": null, "tgl_monitoring": "2025-05-21"},
+        {"usia": 4, "berat": 25, "penyakit": null, "tgl_monitoring": "2025-06-20"},
+        {"usia": 5, "berat": 30, "penyakit": null, "tgl_monitoring": "2025-07-20"},
+        {"usia": 6, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-08-19"},
+        {"usia": 7, "berat": 43, "penyakit": null, "tgl_monitoring": "2025-09-18"},
+        {"usia": 8, "berat": 47, "penyakit": null, "tgl_monitoring": "2025-10-18"},
+        {"usia": 9, "berat": 52, "penyakit": null, "tgl_monitoring": "2025-11-17"},
+        {"usia": 10, "berat": 59, "penyakit": null, "tgl_monitoring": "2025-12-17"},
+        {"usia": 11, "berat": 66, "penyakit": null, "tgl_monitoring": "2026-01-16"},
+        {"usia": 12, "berat": 71, "penyakit": null, "tgl_monitoring": "2026-02-15"},
+        {"usia": 13, "berat": 77, "penyakit": null, "tgl_monitoring": "2026-03-17"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 21,
+        "jenis_kelamin": "Betina",
+        "usia": 3,
+        "berat": 23,
+        "harga": 1150000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-07",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2026-01-07"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2026-02-06"},
+        {"usia": 2, "berat": 16, "penyakit": null, "tgl_monitoring": "2026-03-08"},
+        {"usia": 3, "berat": 23, "penyakit": null, "tgl_monitoring": "2026-04-07"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 22,
+        "jenis_kelamin": "Betina",
+        "usia": 18,
+        "berat": 49,
+        "harga": 2450000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-07",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2024-10-14"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-11-13"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2024-12-13"},
+        {"usia": 3, "berat": 9, "penyakit": null, "tgl_monitoring": "2025-01-12"},
+        {"usia": 4, "berat": 11, "penyakit": null, "tgl_monitoring": "2025-02-11"},
+        {"usia": 5, "berat": 14, "penyakit": null, "tgl_monitoring": "2025-03-13"},
+        {"usia": 6, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-04-12"},
+        {"usia": 7, "berat": 20, "penyakit": null, "tgl_monitoring": "2025-05-12"},
+        {"usia": 8, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-06-11"},
+        {"usia": 9, "berat": 25, "penyakit": null, "tgl_monitoring": "2025-07-11"},
+        {"usia": 10, "berat": 28, "penyakit": null, "tgl_monitoring": "2025-08-10"},
+        {"usia": 11, "berat": 30, "penyakit": null, "tgl_monitoring": "2025-09-09"},
+        {"usia": 12, "berat": 34, "penyakit": "Pneumonia", "tgl_monitoring": "2025-10-09"},
+        {"usia": 13, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-11-08"},
+        {"usia": 14, "berat": 39, "penyakit": null, "tgl_monitoring": "2025-12-08"},
+        {"usia": 15, "berat": 41, "penyakit": null, "tgl_monitoring": "2026-01-07"},
+        {"usia": 16, "berat": 44, "penyakit": null, "tgl_monitoring": "2026-02-06"},
+        {"usia": 17, "berat": 46, "penyakit": null, "tgl_monitoring": "2026-03-08"},
+        {"usia": 18, "berat": 49, "penyakit": null, "tgl_monitoring": "2026-04-07"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 23,
+        "jenis_kelamin": "Betina",
+        "usia": 15,
+        "berat": 76,
+        "harga": 3800000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-12",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2024-12-17"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-01-16"},
+        {"usia": 2, "berat": 12, "penyakit": null, "tgl_monitoring": "2025-02-15"},
+        {"usia": 3, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-03-17"},
+        {"usia": 4, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-04-16"},
+        {"usia": 5, "berat": 28, "penyakit": null, "tgl_monitoring": "2025-05-16"},
+        {"usia": 6, "berat": 32, "penyakit": null, "tgl_monitoring": "2025-06-15"},
+        {"usia": 7, "berat": 38, "penyakit": null, "tgl_monitoring": "2025-07-15"},
+        {"usia": 8, "berat": 43, "penyakit": null, "tgl_monitoring": "2025-08-14"},
+        {"usia": 9, "berat": 48, "penyakit": null, "tgl_monitoring": "2025-09-13"},
+        {"usia": 10, "berat": 52, "penyakit": null, "tgl_monitoring": "2025-10-13"},
+        {"usia": 11, "berat": 58, "penyakit": null, "tgl_monitoring": "2025-11-12"},
+        {"usia": 12, "berat": 61, "penyakit": null, "tgl_monitoring": "2025-12-12"},
+        {"usia": 13, "berat": 65, "penyakit": null, "tgl_monitoring": "2026-01-11"},
+        {"usia": 14, "berat": 70, "penyakit": null, "tgl_monitoring": "2026-02-10"},
+        {"usia": 15, "berat": 76, "penyakit": null, "tgl_monitoring": "2026-03-12"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 24,
+        "jenis_kelamin": "Jantan",
+        "usia": 8,
+        "berat": 50,
+        "harga": 2500000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-17",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-07-20"},
+        {"usia": 1, "berat": 9, "penyakit": "Cacingan", "tgl_monitoring": "2025-08-19"},
+        {"usia": 2, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-09-18"},
+        {"usia": 3, "berat": 21, "penyakit": null, "tgl_monitoring": "2025-10-18"},
+        {"usia": 4, "berat": 27, "penyakit": null, "tgl_monitoring": "2025-11-17"},
+        {"usia": 5, "berat": 33, "penyakit": null, "tgl_monitoring": "2025-12-17"},
+        {"usia": 6, "berat": 38, "penyakit": null, "tgl_monitoring": "2026-01-16"},
+        {"usia": 7, "berat": 43, "penyakit": null, "tgl_monitoring": "2026-02-15"},
+        {"usia": 8, "berat": 50, "penyakit": null, "tgl_monitoring": "2026-03-17"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 25,
+        "jenis_kelamin": "Jantan",
+        "usia": 16,
+        "berat": 100,
+        "harga": 5000000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-19",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": "Orf (Bintil Mulut)", "tgl_monitoring": "2024-11-24"},
+        {"usia": 1, "berat": 10, "penyakit": null, "tgl_monitoring": "2024-12-24"},
+        {"usia": 2, "berat": 16, "penyakit": "Pneumonia", "tgl_monitoring": "2025-01-23"},
+        {"usia": 3, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-02-22"},
+        {"usia": 4, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-03-24"},
+        {"usia": 5, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-04-23"},
+        {"usia": 6, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-05-23"},
+        {"usia": 7, "berat": 47, "penyakit": null, "tgl_monitoring": "2025-06-22"},
+        {"usia": 8, "berat": 52, "penyakit": null, "tgl_monitoring": "2025-07-22"},
+        {"usia": 9, "berat": 59, "penyakit": null, "tgl_monitoring": "2025-08-21"},
+        {"usia": 10, "berat": 65, "penyakit": null, "tgl_monitoring": "2025-09-20"},
+        {"usia": 11, "berat": 70, "penyakit": null, "tgl_monitoring": "2025-10-20"},
+        {"usia": 12, "berat": 76, "penyakit": null, "tgl_monitoring": "2025-11-19"},
+        {"usia": 13, "berat": 82, "penyakit": null, "tgl_monitoring": "2025-12-19"},
+        {"usia": 14, "berat": 89, "penyakit": null, "tgl_monitoring": "2026-01-18"},
+        {"usia": 15, "berat": 94, "penyakit": null, "tgl_monitoring": "2026-02-17"},
+        {"usia": 16, "berat": 100, "penyakit": null, "tgl_monitoring": "2026-03-19"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 26,
+        "jenis_kelamin": "Jantan",
+        "usia": 7,
+        "berat": 46,
+        "harga": 2300000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-13",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-08-15"},
+        {"usia": 1, "berat": 11, "penyakit": null, "tgl_monitoring": "2025-09-14"},
+        {"usia": 2, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-10-14"},
+        {"usia": 3, "berat": 24, "penyakit": null, "tgl_monitoring": "2025-11-13"},
+        {"usia": 4, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-12-13"},
+        {"usia": 5, "berat": 35, "penyakit": null, "tgl_monitoring": "2026-01-12"},
+        {"usia": 6, "berat": 41, "penyakit": null, "tgl_monitoring": "2026-02-11"},
+        {"usia": 7, "berat": 46, "penyakit": null, "tgl_monitoring": "2026-03-13"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 27,
+        "jenis_kelamin": "Betina",
+        "usia": 9,
+        "berat": 57,
+        "harga": 2850000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-27",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-06-30"},
+        {"usia": 1, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-07-30"},
+        {"usia": 2, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-08-29"},
+        {"usia": 3, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-09-28"},
+        {"usia": 4, "berat": 28, "penyakit": "Kembung (Bloat)", "tgl_monitoring": "2025-10-28"},
+        {"usia": 5, "berat": 33, "penyakit": null, "tgl_monitoring": "2025-11-27"},
+        {"usia": 6, "berat": 40, "penyakit": null, "tgl_monitoring": "2025-12-27"},
+        {"usia": 7, "berat": 45, "penyakit": null, "tgl_monitoring": "2026-01-26"},
+        {"usia": 8, "berat": 52, "penyakit": null, "tgl_monitoring": "2026-02-25"},
+        {"usia": 9, "berat": 57, "penyakit": null, "tgl_monitoring": "2026-03-27"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 28,
+        "jenis_kelamin": "Jantan",
+        "usia": 1,
+        "berat": 7,
+        "harga": 350000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-14",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2026-02-12"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2026-03-14"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 29,
+        "jenis_kelamin": "Jantan",
+        "usia": 21,
+        "berat": 134,
+        "harga": 6700000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-07",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-07-16"},
+        {"usia": 1, "berat": 11, "penyakit": null, "tgl_monitoring": "2024-08-15"},
+        {"usia": 2, "berat": 17, "penyakit": null, "tgl_monitoring": "2024-09-14"},
+        {"usia": 3, "berat": 22, "penyakit": null, "tgl_monitoring": "2024-10-14"},
+        {"usia": 4, "berat": 28, "penyakit": null, "tgl_monitoring": "2024-11-13"},
+        {"usia": 5, "berat": 35, "penyakit": null, "tgl_monitoring": "2024-12-13"},
+        {"usia": 6, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-01-12"},
+        {"usia": 7, "berat": 48, "penyakit": null, "tgl_monitoring": "2025-02-11"},
+        {"usia": 8, "berat": 55, "penyakit": null, "tgl_monitoring": "2025-03-13"},
+        {"usia": 9, "berat": 61, "penyakit": "Orf (Bintil Mulut)", "tgl_monitoring": "2025-04-12"},
+        {"usia": 10, "berat": 66, "penyakit": null, "tgl_monitoring": "2025-05-12"},
+        {"usia": 11, "berat": 72, "penyakit": null, "tgl_monitoring": "2025-06-11"},
+        {"usia": 12, "berat": 79, "penyakit": null, "tgl_monitoring": "2025-07-11"},
+        {"usia": 13, "berat": 86, "penyakit": null, "tgl_monitoring": "2025-08-10"},
+        {"usia": 14, "berat": 93, "penyakit": null, "tgl_monitoring": "2025-09-09"},
+        {"usia": 15, "berat": 99, "penyakit": null, "tgl_monitoring": "2025-10-09"},
+        {"usia": 16, "berat": 105, "penyakit": null, "tgl_monitoring": "2025-11-08"},
+        {"usia": 17, "berat": 110, "penyakit": null, "tgl_monitoring": "2025-12-08"},
+        {"usia": 18, "berat": 116, "penyakit": null, "tgl_monitoring": "2026-01-07"},
+        {"usia": 19, "berat": 122, "penyakit": null, "tgl_monitoring": "2026-02-06"},
+        {"usia": 20, "berat": 127, "penyakit": null, "tgl_monitoring": "2026-03-08"},
+        {"usia": 21, "berat": 134, "penyakit": null, "tgl_monitoring": "2026-04-07"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 30,
+        "jenis_kelamin": "Betina",
+        "usia": 18,
+        "berat": 115,
+        "harga": 5750000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-17",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-09-23"},
+        {"usia": 1, "berat": 10, "penyakit": null, "tgl_monitoring": "2024-10-23"},
+        {"usia": 2, "berat": 17, "penyakit": null, "tgl_monitoring": "2024-11-22"},
+        {"usia": 3, "berat": 24, "penyakit": null, "tgl_monitoring": "2024-12-22"},
+        {"usia": 4, "berat": 30, "penyakit": null, "tgl_monitoring": "2025-01-21"},
+        {"usia": 5, "berat": 36, "penyakit": "Pink Eye", "tgl_monitoring": "2025-02-20"},
+        {"usia": 6, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-03-22"},
+        {"usia": 7, "berat": 47, "penyakit": null, "tgl_monitoring": "2025-04-21"},
+        {"usia": 8, "berat": 54, "penyakit": null, "tgl_monitoring": "2025-05-21"},
+        {"usia": 9, "berat": 59, "penyakit": null, "tgl_monitoring": "2025-06-20"},
+        {"usia": 10, "berat": 65, "penyakit": null, "tgl_monitoring": "2025-07-20"},
+        {"usia": 11, "berat": 73, "penyakit": null, "tgl_monitoring": "2025-08-19"},
+        {"usia": 12, "berat": 80, "penyakit": null, "tgl_monitoring": "2025-09-18"},
+        {"usia": 13, "berat": 85, "penyakit": null, "tgl_monitoring": "2025-10-18"},
+        {"usia": 14, "berat": 91, "penyakit": null, "tgl_monitoring": "2025-11-17"},
+        {"usia": 15, "berat": 97, "penyakit": null, "tgl_monitoring": "2025-12-17"},
+        {"usia": 16, "berat": 104, "penyakit": null, "tgl_monitoring": "2026-01-16"},
+        {"usia": 17, "berat": 110, "penyakit": null, "tgl_monitoring": "2026-02-15"},
+        {"usia": 18, "berat": 115, "penyakit": null, "tgl_monitoring": "2026-03-17"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 31,
+        "jenis_kelamin": "Jantan",
+        "usia": 16,
+        "berat": 82,
+        "harga": 4100000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-16",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2024-11-21"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2024-12-21"},
+        {"usia": 2, "berat": 12, "penyakit": null, "tgl_monitoring": "2025-01-20"},
+        {"usia": 3, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-02-19"},
+        {"usia": 4, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-03-21"},
+        {"usia": 5, "berat": 27, "penyakit": null, "tgl_monitoring": "2025-04-20"},
+        {"usia": 6, "berat": 32, "penyakit": null, "tgl_monitoring": "2025-05-20"},
+        {"usia": 7, "berat": 37, "penyakit": null, "tgl_monitoring": "2025-06-19"},
+        {"usia": 8, "berat": 41, "penyakit": null, "tgl_monitoring": "2025-07-19"},
+        {"usia": 9, "berat": 47, "penyakit": null, "tgl_monitoring": "2025-08-18"},
+        {"usia": 10, "berat": 52, "penyakit": null, "tgl_monitoring": "2025-09-17"},
+        {"usia": 11, "berat": 55, "penyakit": null, "tgl_monitoring": "2025-10-17"},
+        {"usia": 12, "berat": 61, "penyakit": null, "tgl_monitoring": "2025-11-16"},
+        {"usia": 13, "berat": 66, "penyakit": null, "tgl_monitoring": "2025-12-16"},
+        {"usia": 14, "berat": 72, "penyakit": null, "tgl_monitoring": "2026-01-15"},
+        {"usia": 15, "berat": 77, "penyakit": null, "tgl_monitoring": "2026-02-14"},
+        {"usia": 16, "berat": 82, "penyakit": null, "tgl_monitoring": "2026-03-16"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 32,
+        "jenis_kelamin": "Betina",
+        "usia": 10,
+        "berat": 49,
+        "harga": 2450000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-27",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-05-31"},
+        {"usia": 1, "berat": 8, "penyakit": null, "tgl_monitoring": "2025-06-30"},
+        {"usia": 2, "berat": 12, "penyakit": null, "tgl_monitoring": "2025-07-30"},
+        {"usia": 3, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-08-29"},
+        {"usia": 4, "berat": 21, "penyakit": null, "tgl_monitoring": "2025-09-28"},
+        {"usia": 5, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-10-28"},
+        {"usia": 6, "berat": 31, "penyakit": null, "tgl_monitoring": "2025-11-27"},
+        {"usia": 7, "berat": 35, "penyakit": null, "tgl_monitoring": "2025-12-27"},
+        {"usia": 8, "berat": 39, "penyakit": null, "tgl_monitoring": "2026-01-26"},
+        {"usia": 9, "berat": 44, "penyakit": null, "tgl_monitoring": "2026-02-25"},
+        {"usia": 10, "berat": 49, "penyakit": "Pneumonia", "tgl_monitoring": "2026-03-27"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 33,
+        "jenis_kelamin": "Jantan",
+        "usia": 4,
+        "berat": 20,
+        "harga": 1000000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-03",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-12-04"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2026-01-03"},
+        {"usia": 2, "berat": 12, "penyakit": null, "tgl_monitoring": "2026-02-02"},
+        {"usia": 3, "berat": 16, "penyakit": null, "tgl_monitoring": "2026-03-04"},
+        {"usia": 4, "berat": 20, "penyakit": null, "tgl_monitoring": "2026-04-03"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 34,
+        "jenis_kelamin": "Betina",
+        "usia": 7,
+        "berat": 20,
+        "harga": 1000000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-06",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-09-08"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-10-08"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-11-07"},
+        {"usia": 3, "berat": 9, "penyakit": null, "tgl_monitoring": "2025-12-07"},
+        {"usia": 4, "berat": 12, "penyakit": null, "tgl_monitoring": "2026-01-06"},
+        {"usia": 5, "berat": 14, "penyakit": null, "tgl_monitoring": "2026-02-05"},
+        {"usia": 6, "berat": 17, "penyakit": null, "tgl_monitoring": "2026-03-07"},
+        {"usia": 7, "berat": 20, "penyakit": null, "tgl_monitoring": "2026-04-06"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 35,
+        "jenis_kelamin": "Jantan",
+        "usia": 4,
+        "berat": 20,
+        "harga": 1000000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-19",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-11-19"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-12-19"},
+        {"usia": 2, "berat": 11, "penyakit": null, "tgl_monitoring": "2026-01-18"},
+        {"usia": 3, "berat": 15, "penyakit": null, "tgl_monitoring": "2026-02-17"},
+        {"usia": 4, "berat": 20, "penyakit": null, "tgl_monitoring": "2026-03-19"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 36,
+        "jenis_kelamin": "Jantan",
+        "usia": 15,
+        "berat": 43,
+        "harga": 2150000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-21",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2024-12-26"},
+        {"usia": 1, "berat": 5, "penyakit": null, "tgl_monitoring": "2025-01-25"},
+        {"usia": 2, "berat": 8, "penyakit": null, "tgl_monitoring": "2025-02-24"},
+        {"usia": 3, "berat": 11, "penyakit": null, "tgl_monitoring": "2025-03-26"},
+        {"usia": 4, "berat": 14, "penyakit": null, "tgl_monitoring": "2025-04-25"},
+        {"usia": 5, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-05-25"},
+        {"usia": 6, "berat": 20, "penyakit": null, "tgl_monitoring": "2025-06-24"},
+        {"usia": 7, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-07-24"},
+        {"usia": 8, "berat": 25, "penyakit": null, "tgl_monitoring": "2025-08-23"},
+        {"usia": 9, "berat": 28, "penyakit": "Mastitis", "tgl_monitoring": "2025-09-22"},
+        {"usia": 10, "berat": 30, "penyakit": null, "tgl_monitoring": "2025-10-22"},
+        {"usia": 11, "berat": 33, "penyakit": null, "tgl_monitoring": "2025-11-21"},
+        {"usia": 12, "berat": 35, "penyakit": null, "tgl_monitoring": "2025-12-21"},
+        {"usia": 13, "berat": 38, "penyakit": null, "tgl_monitoring": "2026-01-20"},
+        {"usia": 14, "berat": 40, "penyakit": null, "tgl_monitoring": "2026-02-19"},
+        {"usia": 15, "berat": 43, "penyakit": null, "tgl_monitoring": "2026-03-21"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 37,
+        "jenis_kelamin": "Betina",
+        "usia": 14,
+        "berat": 88,
+        "harga": 4400000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-26",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-01-30"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2025-03-01"},
+        {"usia": 2, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-03-31"},
+        {"usia": 3, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-04-30"},
+        {"usia": 4, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-05-30"},
+        {"usia": 5, "berat": 35, "penyakit": null, "tgl_monitoring": "2025-06-29"},
+        {"usia": 6, "berat": 41, "penyakit": null, "tgl_monitoring": "2025-07-29"},
+        {"usia": 7, "berat": 46, "penyakit": null, "tgl_monitoring": "2025-08-28"},
+        {"usia": 8, "berat": 52, "penyakit": null, "tgl_monitoring": "2025-09-27"},
+        {"usia": 9, "berat": 57, "penyakit": null, "tgl_monitoring": "2025-10-27"},
+        {"usia": 10, "berat": 64, "penyakit": null, "tgl_monitoring": "2025-11-26"},
+        {"usia": 11, "berat": 70, "penyakit": null, "tgl_monitoring": "2025-12-26"},
+        {"usia": 12, "berat": 75, "penyakit": null, "tgl_monitoring": "2026-01-25"},
+        {"usia": 13, "berat": 82, "penyakit": null, "tgl_monitoring": "2026-02-24"},
+        {"usia": 14, "berat": 88, "penyakit": null, "tgl_monitoring": "2026-03-26"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 38,
+        "jenis_kelamin": "Betina",
+        "usia": 2,
+        "berat": 7,
+        "harga": 350000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-29",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2026-01-28"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2026-02-27"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2026-03-29"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 39,
+        "jenis_kelamin": "Jantan",
+        "usia": 3,
+        "berat": 10,
+        "harga": 500000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-07",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2026-01-07"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2026-02-06"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2026-03-08"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2026-04-07"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 40,
+        "jenis_kelamin": "Jantan",
+        "usia": 9,
+        "berat": 25,
+        "harga": 1250000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-28",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-07-01"},
+        {"usia": 1, "berat": 5, "penyakit": null, "tgl_monitoring": "2025-07-31"},
+        {"usia": 2, "berat": 8, "penyakit": null, "tgl_monitoring": "2025-08-30"},
+        {"usia": 3, "berat": 11, "penyakit": null, "tgl_monitoring": "2025-09-29"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-10-29"},
+        {"usia": 5, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-11-28"},
+        {"usia": 6, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-12-28"},
+        {"usia": 7, "berat": 20, "penyakit": null, "tgl_monitoring": "2026-01-27"},
+        {"usia": 8, "berat": 23, "penyakit": null, "tgl_monitoring": "2026-02-26"},
+        {"usia": 9, "berat": 25, "penyakit": null, "tgl_monitoring": "2026-03-28"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 41,
+        "jenis_kelamin": "Betina",
+        "usia": 18,
+        "berat": 88,
+        "harga": 4400000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-25",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2024-10-01"},
+        {"usia": 1, "berat": 8, "penyakit": null, "tgl_monitoring": "2024-10-31"},
+        {"usia": 2, "berat": 12, "penyakit": null, "tgl_monitoring": "2024-11-30"},
+        {"usia": 3, "berat": 16, "penyakit": null, "tgl_monitoring": "2024-12-30"},
+        {"usia": 4, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-01-29"},
+        {"usia": 5, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-02-28"},
+        {"usia": 6, "berat": 30, "penyakit": null, "tgl_monitoring": "2025-03-30"},
+        {"usia": 7, "berat": 34, "penyakit": null, "tgl_monitoring": "2025-04-29"},
+        {"usia": 8, "berat": 39, "penyakit": null, "tgl_monitoring": "2025-05-29"},
+        {"usia": 9, "berat": 44, "penyakit": null, "tgl_monitoring": "2025-06-28"},
+        {"usia": 10, "berat": 48, "penyakit": null, "tgl_monitoring": "2025-07-28"},
+        {"usia": 11, "berat": 54, "penyakit": null, "tgl_monitoring": "2025-08-27"},
+        {"usia": 12, "berat": 59, "penyakit": null, "tgl_monitoring": "2025-09-26"},
+        {"usia": 13, "berat": 65, "penyakit": null, "tgl_monitoring": "2025-10-26"},
+        {"usia": 14, "berat": 69, "penyakit": null, "tgl_monitoring": "2025-11-25"},
+        {"usia": 15, "berat": 73, "penyakit": null, "tgl_monitoring": "2025-12-25"},
+        {"usia": 16, "berat": 78, "penyakit": null, "tgl_monitoring": "2026-01-24"},
+        {"usia": 17, "berat": 83, "penyakit": null, "tgl_monitoring": "2026-02-23"},
+        {"usia": 18, "berat": 88, "penyakit": null, "tgl_monitoring": "2026-03-25"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 42,
+        "jenis_kelamin": "Jantan",
+        "usia": 7,
+        "berat": 36,
+        "harga": 1800000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-30",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": "Pink Eye", "tgl_monitoring": "2025-09-01"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-10-01"},
+        {"usia": 2, "berat": 11, "penyakit": "Orf (Bintil Mulut)", "tgl_monitoring": "2025-10-31"},
+        {"usia": 3, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-11-30"},
+        {"usia": 4, "berat": 20, "penyakit": null, "tgl_monitoring": "2025-12-30"},
+        {"usia": 5, "berat": 25, "penyakit": null, "tgl_monitoring": "2026-01-29"},
+        {"usia": 6, "berat": 31, "penyakit": null, "tgl_monitoring": "2026-02-28"},
+        {"usia": 7, "berat": 36, "penyakit": null, "tgl_monitoring": "2026-03-30"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 43,
+        "jenis_kelamin": "Betina",
+        "usia": 21,
+        "berat": 102,
+        "harga": 5100000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-17",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2024-06-25"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2024-07-25"},
+        {"usia": 2, "berat": 12, "penyakit": null, "tgl_monitoring": "2024-08-24"},
+        {"usia": 3, "berat": 17, "penyakit": null, "tgl_monitoring": "2024-09-23"},
+        {"usia": 4, "berat": 22, "penyakit": null, "tgl_monitoring": "2024-10-23"},
+        {"usia": 5, "berat": 27, "penyakit": null, "tgl_monitoring": "2024-11-22"},
+        {"usia": 6, "berat": 31, "penyakit": null, "tgl_monitoring": "2024-12-22"},
+        {"usia": 7, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-01-21"},
+        {"usia": 8, "berat": 41, "penyakit": null, "tgl_monitoring": "2025-02-20"},
+        {"usia": 9, "berat": 46, "penyakit": null, "tgl_monitoring": "2025-03-22"},
+        {"usia": 10, "berat": 51, "penyakit": null, "tgl_monitoring": "2025-04-21"},
+        {"usia": 11, "berat": 56, "penyakit": null, "tgl_monitoring": "2025-05-21"},
+        {"usia": 12, "berat": 61, "penyakit": null, "tgl_monitoring": "2025-06-20"},
+        {"usia": 13, "berat": 66, "penyakit": null, "tgl_monitoring": "2025-07-20"},
+        {"usia": 14, "berat": 70, "penyakit": null, "tgl_monitoring": "2025-08-19"},
+        {"usia": 15, "berat": 75, "penyakit": null, "tgl_monitoring": "2025-09-18"},
+        {"usia": 16, "berat": 79, "penyakit": null, "tgl_monitoring": "2025-10-18"},
+        {"usia": 17, "berat": 85, "penyakit": null, "tgl_monitoring": "2025-11-17"},
+        {"usia": 18, "berat": 89, "penyakit": null, "tgl_monitoring": "2025-12-17"},
+        {"usia": 19, "berat": 93, "penyakit": null, "tgl_monitoring": "2026-01-16"},
+        {"usia": 20, "berat": 98, "penyakit": null, "tgl_monitoring": "2026-02-15"},
+        {"usia": 21, "berat": 102, "penyakit": null, "tgl_monitoring": "2026-03-17"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 44,
+        "jenis_kelamin": "Betina",
+        "usia": 22,
+        "berat": 62,
+        "harga": 3100000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-12",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2024-05-21"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-06-20"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2024-07-20"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2024-08-19"},
+        {"usia": 4, "berat": 12, "penyakit": null, "tgl_monitoring": "2024-09-18"},
+        {"usia": 5, "berat": 15, "penyakit": null, "tgl_monitoring": "2024-10-18"},
+        {"usia": 6, "berat": 17, "penyakit": null, "tgl_monitoring": "2024-11-17"},
+        {"usia": 7, "berat": 20, "penyakit": null, "tgl_monitoring": "2024-12-17"},
+        {"usia": 8, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-01-16"},
+        {"usia": 9, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-02-15"},
+        {"usia": 10, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-03-17"},
+        {"usia": 11, "berat": 32, "penyakit": "Pink Eye", "tgl_monitoring": "2025-04-16"},
+        {"usia": 12, "berat": 35, "penyakit": null, "tgl_monitoring": "2025-05-16"},
+        {"usia": 13, "berat": 38, "penyakit": null, "tgl_monitoring": "2025-06-15"},
+        {"usia": 14, "berat": 41, "penyakit": null, "tgl_monitoring": "2025-07-15"},
+        {"usia": 15, "berat": 43, "penyakit": null, "tgl_monitoring": "2025-08-14"},
+        {"usia": 16, "berat": 45, "penyakit": null, "tgl_monitoring": "2025-09-13"},
+        {"usia": 17, "berat": 48, "penyakit": null, "tgl_monitoring": "2025-10-13"},
+        {"usia": 18, "berat": 51, "penyakit": null, "tgl_monitoring": "2025-11-12"},
+        {"usia": 19, "berat": 54, "penyakit": "Mastitis", "tgl_monitoring": "2025-12-12"},
+        {"usia": 20, "berat": 56, "penyakit": null, "tgl_monitoring": "2026-01-11"},
+        {"usia": 21, "berat": 59, "penyakit": null, "tgl_monitoring": "2026-02-10"},
+        {"usia": 22, "berat": 62, "penyakit": null, "tgl_monitoring": "2026-03-12"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 45,
+        "jenis_kelamin": "Jantan",
+        "usia": 10,
+        "berat": 66,
+        "harga": 3300000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-06",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": "Orf (Bintil Mulut)", "tgl_monitoring": "2025-06-10"},
+        {"usia": 1, "berat": 11, "penyakit": null, "tgl_monitoring": "2025-07-10"},
+        {"usia": 2, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-08-09"},
+        {"usia": 3, "berat": 25, "penyakit": null, "tgl_monitoring": "2025-09-08"},
+        {"usia": 4, "berat": 31, "penyakit": null, "tgl_monitoring": "2025-10-08"},
+        {"usia": 5, "berat": 38, "penyakit": null, "tgl_monitoring": "2025-11-07"},
+        {"usia": 6, "berat": 44, "penyakit": null, "tgl_monitoring": "2025-12-07"},
+        {"usia": 7, "berat": 50, "penyakit": null, "tgl_monitoring": "2026-01-06"},
+        {"usia": 8, "berat": 55, "penyakit": null, "tgl_monitoring": "2026-02-05"},
+        {"usia": 9, "berat": 60, "penyakit": null, "tgl_monitoring": "2026-03-07"},
+        {"usia": 10, "berat": 66, "penyakit": null, "tgl_monitoring": "2026-04-06"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 46,
+        "jenis_kelamin": "Jantan",
+        "usia": 8,
+        "berat": 24,
+        "harga": 1200000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-17",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-07-20"},
+        {"usia": 1, "berat": 5, "penyakit": null, "tgl_monitoring": "2025-08-19"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-09-18"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-10-18"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-11-17"},
+        {"usia": 5, "berat": 15, "penyakit": null, "tgl_monitoring": "2025-12-17"},
+        {"usia": 6, "berat": 18, "penyakit": null, "tgl_monitoring": "2026-01-16"},
+        {"usia": 7, "berat": 21, "penyakit": null, "tgl_monitoring": "2026-02-15"},
+        {"usia": 8, "berat": 24, "penyakit": null, "tgl_monitoring": "2026-03-17"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 47,
+        "jenis_kelamin": "Betina",
+        "usia": 12,
+        "berat": 78,
+        "harga": 3900000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-10",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-03-15"},
+        {"usia": 1, "berat": 10, "penyakit": "Cacingan", "tgl_monitoring": "2025-04-14"},
+        {"usia": 2, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-05-14"},
+        {"usia": 3, "berat": 22, "penyakit": "Cacingan", "tgl_monitoring": "2025-06-13"},
+        {"usia": 4, "berat": 28, "penyakit": null, "tgl_monitoring": "2025-07-13"},
+        {"usia": 5, "berat": 36, "penyakit": "Scabies (Kudis)", "tgl_monitoring": "2025-08-12"},
+        {"usia": 6, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-09-11"},
+        {"usia": 7, "berat": 48, "penyakit": "Pneumonia", "tgl_monitoring": "2025-10-11"},
+        {"usia": 8, "berat": 53, "penyakit": null, "tgl_monitoring": "2025-11-10"},
+        {"usia": 9, "berat": 60, "penyakit": null, "tgl_monitoring": "2025-12-10"},
+        {"usia": 10, "berat": 66, "penyakit": null, "tgl_monitoring": "2026-01-09"},
+        {"usia": 11, "berat": 72, "penyakit": null, "tgl_monitoring": "2026-02-08"},
+        {"usia": 12, "berat": 78, "penyakit": null, "tgl_monitoring": "2026-03-10"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 48,
+        "jenis_kelamin": "Jantan",
+        "usia": 13,
+        "berat": 64,
+        "harga": 3200000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-11",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": "Pneumonia", "tgl_monitoring": "2025-02-14"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2025-03-16"},
+        {"usia": 2, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-04-15"},
+        {"usia": 3, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-05-15"},
+        {"usia": 4, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-06-14"},
+        {"usia": 5, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-07-14"},
+        {"usia": 6, "berat": 31, "penyakit": null, "tgl_monitoring": "2025-08-13"},
+        {"usia": 7, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-09-12"},
+        {"usia": 8, "berat": 40, "penyakit": "Kaki Busuk (Foot Rot)", "tgl_monitoring": "2025-10-12"},
+        {"usia": 9, "berat": 45, "penyakit": null, "tgl_monitoring": "2025-11-11"},
+        {"usia": 10, "berat": 49, "penyakit": null, "tgl_monitoring": "2025-12-11"},
+        {"usia": 11, "berat": 54, "penyakit": null, "tgl_monitoring": "2026-01-10"},
+        {"usia": 12, "berat": 60, "penyakit": null, "tgl_monitoring": "2026-02-09"},
+        {"usia": 13, "berat": 64, "penyakit": null, "tgl_monitoring": "2026-03-11"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 49,
+        "jenis_kelamin": "Betina",
+        "usia": 15,
+        "berat": 95,
+        "harga": 4750000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-27",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-01-01"},
+        {"usia": 1, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-01-31"},
+        {"usia": 2, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-03-02"},
+        {"usia": 3, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-04-01"},
+        {"usia": 4, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-05-01"},
+        {"usia": 5, "berat": 35, "penyakit": null, "tgl_monitoring": "2025-05-31"},
+        {"usia": 6, "berat": 40, "penyakit": null, "tgl_monitoring": "2025-06-30"},
+        {"usia": 7, "berat": 46, "penyakit": null, "tgl_monitoring": "2025-07-30"},
+        {"usia": 8, "berat": 52, "penyakit": null, "tgl_monitoring": "2025-08-29"},
+        {"usia": 9, "berat": 59, "penyakit": null, "tgl_monitoring": "2025-09-28"},
+        {"usia": 10, "berat": 66, "penyakit": null, "tgl_monitoring": "2025-10-28"},
+        {"usia": 11, "berat": 71, "penyakit": null, "tgl_monitoring": "2025-11-27"},
+        {"usia": 12, "berat": 76, "penyakit": "Pneumonia", "tgl_monitoring": "2025-12-27"},
+        {"usia": 13, "berat": 81, "penyakit": null, "tgl_monitoring": "2026-01-26"},
+        {"usia": 14, "berat": 88, "penyakit": null, "tgl_monitoring": "2026-02-25"},
+        {"usia": 15, "berat": 95, "penyakit": null, "tgl_monitoring": "2026-03-27"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 50,
+        "jenis_kelamin": "Betina",
+        "usia": 18,
+        "berat": 87,
+        "harga": 4350000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-25",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2024-10-01"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2024-10-31"},
+        {"usia": 2, "berat": 11, "penyakit": null, "tgl_monitoring": "2024-11-30"},
+        {"usia": 3, "berat": 17, "penyakit": null, "tgl_monitoring": "2024-12-30"},
+        {"usia": 4, "berat": 21, "penyakit": null, "tgl_monitoring": "2025-01-29"},
+        {"usia": 5, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-02-28"},
+        {"usia": 6, "berat": 31, "penyakit": null, "tgl_monitoring": "2025-03-30"},
+        {"usia": 7, "berat": 37, "penyakit": null, "tgl_monitoring": "2025-04-29"},
+        {"usia": 8, "berat": 41, "penyakit": null, "tgl_monitoring": "2025-05-29"},
+        {"usia": 9, "berat": 46, "penyakit": null, "tgl_monitoring": "2025-06-28"},
+        {"usia": 10, "berat": 51, "penyakit": null, "tgl_monitoring": "2025-07-28"},
+        {"usia": 11, "berat": 56, "penyakit": null, "tgl_monitoring": "2025-08-27"},
+        {"usia": 12, "berat": 61, "penyakit": null, "tgl_monitoring": "2025-09-26"},
+        {"usia": 13, "berat": 66, "penyakit": null, "tgl_monitoring": "2025-10-26"},
+        {"usia": 14, "berat": 70, "penyakit": null, "tgl_monitoring": "2025-11-25"},
+        {"usia": 15, "berat": 74, "penyakit": null, "tgl_monitoring": "2025-12-25"},
+        {"usia": 16, "berat": 79, "penyakit": null, "tgl_monitoring": "2026-01-24"},
+        {"usia": 17, "berat": 83, "penyakit": null, "tgl_monitoring": "2026-02-23"},
+        {"usia": 18, "berat": 87, "penyakit": null, "tgl_monitoring": "2026-03-25"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 51,
+        "jenis_kelamin": "Jantan",
+        "usia": 21,
+        "berat": 103,
+        "harga": 5150000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-07",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2024-07-16"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2024-08-15"},
+        {"usia": 2, "berat": 13, "penyakit": null, "tgl_monitoring": "2024-09-14"},
+        {"usia": 3, "berat": 18, "penyakit": null, "tgl_monitoring": "2024-10-14"},
+        {"usia": 4, "berat": 24, "penyakit": null, "tgl_monitoring": "2024-11-13"},
+        {"usia": 5, "berat": 28, "penyakit": null, "tgl_monitoring": "2024-12-13"},
+        {"usia": 6, "berat": 32, "penyakit": null, "tgl_monitoring": "2025-01-12"},
+        {"usia": 7, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-02-11"},
+        {"usia": 8, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-03-13"},
+        {"usia": 9, "berat": 46, "penyakit": null, "tgl_monitoring": "2025-04-12"},
+        {"usia": 10, "berat": 50, "penyakit": null, "tgl_monitoring": "2025-05-12"},
+        {"usia": 11, "berat": 55, "penyakit": null, "tgl_monitoring": "2025-06-11"},
+        {"usia": 12, "berat": 60, "penyakit": null, "tgl_monitoring": "2025-07-11"},
+        {"usia": 13, "berat": 64, "penyakit": null, "tgl_monitoring": "2025-08-10"},
+        {"usia": 14, "berat": 68, "penyakit": null, "tgl_monitoring": "2025-09-09"},
+        {"usia": 15, "berat": 73, "penyakit": null, "tgl_monitoring": "2025-10-09"},
+        {"usia": 16, "berat": 79, "penyakit": null, "tgl_monitoring": "2025-11-08"},
+        {"usia": 17, "berat": 84, "penyakit": null, "tgl_monitoring": "2025-12-08"},
+        {"usia": 18, "berat": 89, "penyakit": "Scabies (Kudis)", "tgl_monitoring": "2026-01-07"},
+        {"usia": 19, "berat": 94, "penyakit": null, "tgl_monitoring": "2026-02-06"},
+        {"usia": 20, "berat": 98, "penyakit": null, "tgl_monitoring": "2026-03-08"},
+        {"usia": 21, "berat": 103, "penyakit": null, "tgl_monitoring": "2026-04-07"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 52,
+        "jenis_kelamin": "Betina",
+        "usia": 15,
+        "berat": 42,
+        "harga": 2100000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-30",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-01-04"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-02-03"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-03-05"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-04-04"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-05-04"},
+        {"usia": 5, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-06-03"},
+        {"usia": 6, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-07-03"},
+        {"usia": 7, "berat": 21, "penyakit": null, "tgl_monitoring": "2025-08-02"},
+        {"usia": 8, "berat": 24, "penyakit": null, "tgl_monitoring": "2025-09-01"},
+        {"usia": 9, "berat": 26, "penyakit": null, "tgl_monitoring": "2025-10-01"},
+        {"usia": 10, "berat": 29, "penyakit": null, "tgl_monitoring": "2025-10-31"},
+        {"usia": 11, "berat": 32, "penyakit": null, "tgl_monitoring": "2025-11-30"},
+        {"usia": 12, "berat": 34, "penyakit": null, "tgl_monitoring": "2025-12-30"},
+        {"usia": 13, "berat": 37, "penyakit": null, "tgl_monitoring": "2026-01-29"},
+        {"usia": 14, "berat": 40, "penyakit": null, "tgl_monitoring": "2026-02-28"},
+        {"usia": 15, "berat": 42, "penyakit": null, "tgl_monitoring": "2026-03-30"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 53,
+        "jenis_kelamin": "Betina",
+        "usia": 11,
+        "berat": 30,
+        "harga": 1500000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-29",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-05-03"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2025-06-02"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-07-02"},
+        {"usia": 3, "berat": 9, "penyakit": null, "tgl_monitoring": "2025-08-01"},
+        {"usia": 4, "berat": 12, "penyakit": null, "tgl_monitoring": "2025-08-31"},
+        {"usia": 5, "berat": 14, "penyakit": null, "tgl_monitoring": "2025-09-30"},
+        {"usia": 6, "berat": 18, "penyakit": null, "tgl_monitoring": "2025-10-30"},
+        {"usia": 7, "berat": 20, "penyakit": null, "tgl_monitoring": "2025-11-29"},
+        {"usia": 8, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-12-29"},
+        {"usia": 9, "berat": 25, "penyakit": "Pink Eye", "tgl_monitoring": "2026-01-28"},
+        {"usia": 10, "berat": 27, "penyakit": null, "tgl_monitoring": "2026-02-27"},
+        {"usia": 11, "berat": 30, "penyakit": null, "tgl_monitoring": "2026-03-29"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 54,
+        "jenis_kelamin": "Betina",
+        "usia": 18,
+        "berat": 89,
+        "harga": 4450000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-17",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2024-09-23"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2024-10-23"},
+        {"usia": 2, "berat": 14, "penyakit": null, "tgl_monitoring": "2024-11-22"},
+        {"usia": 3, "berat": 18, "penyakit": null, "tgl_monitoring": "2024-12-22"},
+        {"usia": 4, "berat": 23, "penyakit": null, "tgl_monitoring": "2025-01-21"},
+        {"usia": 5, "berat": 27, "penyakit": null, "tgl_monitoring": "2025-02-20"},
+        {"usia": 6, "berat": 32, "penyakit": null, "tgl_monitoring": "2025-03-22"},
+        {"usia": 7, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-04-21"},
+        {"usia": 8, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-05-21"},
+        {"usia": 9, "berat": 47, "penyakit": null, "tgl_monitoring": "2025-06-20"},
+        {"usia": 10, "berat": 52, "penyakit": null, "tgl_monitoring": "2025-07-20"},
+        {"usia": 11, "berat": 58, "penyakit": null, "tgl_monitoring": "2025-08-19"},
+        {"usia": 12, "berat": 62, "penyakit": null, "tgl_monitoring": "2025-09-18"},
+        {"usia": 13, "berat": 66, "penyakit": null, "tgl_monitoring": "2025-10-18"},
+        {"usia": 14, "berat": 70, "penyakit": null, "tgl_monitoring": "2025-11-17"},
+        {"usia": 15, "berat": 75, "penyakit": null, "tgl_monitoring": "2025-12-17"},
+        {"usia": 16, "berat": 79, "penyakit": null, "tgl_monitoring": "2026-01-16"},
+        {"usia": 17, "berat": 84, "penyakit": null, "tgl_monitoring": "2026-02-15"},
+        {"usia": 18, "berat": 89, "penyakit": null, "tgl_monitoring": "2026-03-17"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 55,
+        "jenis_kelamin": "Betina",
+        "usia": 17,
+        "berat": 49,
+        "harga": 2450000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-04",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2024-11-10"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-12-10"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-01-09"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-02-08"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-03-10"},
+        {"usia": 5, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-04-09"},
+        {"usia": 6, "berat": 19, "penyakit": null, "tgl_monitoring": "2025-05-09"},
+        {"usia": 7, "berat": 21, "penyakit": null, "tgl_monitoring": "2025-06-08"},
+        {"usia": 8, "berat": 24, "penyakit": null, "tgl_monitoring": "2025-07-08"},
+        {"usia": 9, "berat": 28, "penyakit": null, "tgl_monitoring": "2025-08-07"},
+        {"usia": 10, "berat": 30, "penyakit": null, "tgl_monitoring": "2025-09-06"},
+        {"usia": 11, "berat": 33, "penyakit": null, "tgl_monitoring": "2025-10-06"},
+        {"usia": 12, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-11-05"},
+        {"usia": 13, "berat": 38, "penyakit": null, "tgl_monitoring": "2025-12-05"},
+        {"usia": 14, "berat": 40, "penyakit": null, "tgl_monitoring": "2026-01-04"},
+        {"usia": 15, "berat": 43, "penyakit": null, "tgl_monitoring": "2026-02-03"},
+        {"usia": 16, "berat": 46, "penyakit": null, "tgl_monitoring": "2026-03-05"},
+        {"usia": 17, "berat": 49, "penyakit": "Pink Eye", "tgl_monitoring": "2026-04-04"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 56,
+        "jenis_kelamin": "Betina",
+        "usia": 18,
+        "berat": 53,
+        "harga": 2650000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-21",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2024-09-27"},
+        {"usia": 1, "berat": 5, "penyakit": null, "tgl_monitoring": "2024-10-27"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2024-11-26"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2024-12-26"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-01-25"},
+        {"usia": 5, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-02-24"},
+        {"usia": 6, "berat": 19, "penyakit": null, "tgl_monitoring": "2025-03-26"},
+        {"usia": 7, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-04-25"},
+        {"usia": 8, "berat": 25, "penyakit": null, "tgl_monitoring": "2025-05-25"},
+        {"usia": 9, "berat": 28, "penyakit": null, "tgl_monitoring": "2025-06-24"},
+        {"usia": 10, "berat": 30, "penyakit": null, "tgl_monitoring": "2025-07-24"},
+        {"usia": 11, "berat": 33, "penyakit": null, "tgl_monitoring": "2025-08-23"},
+        {"usia": 12, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-09-22"},
+        {"usia": 13, "berat": 38, "penyakit": null, "tgl_monitoring": "2025-10-22"},
+        {"usia": 14, "berat": 41, "penyakit": null, "tgl_monitoring": "2025-11-21"},
+        {"usia": 15, "berat": 44, "penyakit": null, "tgl_monitoring": "2025-12-21"},
+        {"usia": 16, "berat": 47, "penyakit": null, "tgl_monitoring": "2026-01-20"},
+        {"usia": 17, "berat": 50, "penyakit": null, "tgl_monitoring": "2026-02-19"},
+        {"usia": 18, "berat": 53, "penyakit": null, "tgl_monitoring": "2026-03-21"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 57,
+        "jenis_kelamin": "Jantan",
+        "usia": 7,
+        "berat": 21,
+        "harga": 1050000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-17",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": null, "tgl_monitoring": "2025-08-19"},
+        {"usia": 1, "berat": 5, "penyakit": null, "tgl_monitoring": "2025-09-18"},
+        {"usia": 2, "berat": 8, "penyakit": null, "tgl_monitoring": "2025-10-18"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2025-11-17"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2025-12-17"},
+        {"usia": 5, "berat": 16, "penyakit": "Mastitis", "tgl_monitoring": "2026-01-16"},
+        {"usia": 6, "berat": 19, "penyakit": null, "tgl_monitoring": "2026-02-15"},
+        {"usia": 7, "berat": 21, "penyakit": null, "tgl_monitoring": "2026-03-17"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 58,
+        "jenis_kelamin": "Betina",
+        "usia": 11,
+        "berat": 56,
+        "harga": 2800000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-26",
+        "id_jenis_ternak": 2
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 3, "penyakit": null, "tgl_monitoring": "2025-04-30"},
+        {"usia": 1, "berat": 7, "penyakit": null, "tgl_monitoring": "2025-05-30"},
+        {"usia": 2, "berat": 11, "penyakit": null, "tgl_monitoring": "2025-06-29"},
+        {"usia": 3, "berat": 16, "penyakit": null, "tgl_monitoring": "2025-07-29"},
+        {"usia": 4, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-08-28"},
+        {"usia": 5, "berat": 27, "penyakit": null, "tgl_monitoring": "2025-09-27"},
+        {"usia": 6, "berat": 33, "penyakit": null, "tgl_monitoring": "2025-10-27"},
+        {"usia": 7, "berat": 37, "penyakit": null, "tgl_monitoring": "2025-11-26"},
+        {"usia": 8, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-12-26"},
+        {"usia": 9, "berat": 46, "penyakit": null, "tgl_monitoring": "2026-01-25"},
+        {"usia": 10, "berat": 51, "penyakit": null, "tgl_monitoring": "2026-02-24"},
+        {"usia": 11, "berat": 56, "penyakit": null, "tgl_monitoring": "2026-03-26"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 59,
+        "jenis_kelamin": "Jantan",
+        "usia": 21,
+        "berat": 127,
+        "harga": 6350000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-04-02",
+        "id_jenis_ternak": 1
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-07-11"},
+        {"usia": 1, "berat": 9, "penyakit": null, "tgl_monitoring": "2024-08-10"},
+        {"usia": 2, "berat": 15, "penyakit": null, "tgl_monitoring": "2024-09-09"},
+        {"usia": 3, "berat": 21, "penyakit": null, "tgl_monitoring": "2024-10-09"},
+        {"usia": 4, "berat": 27, "penyakit": null, "tgl_monitoring": "2024-11-08"},
+        {"usia": 5, "berat": 33, "penyakit": null, "tgl_monitoring": "2024-12-08"},
+        {"usia": 6, "berat": 39, "penyakit": null, "tgl_monitoring": "2025-01-07"},
+        {"usia": 7, "berat": 44, "penyakit": null, "tgl_monitoring": "2025-02-06"},
+        {"usia": 8, "berat": 50, "penyakit": null, "tgl_monitoring": "2025-03-08"},
+        {"usia": 9, "berat": 57, "penyakit": null, "tgl_monitoring": "2025-04-07"},
+        {"usia": 10, "berat": 62, "penyakit": null, "tgl_monitoring": "2025-05-07"},
+        {"usia": 11, "berat": 67, "penyakit": null, "tgl_monitoring": "2025-06-06"},
+        {"usia": 12, "berat": 73, "penyakit": null, "tgl_monitoring": "2025-07-06"},
+        {"usia": 13, "berat": 79, "penyakit": null, "tgl_monitoring": "2025-08-05"},
+        {"usia": 14, "berat": 85, "penyakit": null, "tgl_monitoring": "2025-09-04"},
+        {"usia": 15, "berat": 90, "penyakit": null, "tgl_monitoring": "2025-10-04"},
+        {"usia": 16, "berat": 96, "penyakit": null, "tgl_monitoring": "2025-11-03"},
+        {"usia": 17, "berat": 103, "penyakit": null, "tgl_monitoring": "2025-12-03"},
+        {"usia": 18, "berat": 109, "penyakit": null, "tgl_monitoring": "2026-01-02"},
+        {"usia": 19, "berat": 115, "penyakit": null, "tgl_monitoring": "2026-02-01"},
+        {"usia": 20, "berat": 121, "penyakit": null, "tgl_monitoring": "2026-03-03"},
+        {"usia": 21, "berat": 127, "penyakit": null, "tgl_monitoring": "2026-04-02"}
+      ]
+    },
+    {
+      "ternak": {
+        "id_ternak": 60,
+        "jenis_kelamin": "Jantan",
+        "usia": 20,
+        "berat": 55,
+        "harga": 2750000,
+        "status_ternak": "Sehat",
+        "status_jual": "Tersedia",
+        "last_update": "2026-04-08",
+        "last_monitor": "2026-03-23",
+        "id_jenis_ternak": 3
+      },
+      "monitoring": [
+        {"usia": 0, "berat": 2, "penyakit": "Cacingan", "tgl_monitoring": "2024-07-31"},
+        {"usia": 1, "berat": 4, "penyakit": null, "tgl_monitoring": "2024-08-30"},
+        {"usia": 2, "berat": 7, "penyakit": null, "tgl_monitoring": "2024-09-29"},
+        {"usia": 3, "berat": 10, "penyakit": null, "tgl_monitoring": "2024-10-29"},
+        {"usia": 4, "berat": 13, "penyakit": null, "tgl_monitoring": "2024-11-28"},
+        {"usia": 5, "berat": 15, "penyakit": null, "tgl_monitoring": "2024-12-28"},
+        {"usia": 6, "berat": 17, "penyakit": null, "tgl_monitoring": "2025-01-27"},
+        {"usia": 7, "berat": 20, "penyakit": null, "tgl_monitoring": "2025-02-26"},
+        {"usia": 8, "berat": 22, "penyakit": null, "tgl_monitoring": "2025-03-28"},
+        {"usia": 9, "berat": 26, "penyakit": "Scabies (Kudis)", "tgl_monitoring": "2025-04-27"},
+        {"usia": 10, "berat": 28, "penyakit": null, "tgl_monitoring": "2025-05-27"},
+        {"usia": 11, "berat": 31, "penyakit": null, "tgl_monitoring": "2025-06-26"},
+        {"usia": 12, "berat": 33, "penyakit": null, "tgl_monitoring": "2025-07-26"},
+        {"usia": 13, "berat": 36, "penyakit": null, "tgl_monitoring": "2025-08-25"},
+        {"usia": 14, "berat": 39, "penyakit": null, "tgl_monitoring": "2025-09-24"},
+        {"usia": 15, "berat": 42, "penyakit": null, "tgl_monitoring": "2025-10-24"},
+        {"usia": 16, "berat": 44, "penyakit": "Kaki Busuk (Foot Rot)", "tgl_monitoring": "2025-11-23"},
+        {"usia": 17, "berat": 47, "penyakit": null, "tgl_monitoring": "2025-12-23"},
+        {"usia": 18, "berat": 50, "penyakit": null, "tgl_monitoring": "2026-01-22"},
+        {"usia": 19, "berat": 52, "penyakit": null, "tgl_monitoring": "2026-02-21"},
+        {"usia": 20, "berat": 55, "penyakit": null, "tgl_monitoring": "2026-03-23"}
+      ]
+    }
+  ]
+}

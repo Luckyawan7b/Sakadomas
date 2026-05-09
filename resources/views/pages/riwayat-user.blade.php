@@ -129,15 +129,31 @@
                             <p class="text-xs text-gray-500">{{ $trx->total_jumlah }} Ekor</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Harga</p>
-                            <p class="text-sm font-bold text-green-600 dark:text-green-400">Rp {{ number_format($trx->total_harga, 0, ',', '.') }}</p>
-                            <p class="text-xs text-gray-500 capitalize">{{ $trx->metode_pembayaran }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Tagihan</p>
+                            <p class="text-sm font-bold text-green-600 dark:text-green-400">Rp {{ number_format($trx->total_harga + $trx->ongkir, 0, ',', '.') }}</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="text-xs text-gray-500 capitalize">{{ $trx->metode_pembayaran ?? 'Belum dipilih' }}</span>
+                                @if($trx->ongkir > 0)
+                                    <span class="text-xs text-brand-500 font-medium">(+Ongkir Rp {{ number_format($trx->ongkir, 0, ',', '.') }})</span>
+                                @endif
+                            </div>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Pengiriman</p>
-                            <p class="text-sm font-medium text-gray-800 dark:text-white">{{ $trx->kurir !== '-' ? $trx->kurir : 'Belum ditentukan' }}</p>
-                            @if($trx->no_kurir && $trx->no_kurir !== '-')
-                                <p class="text-xs text-gray-500">No HP Kurir: {{ $trx->no_kurir }}</p>
+                            @if($trx->metode_pengiriman === 'ambil_sendiri')
+                                <span class="inline-flex items-center gap-1 rounded-full bg-green-100 dark:bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-400">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                    Ambil Sendiri
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 rounded-full bg-brand-100 dark:bg-brand-500/10 px-2.5 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400 mb-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                                    Dikirim
+                                </span>
+                                <p class="text-sm font-medium text-gray-800 dark:text-white">{{ $trx->kurir ?? 'Belum ditentukan' }}</p>
+                                @if($trx->no_kurir)
+                                    <p class="text-xs text-gray-500">No HP Kurir: {{ $trx->no_kurir }}</p>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -209,18 +225,24 @@
                     @endif
 
                     {{-- Info Harga --}}
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm mb-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-4">
                         <div>
                             <p class="text-xs text-gray-400">Jenis Ternak</p>
                             <p class="capitalize font-medium text-gray-700 dark:text-gray-300">{{ $trx->jenisTernak->jenis_ternak ?? '-' }}</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-400">Harga/Ekor</p>
-                            <p class="font-medium text-gray-700 dark:text-gray-300">Rp {{ number_format(($trx->total_jumlah > 0 ? $trx->total_harga / $trx->total_jumlah : 0), 0, ',', '.') }}</p>
+                            <p class="text-xs text-gray-400">Harga Ternak</p>
+                            <p class="font-medium text-gray-700 dark:text-gray-300">Rp {{ number_format($trx->total_harga, 0, ',', '.') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400">Ongkos Kirim</p>
+                            <p class="font-medium {{ $trx->ongkir > 0 ? 'text-gray-700 dark:text-gray-300' : 'text-green-600 dark:text-green-400' }}">
+                                {{ $trx->ongkir > 0 ? 'Rp ' . number_format($trx->ongkir, 0, ',', '.') : 'Gratis' }}
+                            </p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-400">Metode Bayar</p>
-                            <p class="font-medium text-gray-700 dark:text-gray-300 capitalize">{{ $trx->metode_pembayaran }}</p>
+                            <p class="font-medium text-gray-700 dark:text-gray-300 capitalize">{{ $trx->metode_pembayaran ?? 'Belum dipilih' }}</p>
                         </div>
                     </div>
 
@@ -397,6 +419,13 @@
                                             <form action="{{ route('transaksi.upload-bukti', $trx->id_transaksi) }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-3">
                                                 @csrf
                                                 <div>
+                                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Metode Pengiriman</label>
+                                                    <select name="metode_pengiriman" required class="mt-1 block w-full rounded border border-gray-300 text-sm p-2 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                                                        <option value="ambil_sendiri">Ambil Sendiri (Gratis Ongkir)</option>
+                                                        <option value="dikirim">Kirim ke Alamat (Biaya Ongkir Menyesuaikan Jarak)</option>
+                                                    </select>
+                                                </div>
+                                                <div>
                                                     <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Metode Pembayaran</label>
                                                     <select name="metode_pembayaran" required class="mt-1 block w-full rounded border border-gray-300 text-sm p-2 dark:bg-gray-800 dark:border-gray-600 dark:text-white" onchange="document.getElementById('upload_area_{{$trx->id_transaksi}}').style.display = this.value === 'transfer' ? 'block' : 'none'">
                                                         <option value="transfer">Transfer Bank</option>
@@ -406,8 +435,9 @@
                                                 <div id="upload_area_{{$trx->id_transaksi}}">
                                                     <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Bukti Transfer (Max 2MB)</label>
                                                     <input type="file" name="bukti_pembayaran" accept="image/*" class="mt-1 block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                                                    <p class="text-[10px] text-gray-500 mt-1">Total tagihan akhir akan diperbarui sesuai metode pengiriman.</p>
                                                 </div>
-                                                <button type="submit" class="self-start rounded bg-brand-500 px-4 py-2 text-xs font-medium text-white hover:bg-brand-600">Simpan & Selesai</button>
+                                                <button type="submit" class="self-start rounded bg-brand-500 px-4 py-2 text-xs font-medium text-white hover:bg-brand-600">Simpan Pilihan & Selesai</button>
                                             </form>
                                         </div>
                                     @endif

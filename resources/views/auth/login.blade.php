@@ -137,12 +137,17 @@
                                 @if ($errors->has('password')) aria-describedby="password-error" aria-invalid="true" @endif
                                 class="pw-input w-full px-5 py-4 pr-14 bg-surface-container-highest border-none rounded-xl text-on-surface placeholder:text-outline/50 focus:ring-2 focus:ring-primary/30 focus:bg-surface-bright transition-all {{ $errors->has('password') ? 'ring-2 ring-error/50' : '' }}">
                             <button type="button" @click="showPassword = !showPassword"
-                                class="pw-toggle absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-primary transition-colors"
+                                class="pw-toggle flex items-center justify-center absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-primary transition-colors cursor-pointer z-10"
                                 aria-label="Tampilkan atau sembunyikan kata sandi">
-                                <span x-show="!showPassword" class="material-symbols-outlined">visibility</span>
-                                <span x-show="showPassword" class="material-symbols-outlined"
-                                    style="display: none;">visibility_off</span>
+                                <span x-show="!showPassword" class="material-symbols-outlined leading-none">visibility</span>
+                                <span x-show="showPassword" class="material-symbols-outlined leading-none" style="display: none;">visibility_off</span>
                             </button>
+
+                            {{-- <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors cursor-pointer z-10">
+                                <span x-show="!showPassword" class="material-symbols-outlined leading-none">visibility</span>
+                                <span x-show="showPassword" class="material-symbols-outlined leading-none" style="display: none;">visibility_off</span>
+                            </button> --}}
+
                         </div>
                     </div>
 

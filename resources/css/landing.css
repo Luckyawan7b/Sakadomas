@@ -90,6 +90,54 @@
     --radius-4xl: 2rem;
     --radius-5xl: 2.5rem;
 
+    /* ── Material 3 — Design Tokens dari UI Baru ─────────────────────── */
+    /* Warna utama (green-based) untuk halaman landing baru              */
+    --color-m3-primary:             #3d6700;
+    --color-m3-on-primary:          #ffffff;
+    --color-m3-primary-container:   #4f8207;
+    --color-m3-on-primary-container:#f9ffea;
+    --color-m3-primary-fixed:       #b9f474;
+    --color-m3-primary-fixed-dim:   #9ed75b;
+    --color-m3-secondary:           #496800;
+    --color-m3-on-secondary:        #ffffff;
+    --color-m3-secondary-container: #c8f17a;
+    --color-m3-on-secondary-container: #4e6e00;
+    --color-m3-secondary-fixed:     #c8f17a;
+    --color-m3-secondary-fixed-dim: #add461;
+    --color-m3-tertiary:            #535f56;
+    --color-m3-on-tertiary:         #ffffff;
+    --color-m3-tertiary-container:  #6b786e;
+    --color-m3-on-tertiary-container: #f6fff5;
+    --color-m3-tertiary-fixed:      #d9e6da;
+    --color-m3-tertiary-fixed-dim:  #bdcabe;
+    --color-m3-surface:             #fafaf5;
+    --color-m3-on-surface:          #1a1c19;
+    --color-m3-surface-container:   #eeeee9;
+    --color-m3-surface-container-low:    #f4f4ef;
+    --color-m3-surface-container-lowest: #ffffff;
+    --color-m3-surface-container-high:   #e8e8e3;
+    --color-m3-surface-container-highest:#e3e3de;
+    --color-m3-surface-variant:     #e3e3de;
+    --color-m3-on-surface-variant:  #444939;
+    --color-m3-surface-bright:      #fafaf5;
+    --color-m3-surface-dim:         #dadad5;
+    --color-m3-surface-tint:        #3e6a00;
+    --color-m3-outline:             #747967;
+    --color-m3-outline-variant:     #c4c9b4;
+    --color-m3-inverse-surface:     #2f312e;
+    --color-m3-inverse-on-surface:  #f1f1ec;
+    --color-m3-inverse-primary:     #9ed75b;
+    --color-m3-error:               #ba1a1a;
+    --color-m3-on-error:            #ffffff;
+    --color-m3-error-container:     #ffdad6;
+    --color-m3-on-error-container:  #93000a;
+
+    /* ── Font families — tambahan dari UI baru ── */
+    --font-headline:  "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-body:      "Manrope", system-ui, sans-serif;
+    --font-label:     "Manrope", system-ui, sans-serif;
+    --font-playfair:  "Playfair Display", Georgia, serif;
+
     /* ── Named animations ── */
     --animate-float:      float 3.5s ease-in-out infinite;
     --animate-float2:     float2 4s ease-in-out infinite;

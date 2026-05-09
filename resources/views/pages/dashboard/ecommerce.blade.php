@@ -54,7 +54,7 @@
                     <div class="flex items-center justify-center w-10 h-10 rounded-xl {{ $total_belum_monitor > 0 ? 'bg-red-100 dark:bg-red-500/20' : 'bg-green-100 dark:bg-green-500/20' }}">
                         <svg class="w-5 h-5 {{ $total_belum_monitor > 0 ? 'text-red-500' : 'text-green-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                     </div>
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Monitoring</span>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Monitoring Bulan Ini</span>
                 </div>
                 <div class="flex items-end justify-between">
                     <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ $persen_sudah_monitor }}%</h3>
@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // MutationObserver to detect theme changes (dark mode toggle)
     const observer = new MutationObserver(() => {
         const newTheme = getChartTheme();
-        
+
         // Update Donut Chart
         chartPenjualan.updateOptions({
             stroke: { colors: [newTheme.bgStroke] },

@@ -26,9 +26,9 @@ class AkunController extends Controller
 
     public function showRegister()
     {
-        $kecamatan = Kecamatan::all();
-        return view('auth.register', ['title' => 'Register | SMART-SAKA'], compact('kecamatan'));
-        // return view('pages.auth.signup', ['title' => 'Register | SMART-SAKA'], compact('kecamatan'));
+        $kecamatan = Kecamatan::select('id_kecamatan', 'nama_kecamatan')->get();
+        $desa = Desa::select('id_desa', 'id_kecamatan', 'nama_desa')->get();
+        return view('auth.register', ['title' => 'Register | SMART-SAKA'], compact('kecamatan', 'desa'));
     }
 
     public function register(Request $request)

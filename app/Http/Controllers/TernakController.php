@@ -88,7 +88,7 @@ class TernakController extends Controller
         $data_kamar = Kamar::with('kandang')->get();
         $data_jenis = JenisTernak::all();
 
-        $stat_total = Ternak::count();
+        $stat_total = Ternak::where('status_ternak', '!=', 'mati')->where('status_jual', '!=', 'terjual')->count();
         $stat_siap_jual = Ternak::where('status_jual', 'siap jual')->count();
         $stat_sakit = Ternak::where('status_ternak', 'sakit')->count();
         $stat_terjual = Ternak::where('status_jual', 'terjual')->count();
@@ -201,7 +201,7 @@ class TernakController extends Controller
     public function delete($id)
     {
         $ternak = Ternak::findOrFail($id);
-        
+
         // Sempurnakan logika: bukan menghapus record, tapi mengeluarkan dari kamar
         $ternak->update([
             'id_kamar' => null

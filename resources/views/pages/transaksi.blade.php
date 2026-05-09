@@ -260,9 +260,16 @@
 
                             <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
                                 <span class="font-bold text-green-600 dark:text-green-400">Rp
-                                    {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span><br>
-                                <span class="text-xs text-gray-500"><i class="fas fa-truck text-[10px]"></i>
-                                    {{ $transaksi->kurir }} ({{ $transaksi->no_kurir }})</span>
+                                    {{ number_format($transaksi->total_harga + $transaksi->ongkir, 0, ',', '.') }}</span><br>
+                                @if($transaksi->ongkir > 0)
+                                    <span class="text-xs text-gray-500">(Ongkir: Rp {{ number_format($transaksi->ongkir, 0, ',', '.') }})</span><br>
+                                @endif
+                                @if($transaksi->metode_pengiriman === 'ambil_sendiri')
+                                    <span class="inline-flex items-center gap-1 mt-1 rounded-full bg-green-100 dark:bg-green-500/10 px-2 py-0.5 text-[10px] font-medium text-green-700 dark:text-green-400">Ambil Sendiri</span>
+                                @else
+                                    <span class="text-xs text-gray-500"><i class="fas fa-truck text-[10px]"></i>
+                                        {{ $transaksi->kurir ?? '-' }} ({{ $transaksi->no_kurir ?? '-' }})</span>
+                                @endif
                             </td>
 
                             <td class="py-4 px-4 text-center">
@@ -388,6 +395,18 @@
                                             @csrf @method('PUT')
                                             <input type="hidden" name="id_transaksi_edit" value="{{ $transaksi->id_transaksi }}">
 
+                                            {{-- Info Pengiriman --}}
+                                            <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-800/50">
+                                                <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Metode Pengiriman</p>
+                                                @if($transaksi->metode_pengiriman === 'ambil_sendiri')
+                                                    <span class="inline-flex items-center gap-1 rounded-full bg-green-100 dark:bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-400">🏠 Ambil Sendiri</span>
+                                                    <p class="text-xs text-gray-500 mt-1">Ongkir: Gratis</p>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 rounded-full bg-brand-100 dark:bg-brand-500/10 px-2.5 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400">🚚 Dikirim</span>
+                                                    <p class="text-xs text-gray-500 mt-1">Ongkir: Rp {{ number_format($transaksi->ongkir, 0, ',', '.') }}</p>
+                                                @endif
+                                            </div>
+
                                             <div>
                                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Update Status</label>
                                                 <select name="status" required class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
@@ -400,6 +419,7 @@
                                                 <p class="mt-1 text-xs text-gray-500">Peringatan: 'Selesai' memindahkan ke Rekap, 'Batal' mengembalikan stok ternak.</p>
                                             </div>
 
+                                            @if($transaksi->metode_pengiriman === 'dikirim')
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kurir Pengiriman</label>
@@ -410,6 +430,7 @@
                                                     <input type="text" name="no_kurir" value="{{ $transaksi->no_kurir }}" class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
                                                 </div>
                                             </div>
+                                            @endif
 
                                             <div class="flex items-center gap-3 mt-4 justify-end">
                                                 <button @click="modalEdit = false" type="button" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">Batal</button>

@@ -1,0 +1,1242 @@
+[
+    {
+        "id_jarak": 1,
+        "id_desa": 1,
+        "jarak_km": 20
+    },
+    {
+        "id_jarak": 2,
+        "id_desa": 2,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 3,
+        "id_desa": 3,
+        "jarak_km": 23
+    },
+    {
+        "id_jarak": 4,
+        "id_desa": 4,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 5,
+        "id_desa": 5,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 6,
+        "id_desa": 6,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 7,
+        "id_desa": 7,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 8,
+        "id_desa": 8,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 9,
+        "id_desa": 9,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 10,
+        "id_desa": 10,
+        "jarak_km": 15
+    },
+    {
+        "id_jarak": 11,
+        "id_desa": 11,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 12,
+        "id_desa": 12,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 13,
+        "id_desa": 13,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 14,
+        "id_desa": 14,
+        "jarak_km": 14
+    },
+    {
+        "id_jarak": 15,
+        "id_desa": 15,
+        "jarak_km": 8
+    },
+    {
+        "id_jarak": 16,
+        "id_desa": 16,
+        "jarak_km": 10
+    },
+    {
+        "id_jarak": 17,
+        "id_desa": 17,
+        "jarak_km": 11
+    },
+    {
+        "id_jarak": 18,
+        "id_desa": 18,
+        "jarak_km": 13
+    },
+    {
+        "id_jarak": 19,
+        "id_desa": 19,
+        "jarak_km": 14
+    },
+    {
+        "id_jarak": 20,
+        "id_desa": 20,
+        "jarak_km": 8
+    },
+    {
+        "id_jarak": 21,
+        "id_desa": 21,
+        "jarak_km": 10
+    },
+    {
+        "id_jarak": 22,
+        "id_desa": 22,
+        "jarak_km": 11
+    },
+    {
+        "id_jarak": 23,
+        "id_desa": 23,
+        "jarak_km": 13
+    },
+    {
+        "id_jarak": 24,
+        "id_desa": 24,
+        "jarak_km": 14
+    },
+    {
+        "id_jarak": 25,
+        "id_desa": 25,
+        "jarak_km": 8
+    },
+    {
+        "id_jarak": 26,
+        "id_desa": 26,
+        "jarak_km": 2
+    },
+    {
+        "id_jarak": 27,
+        "id_desa": 27,
+        "jarak_km": 1
+    },
+    {
+        "id_jarak": 28,
+        "id_desa": 28,
+        "jarak_km": 1
+    },
+    {
+        "id_jarak": 29,
+        "id_desa": 29,
+        "jarak_km": 2
+    },
+    {
+        "id_jarak": 30,
+        "id_desa": 30,
+        "jarak_km": 1
+    },
+    {
+        "id_jarak": 31,
+        "id_desa": 31,
+        "jarak_km": 1
+    },
+    {
+        "id_jarak": 32,
+        "id_desa": 32,
+        "jarak_km": 2
+    },
+    {
+        "id_jarak": 33,
+        "id_desa": 33,
+        "jarak_km": 12
+    },
+    {
+        "id_jarak": 34,
+        "id_desa": 34,
+        "jarak_km": 14
+    },
+    {
+        "id_jarak": 35,
+        "id_desa": 35,
+        "jarak_km": 8
+    },
+    {
+        "id_jarak": 36,
+        "id_desa": 36,
+        "jarak_km": 9
+    },
+    {
+        "id_jarak": 37,
+        "id_desa": 37,
+        "jarak_km": 11
+    },
+    {
+        "id_jarak": 38,
+        "id_desa": 38,
+        "jarak_km": 12
+    },
+    {
+        "id_jarak": 39,
+        "id_desa": 39,
+        "jarak_km": 14
+    },
+    {
+        "id_jarak": 40,
+        "id_desa": 40,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 41,
+        "id_desa": 41,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 42,
+        "id_desa": 42,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 43,
+        "id_desa": 43,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 44,
+        "id_desa": 44,
+        "jarak_km": 24
+    },
+    {
+        "id_jarak": 45,
+        "id_desa": 45,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 46,
+        "id_desa": 46,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 47,
+        "id_desa": 47,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 48,
+        "id_desa": 48,
+        "jarak_km": 44
+    },
+    {
+        "id_jarak": 49,
+        "id_desa": 49,
+        "jarak_km": 45
+    },
+    {
+        "id_jarak": 50,
+        "id_desa": 50,
+        "jarak_km": 39
+    },
+    {
+        "id_jarak": 51,
+        "id_desa": 51,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 52,
+        "id_desa": 52,
+        "jarak_km": 42
+    },
+    {
+        "id_jarak": 53,
+        "id_desa": 53,
+        "jarak_km": 44
+    },
+    {
+        "id_jarak": 54,
+        "id_desa": 54,
+        "jarak_km": 45
+    },
+    {
+        "id_jarak": 55,
+        "id_desa": 55,
+        "jarak_km": 39
+    },
+    {
+        "id_jarak": 56,
+        "id_desa": 56,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 57,
+        "id_desa": 57,
+        "jarak_km": 35
+    },
+    {
+        "id_jarak": 58,
+        "id_desa": 58,
+        "jarak_km": 36
+    },
+    {
+        "id_jarak": 59,
+        "id_desa": 59,
+        "jarak_km": 38
+    },
+    {
+        "id_jarak": 60,
+        "id_desa": 60,
+        "jarak_km": 32
+    },
+    {
+        "id_jarak": 61,
+        "id_desa": 61,
+        "jarak_km": 33
+    },
+    {
+        "id_jarak": 62,
+        "id_desa": 62,
+        "jarak_km": 35
+    },
+    {
+        "id_jarak": 63,
+        "id_desa": 63,
+        "jarak_km": 36
+    },
+    {
+        "id_jarak": 64,
+        "id_desa": 64,
+        "jarak_km": 27
+    },
+    {
+        "id_jarak": 65,
+        "id_desa": 65,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 66,
+        "id_desa": 66,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 67,
+        "id_desa": 67,
+        "jarak_km": 24
+    },
+    {
+        "id_jarak": 68,
+        "id_desa": 68,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 69,
+        "id_desa": 69,
+        "jarak_km": 27
+    },
+    {
+        "id_jarak": 70,
+        "id_desa": 70,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 71,
+        "id_desa": 71,
+        "jarak_km": 13
+    },
+    {
+        "id_jarak": 72,
+        "id_desa": 72,
+        "jarak_km": 14
+    },
+    {
+        "id_jarak": 73,
+        "id_desa": 73,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 74,
+        "id_desa": 74,
+        "jarak_km": 17
+    },
+    {
+        "id_jarak": 75,
+        "id_desa": 75,
+        "jarak_km": 11
+    },
+    {
+        "id_jarak": 76,
+        "id_desa": 76,
+        "jarak_km": 13
+    },
+    {
+        "id_jarak": 77,
+        "id_desa": 77,
+        "jarak_km": 14
+    },
+    {
+        "id_jarak": 78,
+        "id_desa": 78,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 79,
+        "id_desa": 79,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 80,
+        "id_desa": 80,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 81,
+        "id_desa": 81,
+        "jarak_km": 17
+    },
+    {
+        "id_jarak": 82,
+        "id_desa": 82,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 83,
+        "id_desa": 83,
+        "jarak_km": 20
+    },
+    {
+        "id_jarak": 84,
+        "id_desa": 84,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 85,
+        "id_desa": 85,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 86,
+        "id_desa": 86,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 87,
+        "id_desa": 87,
+        "jarak_km": 17
+    },
+    {
+        "id_jarak": 88,
+        "id_desa": 88,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 89,
+        "id_desa": 89,
+        "jarak_km": 20
+    },
+    {
+        "id_jarak": 90,
+        "id_desa": 90,
+        "jarak_km": 14
+    },
+    {
+        "id_jarak": 91,
+        "id_desa": 91,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 92,
+        "id_desa": 92,
+        "jarak_km": 17
+    },
+    {
+        "id_jarak": 93,
+        "id_desa": 93,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 94,
+        "id_desa": 94,
+        "jarak_km": 11
+    },
+    {
+        "id_jarak": 95,
+        "id_desa": 95,
+        "jarak_km": 5
+    },
+    {
+        "id_jarak": 96,
+        "id_desa": 96,
+        "jarak_km": 7
+    },
+    {
+        "id_jarak": 97,
+        "id_desa": 97,
+        "jarak_km": 8
+    },
+    {
+        "id_jarak": 98,
+        "id_desa": 98,
+        "jarak_km": 10
+    },
+    {
+        "id_jarak": 99,
+        "id_desa": 99,
+        "jarak_km": 11
+    },
+    {
+        "id_jarak": 100,
+        "id_desa": 100,
+        "jarak_km": 5
+    },
+    {
+        "id_jarak": 101,
+        "id_desa": 101,
+        "jarak_km": 7
+    },
+    {
+        "id_jarak": 102,
+        "id_desa": 102,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 103,
+        "id_desa": 103,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 104,
+        "id_desa": 104,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 105,
+        "id_desa": 105,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 106,
+        "id_desa": 106,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 107,
+        "id_desa": 107,
+        "jarak_km": 19
+    },
+    {
+        "id_jarak": 108,
+        "id_desa": 108,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 109,
+        "id_desa": 109,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 110,
+        "id_desa": 110,
+        "jarak_km": 16
+    },
+    {
+        "id_jarak": 111,
+        "id_desa": 111,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 112,
+        "id_desa": 112,
+        "jarak_km": 23
+    },
+    {
+        "id_jarak": 113,
+        "id_desa": 113,
+        "jarak_km": 24
+    },
+    {
+        "id_jarak": 114,
+        "id_desa": 114,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 115,
+        "id_desa": 115,
+        "jarak_km": 20
+    },
+    {
+        "id_jarak": 116,
+        "id_desa": 116,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 117,
+        "id_desa": 117,
+        "jarak_km": 23
+    },
+    {
+        "id_jarak": 118,
+        "id_desa": 118,
+        "jarak_km": 28
+    },
+    {
+        "id_jarak": 119,
+        "id_desa": 119,
+        "jarak_km": 29
+    },
+    {
+        "id_jarak": 120,
+        "id_desa": 120,
+        "jarak_km": 23
+    },
+    {
+        "id_jarak": 121,
+        "id_desa": 121,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 122,
+        "id_desa": 122,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 123,
+        "id_desa": 123,
+        "jarak_km": 28
+    },
+    {
+        "id_jarak": 124,
+        "id_desa": 124,
+        "jarak_km": 38
+    },
+    {
+        "id_jarak": 125,
+        "id_desa": 125,
+        "jarak_km": 32
+    },
+    {
+        "id_jarak": 126,
+        "id_desa": 126,
+        "jarak_km": 33
+    },
+    {
+        "id_jarak": 127,
+        "id_desa": 127,
+        "jarak_km": 35
+    },
+    {
+        "id_jarak": 128,
+        "id_desa": 128,
+        "jarak_km": 36
+    },
+    {
+        "id_jarak": 129,
+        "id_desa": 129,
+        "jarak_km": 38
+    },
+    {
+        "id_jarak": 130,
+        "id_desa": 130,
+        "jarak_km": 32
+    },
+    {
+        "id_jarak": 131,
+        "id_desa": 131,
+        "jarak_km": 33
+    },
+    {
+        "id_jarak": 132,
+        "id_desa": 132,
+        "jarak_km": 35
+    },
+    {
+        "id_jarak": 133,
+        "id_desa": 133,
+        "jarak_km": 36
+    },
+    {
+        "id_jarak": 134,
+        "id_desa": 134,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 135,
+        "id_desa": 135,
+        "jarak_km": 20
+    },
+    {
+        "id_jarak": 136,
+        "id_desa": 136,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 137,
+        "id_desa": 137,
+        "jarak_km": 23
+    },
+    {
+        "id_jarak": 138,
+        "id_desa": 138,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 139,
+        "id_desa": 139,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 140,
+        "id_desa": 140,
+        "jarak_km": 20
+    },
+    {
+        "id_jarak": 141,
+        "id_desa": 141,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 142,
+        "id_desa": 142,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 143,
+        "id_desa": 143,
+        "jarak_km": 20
+    },
+    {
+        "id_jarak": 144,
+        "id_desa": 144,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 145,
+        "id_desa": 145,
+        "jarak_km": 15
+    },
+    {
+        "id_jarak": 146,
+        "id_desa": 146,
+        "jarak_km": 17
+    },
+    {
+        "id_jarak": 147,
+        "id_desa": 147,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 148,
+        "id_desa": 148,
+        "jarak_km": 20
+    },
+    {
+        "id_jarak": 149,
+        "id_desa": 149,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 150,
+        "id_desa": 150,
+        "jarak_km": 15
+    },
+    {
+        "id_jarak": 151,
+        "id_desa": 151,
+        "jarak_km": 17
+    },
+    {
+        "id_jarak": 152,
+        "id_desa": 152,
+        "jarak_km": 18
+    },
+    {
+        "id_jarak": 153,
+        "id_desa": 153,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 154,
+        "id_desa": 154,
+        "jarak_km": 28
+    },
+    {
+        "id_jarak": 155,
+        "id_desa": 155,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 156,
+        "id_desa": 156,
+        "jarak_km": 23
+    },
+    {
+        "id_jarak": 157,
+        "id_desa": 157,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 158,
+        "id_desa": 158,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 159,
+        "id_desa": 159,
+        "jarak_km": 28
+    },
+    {
+        "id_jarak": 160,
+        "id_desa": 160,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 161,
+        "id_desa": 161,
+        "jarak_km": 23
+    },
+    {
+        "id_jarak": 162,
+        "id_desa": 162,
+        "jarak_km": 24
+    },
+    {
+        "id_jarak": 163,
+        "id_desa": 163,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 164,
+        "id_desa": 164,
+        "jarak_km": 27
+    },
+    {
+        "id_jarak": 165,
+        "id_desa": 165,
+        "jarak_km": 30
+    },
+    {
+        "id_jarak": 166,
+        "id_desa": 166,
+        "jarak_km": 31
+    },
+    {
+        "id_jarak": 167,
+        "id_desa": 167,
+        "jarak_km": 33
+    },
+    {
+        "id_jarak": 168,
+        "id_desa": 168,
+        "jarak_km": 34
+    },
+    {
+        "id_jarak": 169,
+        "id_desa": 169,
+        "jarak_km": 36
+    },
+    {
+        "id_jarak": 170,
+        "id_desa": 170,
+        "jarak_km": 30
+    },
+    {
+        "id_jarak": 171,
+        "id_desa": 171,
+        "jarak_km": 31
+    },
+    {
+        "id_jarak": 172,
+        "id_desa": 172,
+        "jarak_km": 33
+    },
+    {
+        "id_jarak": 173,
+        "id_desa": 173,
+        "jarak_km": 34
+    },
+    {
+        "id_jarak": 174,
+        "id_desa": 174,
+        "jarak_km": 36
+    },
+    {
+        "id_jarak": 175,
+        "id_desa": 175,
+        "jarak_km": 30
+    },
+    {
+        "id_jarak": 176,
+        "id_desa": 176,
+        "jarak_km": 31
+    },
+    {
+        "id_jarak": 177,
+        "id_desa": 177,
+        "jarak_km": 33
+    },
+    {
+        "id_jarak": 178,
+        "id_desa": 178,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 179,
+        "id_desa": 179,
+        "jarak_km": 42
+    },
+    {
+        "id_jarak": 180,
+        "id_desa": 180,
+        "jarak_km": 36
+    },
+    {
+        "id_jarak": 181,
+        "id_desa": 181,
+        "jarak_km": 38
+    },
+    {
+        "id_jarak": 182,
+        "id_desa": 182,
+        "jarak_km": 39
+    },
+    {
+        "id_jarak": 183,
+        "id_desa": 183,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 184,
+        "id_desa": 184,
+        "jarak_km": 42
+    },
+    {
+        "id_jarak": 185,
+        "id_desa": 185,
+        "jarak_km": 36
+    },
+    {
+        "id_jarak": 186,
+        "id_desa": 186,
+        "jarak_km": 38
+    },
+    {
+        "id_jarak": 187,
+        "id_desa": 187,
+        "jarak_km": 39
+    },
+    {
+        "id_jarak": 188,
+        "id_desa": 188,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 189,
+        "id_desa": 189,
+        "jarak_km": 42
+    },
+    {
+        "id_jarak": 190,
+        "id_desa": 190,
+        "jarak_km": 44
+    },
+    {
+        "id_jarak": 191,
+        "id_desa": 191,
+        "jarak_km": 46
+    },
+    {
+        "id_jarak": 192,
+        "id_desa": 192,
+        "jarak_km": 47
+    },
+    {
+        "id_jarak": 193,
+        "id_desa": 193,
+        "jarak_km": 49
+    },
+    {
+        "id_jarak": 194,
+        "id_desa": 194,
+        "jarak_km": 50
+    },
+    {
+        "id_jarak": 195,
+        "id_desa": 195,
+        "jarak_km": 44
+    },
+    {
+        "id_jarak": 196,
+        "id_desa": 196,
+        "jarak_km": 46
+    },
+    {
+        "id_jarak": 197,
+        "id_desa": 197,
+        "jarak_km": 47
+    },
+    {
+        "id_jarak": 198,
+        "id_desa": 198,
+        "jarak_km": 49
+    },
+    {
+        "id_jarak": 199,
+        "id_desa": 199,
+        "jarak_km": 50
+    },
+    {
+        "id_jarak": 200,
+        "id_desa": 200,
+        "jarak_km": 49
+    },
+    {
+        "id_jarak": 201,
+        "id_desa": 201,
+        "jarak_km": 51
+    },
+    {
+        "id_jarak": 202,
+        "id_desa": 202,
+        "jarak_km": 52
+    },
+    {
+        "id_jarak": 203,
+        "id_desa": 203,
+        "jarak_km": 54
+    },
+    {
+        "id_jarak": 204,
+        "id_desa": 204,
+        "jarak_km": 55
+    },
+    {
+        "id_jarak": 205,
+        "id_desa": 205,
+        "jarak_km": 49
+    },
+    {
+        "id_jarak": 206,
+        "id_desa": 206,
+        "jarak_km": 51
+    },
+    {
+        "id_jarak": 207,
+        "id_desa": 207,
+        "jarak_km": 52
+    },
+    {
+        "id_jarak": 208,
+        "id_desa": 208,
+        "jarak_km": 54
+    },
+    {
+        "id_jarak": 209,
+        "id_desa": 209,
+        "jarak_km": 47
+    },
+    {
+        "id_jarak": 210,
+        "id_desa": 210,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 211,
+        "id_desa": 211,
+        "jarak_km": 42
+    },
+    {
+        "id_jarak": 212,
+        "id_desa": 212,
+        "jarak_km": 44
+    },
+    {
+        "id_jarak": 213,
+        "id_desa": 213,
+        "jarak_km": 45
+    },
+    {
+        "id_jarak": 214,
+        "id_desa": 214,
+        "jarak_km": 47
+    },
+    {
+        "id_jarak": 215,
+        "id_desa": 215,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 216,
+        "id_desa": 216,
+        "jarak_km": 42
+    },
+    {
+        "id_jarak": 217,
+        "id_desa": 217,
+        "jarak_km": 44
+    },
+    {
+        "id_jarak": 218,
+        "id_desa": 218,
+        "jarak_km": 45
+    },
+    {
+        "id_jarak": 219,
+        "id_desa": 219,
+        "jarak_km": 47
+    },
+    {
+        "id_jarak": 220,
+        "id_desa": 220,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 221,
+        "id_desa": 221,
+        "jarak_km": 37
+    },
+    {
+        "id_jarak": 222,
+        "id_desa": 222,
+        "jarak_km": 38
+    },
+    {
+        "id_jarak": 223,
+        "id_desa": 223,
+        "jarak_km": 40
+    },
+    {
+        "id_jarak": 224,
+        "id_desa": 224,
+        "jarak_km": 41
+    },
+    {
+        "id_jarak": 225,
+        "id_desa": 225,
+        "jarak_km": 35
+    },
+    {
+        "id_jarak": 226,
+        "id_desa": 226,
+        "jarak_km": 37
+    },
+    {
+        "id_jarak": 227,
+        "id_desa": 227,
+        "jarak_km": 24
+    },
+    {
+        "id_jarak": 228,
+        "id_desa": 228,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 229,
+        "id_desa": 229,
+        "jarak_km": 27
+    },
+    {
+        "id_jarak": 230,
+        "id_desa": 230,
+        "jarak_km": 21
+    },
+    {
+        "id_jarak": 231,
+        "id_desa": 231,
+        "jarak_km": 22
+    },
+    {
+        "id_jarak": 232,
+        "id_desa": 232,
+        "jarak_km": 24
+    },
+    {
+        "id_jarak": 233,
+        "id_desa": 233,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 234,
+        "id_desa": 234,
+        "jarak_km": 30
+    },
+    {
+        "id_jarak": 235,
+        "id_desa": 235,
+        "jarak_km": 24
+    },
+    {
+        "id_jarak": 236,
+        "id_desa": 236,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 237,
+        "id_desa": 237,
+        "jarak_km": 27
+    },
+    {
+        "id_jarak": 238,
+        "id_desa": 238,
+        "jarak_km": 28
+    },
+    {
+        "id_jarak": 239,
+        "id_desa": 239,
+        "jarak_km": 30
+    },
+    {
+        "id_jarak": 240,
+        "id_desa": 240,
+        "jarak_km": 24
+    },
+    {
+        "id_jarak": 241,
+        "id_desa": 241,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 242,
+        "id_desa": 242,
+        "jarak_km": 28
+    },
+    {
+        "id_jarak": 243,
+        "id_desa": 243,
+        "jarak_km": 29
+    },
+    {
+        "id_jarak": 244,
+        "id_desa": 244,
+        "jarak_km": 31
+    },
+    {
+        "id_jarak": 245,
+        "id_desa": 245,
+        "jarak_km": 25
+    },
+    {
+        "id_jarak": 246,
+        "id_desa": 246,
+        "jarak_km": 26
+    },
+    {
+        "id_jarak": 247,
+        "id_desa": 247,
+        "jarak_km": 28
+    },
+    {
+        "id_jarak": 248,
+        "id_desa": 248,
+        "jarak_km": 29
+    }
+]

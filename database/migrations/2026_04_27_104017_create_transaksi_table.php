@@ -20,6 +20,8 @@ return new class extends Migration
             $table->text('bukti_pembayaran')->nullable();
             $table->enum('status', ['pending', 'dikirim', 'selesai', 'batal', 'diproses'])->default('pending');
             $table->dateTime('tgl_dikirim')->nullable();
+            $table->enum('metode_pengiriman', ['dikirim', 'ambil_sendiri'])->default('dikirim');
+            $table->integer('ongkir')->default(0);
             $table->date('batas_survei')->nullable();
             $table->boolean('is_survei')->default(false);
             $table->foreignId('id_akun')->constrained('akun', 'id_akun')->onDelete('cascade');

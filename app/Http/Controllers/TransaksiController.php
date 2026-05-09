@@ -54,7 +54,7 @@ class TransaksiController extends Controller
         Keuangan::create([
             'ket'             => 'Pemasukan dari transaksi #TRX-' . $transaksi->id_transaksi,
             'tanggal'         => Carbon::now()->toDateString(),
-            'nominal'         => $transaksi->total_harga,
+            'nominal'         => $transaksi->total_harga + $transaksi->ongkir,
             'jenis_keuangan'  => 'pemasukan',
             'id_transaksi'    => $transaksi->id_transaksi,
         ]);
@@ -108,6 +108,8 @@ class TransaksiController extends Controller
             'kurir'             => 'nullable|string|max:50',
             'no_kurir'          => 'nullable|string|max:20',
             'status'            => 'required|string',
+            'metode_pengiriman' => 'required|in:dikirim,ambil_sendiri',
+            'ongkir'            => 'required|integer|min:0',
         ]);
 
         $uploadedFileUrl = null;
@@ -127,6 +129,8 @@ class TransaksiController extends Controller
             'kurir'                 => $request->kurir ?? '-',
             'no_kurir'              => $request->no_kurir ?? '-',
             'status'                => $request->status,
+            'metode_pengiriman'     => $request->metode_pengiriman,
+            'ongkir'                => $request->ongkir,
         ]);
 
         return back()->with('success', 'Transaksi berhasil ditambahkan.');
@@ -148,8 +152,8 @@ class TransaksiController extends Controller
 
         $updateData = [
             'status'   => $newStatus,
-            'kurir'    => $request->kurir ?? $transaksi->kurir,
-            'no_kurir' => $request->no_kurir ?? $transaksi->no_kurir,
+            'kurir'    => ($transaksi->metode_pengiriman === 'ambil_sendiri') ? null : ($request->kurir ?? $transaksi->kurir),
+            'no_kurir' => ($transaksi->metode_pengiriman === 'ambil_sendiri') ? null : ($request->no_kurir ?? $transaksi->no_kurir),
         ];
 
         // Catat waktu pengiriman jika status berubah ke dikirim
@@ -276,12 +280,24 @@ class TransaksiController extends Controller
                 if ($dataBreed['breed_name'] === $searchJenis) {
                     foreach ($dataBreed['age_categories'] as $ageCat) {
                         if ($ageCat['category_name'] === $katUsia) {
+                            $lastClass = null;
                             foreach ($ageCat['weight_classes'] as $wClass) {
+                                $lastClass = $wClass;
                                 // Cek apakah berat sesuai dengan rentang min & max di JSON
                                 if ($berat >= $wClass['min_weight'] && $berat <= $wClass['max_weight']) {
                                     $kelasBerat = $wClass['class_name'];
                                     break 3; // Keluar dari loop jika sudah ketemu
                                 }
+                            }
+                            
+                            // Jika berat di luar jangkauan (kurang dari min atau lebih dari max)
+                            if ($kelasBerat === 'Uncategorized' && $lastClass) {
+                                if ($berat > $lastClass['max_weight']) {
+                                    $kelasBerat = $lastClass['class_name'];
+                                } else {
+                                    $kelasBerat = $ageCat['weight_classes'][0]['class_name'];
+                                }
+                                break 2; // Keluar dari loop breed_name
                             }
                         }
                     }
@@ -316,7 +332,37 @@ class TransaksiController extends Controller
         })
         ->values();
 
-        return view('pages.transaksi-user', compact('jenis_ternak'));
+        // Hitung ongkir untuk user yang sedang login
+        $ongkirInfo = null;
+        $user = Auth::user();
+        if ($user && $user->id_desa) {
+            $jarakData = \App\Models\Jarak::where('id_desa', $user->id_desa)->first();
+            if ($jarakData) {
+                $km = $jarakData->jarak_km;
+                if ($km <= 15) {
+                    $ongkirNominal = 50000;
+                } elseif ($km <= 30) {
+                    $ongkirNominal = 100000;
+                } elseif ($km <= 45) {
+                    $ongkirNominal = 150000;
+                } else {
+                    $ongkirNominal = 200000;
+                }
+                $ongkirInfo = [
+                    'jarak_km' => $km,
+                    'ongkir' => $ongkirNominal,
+                    'dalam_jangkauan' => true,
+                ];
+            } else {
+                $ongkirInfo = [
+                    'jarak_km' => null,
+                    'ongkir' => 0,
+                    'dalam_jangkauan' => false,
+                ];
+            }
+        }
+
+        return view('pages.transaksi-user', compact('jenis_ternak', 'ongkirInfo'));
     }
 
     // ================================================================
@@ -332,6 +378,7 @@ class TransaksiController extends Controller
             'jenis_kelamin_pesanan' => 'required|string',
             'total_jumlah'          => 'required|integer|min:1',
             'total_harga'           => 'required|numeric|min:0',
+            'metode_pengiriman'     => 'required|in:dikirim,ambil_sendiri',
         ];
 
         if ($isSurvei) {
@@ -369,6 +416,28 @@ class TransaksiController extends Controller
             return back()->withErrors(['stok' => 'Mohon maaf, stok domba kriteria ini tidak mencukupi (tersedia: ' . $stok_tersedia . ' ekor).'])->withInput();
         }
 
+        // 2.5 Kalkulasi Ongkir
+        $ongkir = 0;
+        if ($request->metode_pengiriman === 'dikirim') {
+            $user = Auth::user();
+            $jarakData = \App\Models\Jarak::where('id_desa', $user->id_desa)->first();
+            
+            if (!$jarakData) {
+                return back()->withErrors(['metode_pengiriman' => 'Maaf, alamat Anda berada di luar jangkauan pengiriman kami. Silakan pilih metode Ambil Sendiri.'])->withInput();
+            }
+
+            $km = $jarakData->jarak_km;
+            if ($km <= 15) {
+                $ongkir = 50000;
+            } elseif ($km <= 30) {
+                $ongkir = 100000;
+            } elseif ($km <= 45) {
+                $ongkir = 150000;
+            } else {
+                $ongkir = 200000;
+            }
+        }
+
         // 3. Upload Bukti Transfer (hanya jika bukan survei dan metode transfer)
         $uploadedFileUrl = null;
         if (!$isSurvei && $request->hasFile('bukti_pembayaran')) {
@@ -386,8 +455,10 @@ class TransaksiController extends Controller
             'total_harga'           => $request->total_harga,
             'metode_pembayaran'     => $isSurvei ? null : $request->metode_pembayaran,
             'bukti_pembayaran'      => $uploadedFileUrl,
-            'kurir'                 => '-',
-            'no_kurir'              => '-',
+            'metode_pengiriman'     => $request->metode_pengiriman,
+            'ongkir'                => $ongkir,
+            'kurir'                 => null,
+            'no_kurir'              => null,
             'status'                => 'pending',
             'is_survei'             => $isSurvei,
             'batas_survei'          => $isSurvei ? $now->copy()->addDays(7)->toDateString() : null,
@@ -450,6 +521,36 @@ class TransaksiController extends Controller
         ];
 
         return view('pages.riwayat-user', compact('data_transaksi', 'stats'));
+    }
+
+    // ================================================================
+    // 8.5 HALAMAN PEMBAYARAN (Transfer Page — Landing UI Baru)
+    // ================================================================
+    public function halamanPembayaran($id)
+    {
+        $transaksi = Transaksi::with(['jenisTernak', 'detailTransaksi.ternak.jenis_ternak', 'survei'])
+            ->where('id_akun', Auth::id())
+            ->findOrFail($id);
+
+        // Hitung sisa waktu pembayaran (24 jam dari transaksi dibuat / survei selesai)
+        $batasWaktu = Carbon::parse($transaksi->tgl_transaksi)->addHours(24);
+
+        // Jika transaksi survei dan survei selesai, hitung dari waktu survei selesai
+        if ($transaksi->is_survei && $transaksi->survei) {
+            $surveiSelesai = $transaksi->survei->where('status', 'selesai')->first();
+            if ($surveiSelesai) {
+                $batasWaktu = Carbon::parse($surveiSelesai->updated_at)->addHours(24);
+            }
+        }
+
+        $sisaDetik = max(0, Carbon::now()->diffInSeconds($batasWaktu, false));
+
+        return view('landing.transfer-page', [
+            'transaksi'  => $transaksi,
+            'sisaDetik'  => $sisaDetik,
+            'batasWaktu' => $batasWaktu,
+            'waNumber'   => config('smartsaka.wa_number'),
+        ]);
     }
 
     // ================================================================
@@ -532,7 +633,29 @@ class TransaksiController extends Controller
         $request->validate([
             'metode_pembayaran' => 'required|in:transfer,cash',
             'bukti_pembayaran'  => 'required_if:metode_pembayaran,transfer|nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'metode_pengiriman' => 'required|in:dikirim,ambil_sendiri',
         ]);
+
+        $ongkir = 0;
+        if ($request->metode_pengiriman === 'dikirim') {
+            $user = Auth::user();
+            $jarakData = \App\Models\Jarak::where('id_desa', $user->id_desa)->first();
+            
+            if (!$jarakData) {
+                return back()->withErrors(['upload' => 'Maaf, alamat Anda berada di luar jangkauan pengiriman kami. Silakan pilih metode Ambil Sendiri.']);
+            }
+
+            $km = $jarakData->jarak_km;
+            if ($km <= 15) {
+                $ongkir = 50000;
+            } elseif ($km <= 30) {
+                $ongkir = 100000;
+            } elseif ($km <= 45) {
+                $ongkir = 150000;
+            } else {
+                $ongkir = 200000;
+            }
+        }
 
         $uploadedFileUrl = $transaksi->bukti_pembayaran;
         if ($request->hasFile('bukti_pembayaran')) {
@@ -542,6 +665,8 @@ class TransaksiController extends Controller
         $transaksi->update([
             'metode_pembayaran' => $request->metode_pembayaran,
             'bukti_pembayaran'  => $uploadedFileUrl,
+            'metode_pengiriman' => $request->metode_pengiriman,
+            'ongkir'            => $ongkir,
         ]);
 
         // Kirim push notification ke admin

@@ -249,6 +249,8 @@
                         selectedTernakId: '',
                         ternakKosong: {{ $ternak_kosong->toJson() }},
                         selectedTernakData: {},
+                        jenisKelamin: '{{ old('jenis_kelamin', 'jantan') }}',
+                        statusTernak: '{{ old('status_ternak', 'sehat') }}',
                         updateTernakData() {
                             this.selectedTernakData = this.ternakKosong.find(t => t.id_ternak == this.selectedTernakId) || {};
                         }
@@ -294,11 +296,11 @@
                                 <div>
                                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Jenis
                                         Kelamin</label>
-                                    <select name="jenis_kelamin" required
+                                    <select name="jenis_kelamin" required x-model="jenisKelamin" @change="if(jenisKelamin === 'jantan' && statusTernak === 'hamil') statusTernak = 'sehat'"
                                         class="dark:bg-gray-900 h-11 w-full rounded-xl border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-500 dark:border-gray-700 dark:text-white">
-                                        <option value="jantan" {{ old('jenis_kelamin') == 'jantan' ? 'selected' : '' }}>♂
+                                        <option value="jantan">♂
                                             Jantan</option>
-                                        <option value="betina" {{ old('jenis_kelamin') == 'betina' ? 'selected' : '' }}>♀
+                                        <option value="betina">♀
                                             Betina</option>
                                     </select>
                                 </div>
@@ -322,13 +324,13 @@
                                 <div>
                                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Status
                                         Kesehatan</label>
-                                    <select name="status_ternak" required
+                                    <select name="status_ternak" required x-model="statusTernak"
                                         class="dark:bg-gray-900 h-11 w-full rounded-xl border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-500 dark:border-gray-700 dark:text-white">
-                                        <option value="sehat" {{ old('status_ternak') == 'sehat' ? 'selected' : '' }}>✅
+                                        <option value="sehat">✅
                                             Sehat</option>
-                                        <option value="sakit" {{ old('status_ternak') == 'sakit' ? 'selected' : '' }}>🔴
+                                        <option value="sakit">🔴
                                             Sakit</option>
-                                        <option value="hamil" {{ old('status_ternak') == 'hamil' ? 'selected' : '' }}>🟣
+                                        <option value="hamil" x-show="jenisKelamin === 'betina'">🟣
                                             Hamil</option>
                                     </select>
                                 </div>
@@ -677,7 +679,9 @@
                                                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"
                                                     x-data="{
                                                         selectedKandang: '{{ old('id_kandang', $ternak->id_kamar ? $ternak->kamar->id_kandang : 'kosong') }}',
-                                                        selectedKamar: '{{ old('id_kamar', $ternak->id_kamar ?? 'kosong') }}'
+                                                        selectedKamar: '{{ old('id_kamar', $ternak->id_kamar ?? 'kosong') }}',
+                                                        jenisKelamin: '{{ old('jenis_kelamin', $ternak->jenis_kelamin) }}',
+                                                        statusTernak: '{{ old('status_ternak', $ternak->status_ternak) }}'
                                                     }">
                                                     <div>
                                                         <label
@@ -731,13 +735,11 @@
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kelamin</label>
-                                                        <select name="jenis_kelamin" required
+                                                        <select name="jenis_kelamin" required x-model="jenisKelamin" @change="if(jenisKelamin === 'jantan' && statusTernak === 'hamil') statusTernak = 'sehat'"
                                                             class="dark:bg-gray-900 h-11 w-full rounded-xl border border-gray-300 bg-transparent px-4 py-2 text-sm dark:border-gray-700 dark:text-white">
-                                                            <option value="jantan"
-                                                                {{ $ternak->jenis_kelamin == 'jantan' ? 'selected' : '' }}>
+                                                            <option value="jantan">
                                                                 ♂ Jantan</option>
-                                                            <option value="betina"
-                                                                {{ $ternak->jenis_kelamin == 'betina' ? 'selected' : '' }}>
+                                                            <option value="betina">
                                                                 ♀ Betina</option>
                                                         </select>
                                                     </div>
@@ -772,19 +774,15 @@
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kesehatan</label>
-                                                        <select name="status_ternak" required
+                                                        <select name="status_ternak" required x-model="statusTernak"
                                                             class="dark:bg-gray-900 h-11 w-full rounded-xl border border-gray-300 bg-transparent px-4 py-2 text-sm dark:border-gray-700 dark:text-white">
-                                                            <option value="sehat"
-                                                                {{ $ternak->status_ternak == 'sehat' ? 'selected' : '' }}>✅
+                                                            <option value="sehat">✅
                                                                 Sehat</option>
-                                                            <option value="sakit"
-                                                                {{ $ternak->status_ternak == 'sakit' ? 'selected' : '' }}>
+                                                            <option value="sakit">
                                                                 🔴 Sakit</option>
-                                                            <option value="hamil"
-                                                                {{ $ternak->status_ternak == 'hamil' ? 'selected' : '' }}>
+                                                            <option value="hamil" x-show="jenisKelamin === 'betina'">
                                                                 🟣 Hamil</option>
-                                                            <option value="mati"
-                                                                {{ $ternak->status_ternak == 'mati' ? 'selected' : '' }}>⚫
+                                                            <option value="mati">⚫
                                                                 Mati</option>
                                                         </select>
                                                     </div>
