@@ -132,76 +132,47 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7" role="list" aria-label="Daftar produk ternak">
-                {{--
-                    LOOPING DATA DARI CONTROLLER:
-                    Di LandingController, kirimkan:
-                        $products = Product::active()->ordered()->get();
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7 capitalize" role="list" aria-label="Daftar produk ternak">
+                @forelse ($featuredProducts as $index => $item)
+                    <div role="listitem">
+                        <x-landing.product-card :title="$item['nama_produk']" :description="$item['breed'] . ' kelas ' . $item['kelas_berat'] . '. ' . $item['weight_range']" :price="'Rp ' . number_format($item['harga'], 0, ',', '.')" :price-raw="$item['harga']"
+                            :image="$dummyImages[strtolower(str_replace(' ', '', $item['breed']))] ?? $dummyImages['default']" :badge="$item['kelas_berat']" :badge-color="$item['kelas_berat'] == 'Super' ? 'bark' : 'olive'" :category="$item['jenis_kelamin']"
+                            :delay="($index * 0.05) . 's'" :slug="$item['slug']" :id-jenis="$item['id_jenis']" :kelamin="$item['jenis_kelamin']" wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
+                    </div>
+                @empty
+                    <div class="col-span-full py-20 text-center">
+                        <p class="text-olive-700/60">Saat ini belum ada produk siap jual. Silakan hubungi kami untuk
+                            informasi stok.</p>
+                    </div>
+                @endforelse
 
-                    Contoh loop dinamis:
-                    @foreach ($products as $index => $product)
-                        <x-landing.product-card
-                            :title="$product->name"
-                            :description="$product->description"
-                            :price="'Rp ' . number_format($product->price, 0, ',', '.')"
-                            :price-raw="$product->price"
-                            :image="asset('images/products/' . $product->image)"
-                            :badge="$product->badge"
-                            :badge-color="$product->badge_color ?? 'olive'"
-                            :category="$product->category"
-                            :delay="($index * 0.07) . 's'"
-                            :featured="$product->is_featured"
-                            wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}"
-                        />
-                    @endforeach
-                --}}
-
+                {{-- Card Lihat Katalog Lengkap --}}
+                @if($featuredProducts->isNotEmpty())
                 <div role="listitem">
-                    <x-landing.product-card title="Domba Crosstexel"
-                        description="Postur besar, daging tebal berkualitas premium. Cocok untuk kurban, aqiqah & investasi ternak."
-                        price="Rp 3.500.000" price-raw="3500000"
-                        image="{{ asset('images/landing/product-crosstexel.jpg') }}" badge="Best Seller" badge-color="olive"
-                        category="Jantan" delay="0.05s" wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
+                    <article
+                        class="product-card bg-gradient-to-br from-olive-700 to-olive-900 rounded-[2.5rem] overflow-hidden shadow-sm reveal h-full flex flex-col justify-between"
+                        style="transition-delay: 0.35s">
+                        <div class="p-10">
+                            <div class="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center text-4xl mb-8"
+                                aria-hidden="true">🐑</div>
+                            <h3 class="font-serif text-3xl text-cream-50 mb-4 tracking-tight">Lihat Katalog Lengkap</h3>
+                            <p class="text-cream-200/80 text-base leading-relaxed mb-8">
+                                Telusuri seluruh koleksi ternak kami dengan berbagai kategori usia, berat, dan jenis unggulan lainnya.
+                            </p>
+                        </div>
+                        <div class="p-10 pt-0">
+                            <a href="{{ route('katalog') }}"
+                                class="inline-flex items-center gap-3 bg-white text-olive-800 font-bold text-sm px-8 py-4 rounded-2xl hover:bg-cream-100 transition-all group">
+                                Buka Katalog
+                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
                 </div>
-
-                <div role="listitem">
-                    <x-landing.product-card title="Domba Merino Premium"
-                        description="Wol halus berkualitas internasional, badan proporsional, dan genetik unggul untuk pengembangbiakan."
-                        price="Rp 4.200.000" price-raw="4200000" image="{{ asset('images/landing/product-merino.jpg') }}"
-                        badge="Premium" badge-color="bark" category="Betina" delay="0.12s"
-                        wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
-                </div>
-
-                <div role="listitem">
-                    <x-landing.product-card title="Kambing Etawa Super"
-                        description="Produksi susu tinggi, postur tegap, dan mudah beradaptasi. Pilihan terbaik untuk usaha susu kambing."
-                        price="Rp 2.800.000" price-raw="2800000"
-                        image="{{ asset('images/landing/product-etawa1.jpg') }}" badge="Unggulan" badge-color="cream"
-                        category="Perah" delay="0.19s" wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
-                </div>
-
-                <div role="listitem">
-                    <x-landing.product-card title="Domba Garut"
-                        description="Adaptasi iklim tropis sangat baik, daging lezat, dan harga terjangkau untuk kebutuhan kurban."
-                        price="Rp 2.100.000" price-raw="2100000" image="{{ asset('images/landing/product-garut.jpg') }}"
-                        category="Lokal" delay="0.26s" wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
-                </div>
-
-                <div role="listitem">
-                    <x-landing.product-card title="Bibit Domba Unggul"
-                        description="Bibit berkualitas tinggi dari indukan pilihan, ideal untuk memulai atau mengembangkan usaha ternak."
-                        price="Rp 1.200.000" price-raw="1200000" image="{{ asset('images/landing/product-bibit.jpg') }}"
-                        badge="Bibit" badge-color="green" category="Anak" delay="0.33s"
-                        wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
-                </div>
-
-                <div role="listitem">
-                    <x-landing.product-card title="Paket Aqiqah & Kurban"
-                        description="Layanan lengkap mulai pemilihan hewan, pemotongan, hingga pengantaran ke lokasi Anda. Harga transparan, proses amanah."
-                        price="Hubungi Kami" price-raw="0" image="{{ asset('images/landing/product-aqiqah.jpg') }}"
-                        delay="0.40s" :featured="true" wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
-                </div>
-
+                @endif
             </div>
         </div>
     </section>

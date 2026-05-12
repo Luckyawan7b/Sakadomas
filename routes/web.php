@@ -19,13 +19,13 @@ use App\Http\Controllers\NotifikasiController;
 */
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/katalog', [LandingController::class, 'katalog'])->name('katalog');
-Route::get('/produk/{id}', [LandingController::class, 'detailProduk'])->name('produk.detail');
+Route::get('/produk/{slug}', [LandingController::class, 'detailProduk'])->name('produk.detail');
 
 // Firebase Service Worker (Dynamic to hide secrets)
 Route::get('/firebase-messaging-sw.js', function () {
     return response()->view('service-worker', [
         'config' => config('services.firebase')
-    ])->header('Content-Type', 'application/javascript');
+    ])->header('Content-Type', 'application/ja  vascript');
 });
 
 Route::middleware('guest')->group(function () {

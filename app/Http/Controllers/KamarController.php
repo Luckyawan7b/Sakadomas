@@ -51,10 +51,10 @@ class KamarController extends Controller
         $data_kamar = Kamar::with('kandang')->get();
         $data_jenis = JenisTernak::all();
 
-        // ✅ FIX: Query dipindah dari Blade ke Controller (MVC compliance)
         $ternak_kosong = Ternak::with('jenis_ternak')
                                     ->whereNull('id_kamar')
                                     ->where('status_jual', '!=', 'terjual')
+                                    ->where('status_ternak', '!=', 'mati')
                                     ->orderBy('id_ternak', 'asc')
                                     ->get();
 

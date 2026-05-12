@@ -308,7 +308,7 @@
                         <p class="text-[10px] font-bold text-m3-on-surface-variant uppercase tracking-widest mb-3">Jenis
                             Domba</p>
                         <div class="space-y-2.5">
-                            @foreach (['crosstexel' => 'Cross Texel', 'merino' => 'Merino', 'etawape' => 'Etawa (PE)'] as $key => $label)
+                            @foreach (['crosstexel' => 'Cross Texel', 'merino' => 'Merino', 'etawa' => 'Etawa (PE)'] as $key => $label)
                                 <label class="flex items-center gap-3 cursor-pointer group">
                                     <input type="checkbox" value="{{ $key }}" x-model="filterBreed"
                                         class="rounded border-m3-outline-variant text-m3-primary focus:ring-m3-primary w-5 h-5" />
@@ -384,7 +384,7 @@
                         dari <span class="text-m3-primary font-bold" x-text="filteredItems.length"></span> produk
                     </p>
                     {{-- Active filter tags --}}
-                    <div class="hidden sm:flex items-center gap-2 flex-wrap"
+                    <div class="hidden sm:flex items-center gap-2 flex-wrap capitalize"
                         x-show="filterBreed.length || filterKelamin.length || filterUsia.length || filterKelas.length">
                         <template x-for="f in filterBreed" :key="'b_' + f">
                             <span class="bg-m3-primary-fixed/40 text-m3-primary text-[10px] font-bold px-3 py-1 rounded-full"
@@ -474,9 +474,9 @@
                                 <div class="flex gap-2">
                                     @auth
                                         <a :href="'{{ route('transaksi.create') }}?jenis=' + item.id_jenis +
-                                            '&kelamin=' + item.jenis_kelamin + ' & harga = ' + item.harga"
+                                            '&kelamin=' + item.jenis_kelamin + '&harga=' + item.harga"
                                             class="flex-1 py-2.5 bg-m3-secondary-container text-m3-on-secondary-container rounded-full font-bold text-sm hover:bg-m3-primary-fixed transition-colors text-center">
-                                            Beli Sekarang
+                                            Pesan Sekarang
                                         </a>
                                     @else
                                         <a href="{{ route('login') }}"
@@ -484,7 +484,7 @@
                                             Login & Beli
                                         </a>
                                     @endauth
-                                    <a :href="'{{ url('/produk') }}/' + item.id_ternak"
+                                    <a :href="'{{ url('/produk') }}/' + item.slug"
                                         class="w-10 h-10 flex items-center justify-center bg-m3-surface-container rounded-full text-m3-on-surface-variant hover:bg-m3-surface-variant transition-colors shrink-0">
                                         <span class="material-symbols-outlined text-xl">visibility</span>
                                     </a>
