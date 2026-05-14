@@ -362,7 +362,7 @@ class TransaksiController extends Controller
             }
         }
 
-        return view('pages.transaksi-user', compact('jenis_ternak', 'ongkirInfo'));
+        return view('landing.form-pemesanan', compact('jenis_ternak', 'ongkirInfo', 'klasifikasiData'));
     }
 
     // ================================================================
