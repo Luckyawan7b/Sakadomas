@@ -68,7 +68,7 @@
     .time-slot.selected { background: var(--color-m3-primary); color: #fff; border-color: var(--color-m3-primary); }
     .time-slot.booked  { background: var(--color-m3-error-container); color: var(--color-m3-on-error-container); border-color: transparent; cursor: not-allowed; opacity: 0.65; }
 
-    
+
 </style>
 @endpush
 
@@ -161,6 +161,14 @@
         metodePengiriman: "ambil_sendiri",
         metodePembayaran: "transfer",
         fileName: "",
+        filePreview: null,
+
+        /* ── Step 4: Transfer ── */
+        totalSeconds: 24 * 3600,
+        countdownInterval: null,
+        showToast: false,
+        toastMsg: "",
+        uploadError: false,
 
         /* ── Step validation ── */
         errors: {},
@@ -179,13 +187,15 @@
                     String(item.harga) === hargaParam
                 );
                 if (match) {
-                    this.selectedKategori = match.nama_produk;
-                    this.$nextTick(() => {
-                        this.selectedKelas = match.kelas_berat;
+                    setTimeout(() => {
+                        this.selectedKategori = match.nama_produk;
                         this.$nextTick(() => {
-                            this.selectedKey = this.makeKey(match);
+                            this.selectedKelas = match.kelas_berat;
+                            this.$nextTick(() => {
+                                this.selectedKey = this.makeKey(match);
+                            });
                         });
-                    });
+                    }, 50);
                 }
             }
 
@@ -263,8 +273,70 @@
         goStep(n) {
             if (n === 2 && this.currentStep === 1 && !this.validateStep1()) return;
             if (n === 3 && this.currentStep === 2 && !this.validateStep2()) return;
+            if (n === 4 && this.currentStep === 3) {
+                // Prepare Step 4
+                this.startCountdown();
+            }
+            if (n < 4 && this.countdownInterval) {
+                clearInterval(this.countdownInterval);
+            }
             this.currentStep = n;
             window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+
+        /* ── Step 4 Logic ── */
+        startCountdown() {
+            if (this.countdownInterval) clearInterval(this.countdownInterval);
+            this.countdownInterval = setInterval(() => {
+                if (this.totalSeconds > 0) this.totalSeconds--;
+            }, 1000);
+        },
+        formatTime(sec) {
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return {
+                h: String(h).padStart(2, "0"),
+                m: String(m).padStart(2, "0"),
+                s: String(s).padStart(2, "0")
+            };
+        },
+        copyAccount(num) {
+            navigator.clipboard.writeText(num.replace(/\s/g, ""));
+            this.toastMsg = "Nomor rekening berhasil disalin!";
+            this.showToast = true;
+            setTimeout(() => this.showToast = false, 2000);
+        },
+        handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Ukuran file maksimal 5MB");
+                return;
+            }
+            this.fileName = file.name;
+            this.uploadError = false;
+
+            if (file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = (e) => this.filePreview = e.target.result;
+                reader.readAsDataURL(file);
+            } else {
+                this.filePreview = null;
+            }
+        },
+        removeFile() {
+            this.fileName = "";
+            this.filePreview = null;
+            this.$refs.fileInput.value = "";
+        },
+        submitForm() {
+            if (!this.isSurvei && this.metodePembayaran === "transfer" && !this.fileName) {
+                this.uploadError = true;
+                this.$refs.uploadArea.scrollIntoView({ behavior: "smooth", block: "center" });
+                return;
+            }
+            this.$refs.mainForm.submit();
         },
 
         /* ── Calendar ── */
@@ -341,7 +413,7 @@
     <div class="bg-m3-surface-container-lowest rounded-3xl shadow-[0_20px_50px_rgba(61,103,0,0.07)] p-6 mb-10 overflow-x-auto">
         <div class="flex justify-between items-center min-w-[540px] px-4">
 
-            <template x-for="(label, idx) in ['Detail Pesanan Ternak','Pengambilan & Pembayaran','Ringkasan']" :key="idx">
+            <template x-for="(label, idx) in ( (!isSurvei && metodePembayaran === 'transfer') ? ['Detail Pesanan','Pengambilan','Ringkasan','Pembayaran'] : ['Detail Pesanan','Pengambilan','Ringkasan'] )" :key="idx">
                 <template x-if="true">
                     <div class="contents">
                         {{-- Step dot --}}
@@ -361,7 +433,7 @@
                                 x-text="label"></span>
                         </div>
                         {{-- Connector line (not after last) --}}
-                        <template x-if="idx < 2">
+                        <template x-if="idx < ( (!isSurvei && metodePembayaran === 'transfer') ? 3 : 2 )">
                             <div class="h-0.5 flex-1 mx-4 step-line transition-all"
                                 :class="idx + 1 < currentStep ? 'done' : ''"></div>
                         </template>
@@ -374,8 +446,8 @@
 
     {{-- ── FORM WRAPPER ── --}}
     <form method="POST" action="{{ route('transaksi.create.store') }}" enctype="multipart/form-data"
-        id="order-form"
-        @submit.prevent="$el.submit()">
+        id="order-form" x-ref="mainForm"
+        @submit.prevent="submitForm()">
         @csrf
 
         {{-- Hidden fields synced to Alpine state --}}
@@ -410,7 +482,7 @@
                                 Pilih Kategori Produk <span class="text-m3-error">*</span>
                             </label>
                             <select x-model="selectedKategori" @change="selectedKelas = ''; selectedKey = ''; jumlah = 1"
-                                class="input-line">
+                                class="input-line capitalize">
                                 <option value="">-- Pilih Kategori (Breed + Usia) --</option>
                                 <template x-for="kat in kategoriOptions" :key="kat">
                                     <option :value="kat" x-text="kat"></option>
@@ -511,11 +583,11 @@
                     {{-- Step 1 Navigation --}}
                     <div class="flex justify-between items-center pt-10">
                         <a href="{{ route('katalog') }}"
-                            class="text-m3-primary font-bold flex items-center gap-2 hover:-translate-x-1 transition-transform text-sm">
+                            class="text-m3-primary font-bold flex items-center gap-2 hover:-translate-x-1 transition-transform text-sm cursor-pointer">
                             <span class="material-symbols-outlined text-lg">arrow_back</span> Kembali ke Katalog
                         </a>
                         <button type="button" @click="goStep(2)"
-                            class="bg-m3-primary text-m3-on-primary px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-m3-primary-container active:scale-95 transition-all flex items-center gap-2">
+                            class="bg-m3-primary text-m3-on-primary px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-m3-primary-container active:scale-95 transition-all flex items-center gap-2 cursor-pointer">
                             Lanjutkan <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
                     </div>
@@ -549,13 +621,13 @@
                                 {{-- Month nav --}}
                                 <div class="flex justify-between items-center mb-5">
                                     <button type="button" @click="changeMonth(-1)"
-                                        class="w-9 h-9 rounded-full hover:bg-m3-surface-variant flex items-center justify-center transition-colors">
+                                        class="w-9 h-9 rounded-full hover:bg-m3-surface-variant flex items-center justify-center transition-colors cursor-pointer">
                                         <span class="material-symbols-outlined text-sm">chevron_left</span>
                                     </button>
                                     <span class="font-bold text-m3-primary text-base"
                                         x-text="monthNames[calMonth] + ' ' + calYear"></span>
                                     <button type="button" @click="changeMonth(1)"
-                                        class="w-9 h-9 rounded-full hover:bg-m3-surface-variant flex items-center justify-center transition-colors">
+                                        class="w-9 h-9 rounded-full hover:bg-m3-surface-variant flex items-center justify-center transition-colors cursor-pointer">
                                         <span class="material-symbols-outlined text-sm">chevron_right</span>
                                     </button>
                                 </div>
@@ -583,7 +655,7 @@
                                                         'cal-day past': day.past,
                                                         'cal-day': !day.past && !day.selected
                                                     }"
-                                                    class="w-8 h-8 mx-auto flex items-center justify-center text-sm transition-all"
+                                                    class="w-8 h-8 mx-auto flex items-center justify-center text-sm transition-all cursor-pointer disabled:cursor-not-allowed"
                                                     x-text="day.d">
                                                 </button>
                                             </template>
@@ -621,7 +693,7 @@
                                             'time-slot booked':   isTimeBooked(t),
                                             'time-slot border-m3-outline-variant text-m3-on-surface hover:border-m3-primary': selectedTime !== t && !isTimeBooked(t)
                                         }"
-                                        class="px-3 py-3 rounded-2xl border-2 text-xs font-bold transition-all disabled:cursor-not-allowed">
+                                        class="px-3 py-3 rounded-2xl border-2 text-xs font-bold transition-all disabled:cursor-not-allowed cursor-pointer">
                                         <span class="material-symbols-outlined text-[16px] block mb-1"
                                             x-text="isTimeBooked(t) ? 'block' : 'schedule'"></span>
                                         <span x-text="t"></span>
@@ -747,51 +819,11 @@
                             {{-- Hidden metode_pembayaran input (only relevant if not survei) --}}
                             <input type="hidden" name="metode_pembayaran" :value="isSurvei ? '' : metodePembayaran">
 
-                            {{-- Upload Bukti Transfer --}}
+                            {{-- Info Banner (Legacy simplified, kept for compatibility if needed elsewhere) --}}
                             <div x-show="metodePembayaran === 'transfer'" x-transition
-                                class="mt-6 p-6 bg-m3-surface-container-low rounded-2xl space-y-4">
-                                <p class="text-sm font-bold text-m3-primary flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-base">receipt_long</span>
-                                    Upload Bukti Transfer <span class="text-m3-error">*</span>
-                                </p>
-
-                                {{-- Bank info --}}
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div class="flex items-center gap-3 bg-white rounded-xl p-3 border border-m3-outline-variant/40">
-                                        <div class="w-10 h-10 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">BRI</div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-bold text-m3-on-surface tracking-wider">0123 4567 8901</p>
-                                            <p class="text-xs text-m3-outline">a.n. Peternakan Sakadomas</p>
-                                        </div>
-                                        <button type="button" @click="navigator.clipboard.writeText('01234567890123'); $el.textContent='✓'"
-                                            class="text-xs text-m3-primary font-bold shrink-0">Salin</button>
-                                    </div>
-                                    <div class="flex items-center gap-3 bg-white rounded-xl p-3 border border-m3-outline-variant/40">
-                                        <div class="w-10 h-10 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0">BSI</div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-bold text-m3-on-surface tracking-wider">7654 3210 9876</p>
-                                            <p class="text-xs text-m3-outline">a.n. Peternakan Sakadomas</p>
-                                        </div>
-                                        <button type="button" @click="navigator.clipboard.writeText('765432109876'); $el.textContent='✓'"
-                                            class="text-xs text-m3-primary font-bold shrink-0">Salin</button>
-                                    </div>
-                                </div>
-
-                                {{-- File upload --}}
-                                <div class="flex items-center gap-3">
-                                    <label for="uploadBukti"
-                                        class="cursor-pointer inline-flex items-center gap-2 bg-m3-primary text-m3-on-primary px-5 py-2.5 rounded-full text-sm font-bold hover:bg-m3-primary-container transition-colors">
-                                        <span class="material-symbols-outlined text-sm">upload</span> Pilih File
-                                    </label>
-                                    <input type="file" id="uploadBukti" name="bukti_pembayaran" accept="image/*"
-                                        :required="!isSurvei && metodePembayaran === 'transfer'"
-                                        class="hidden"
-                                        @change="fileName = $event.target.files.length > 0 ? $event.target.files[0].name : ''">
-                                    <span class="text-sm text-m3-outline italic truncate max-w-[200px]"
-                                        x-text="fileName || 'Belum ada file'"></span>
-                                </div>
-                                <p class="text-[11px] text-m3-error font-medium">
-                                    * Pesanan dengan bukti transfer yang sudah dikirim tidak dapat dibatalkan.
+                                class="mt-4 p-4 bg-m3-primary-fixed/10 rounded-xl border border-m3-primary/10">
+                                <p class="text-xs text-m3-on-surface-variant">
+                                    ℹ️ Detail rekening dan unggah bukti akan muncul di <strong>langkah terakhir</strong> setelah ringkasan.
                                 </p>
                             </div>
                         </div>
@@ -800,11 +832,11 @@
                     {{-- Step 2 Navigation --}}
                     <div class="flex justify-between items-center pt-10">
                         <button type="button" @click="goStep(1)"
-                            class="text-m3-primary font-bold flex items-center gap-2 hover:-translate-x-1 transition-transform text-sm">
+                            class="text-m3-primary font-bold flex items-center gap-2 hover:-translate-x-1 transition-transform text-sm cursor-pointer">
                             <span class="material-symbols-outlined text-lg">arrow_back</span> Kembali
                         </button>
                         <button type="button" @click="goStep(3)"
-                            class="bg-m3-primary text-m3-on-primary px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-m3-primary-container active:scale-95 transition-all flex items-center gap-2">
+                            class="bg-m3-primary text-m3-on-primary px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-m3-primary-container active:scale-95 transition-all flex items-center gap-2 cursor-pointer">
                             Lihat Ringkasan <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
                     </div>
@@ -825,7 +857,7 @@
                         {{-- Detail Ternak --}}
                         <div class="bg-m3-surface-container-low rounded-2xl p-6 space-y-4">
                             <p class="text-[10px] uppercase tracking-widest font-bold text-m3-primary">Detail Pesanan Ternak</p>
-                            <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4 text-sm capitalize">
                                 <div>
                                     <span class="text-m3-on-surface-variant">Kategori:</span><br>
                                     <span class="font-bold text-m3-on-surface" x-text="sumKategori()"></span>
@@ -908,15 +940,164 @@
                     {{-- Step 3 Navigation + Submit --}}
                     <div class="flex justify-between items-center pt-10">
                         <button type="button" @click="goStep(2)"
-                            class="text-m3-primary font-bold flex items-center gap-2 hover:-translate-x-1 transition-transform text-sm">
+                            class="text-m3-primary font-bold flex items-center gap-2 hover:-translate-x-1 transition-transform text-sm cursor-pointer">
                             <span class="material-symbols-outlined text-lg">arrow_back</span> Ubah Data
                         </button>
-                        <button type="submit"
+
+                        {{-- Submit for Survei/COD --}}
+                        <button type="submit" x-show="isSurvei || metodePembayaran === 'cash'"
                             :disabled="metodePengiriman === 'dikirim' && !dalamJangkauan && !isSurvei"
-                            class="bg-m3-primary text-m3-on-primary px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-m3-primary-container active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="bg-m3-primary text-m3-on-primary px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-m3-primary-container active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                             <span x-text="isSurvei ? 'Konfirmasi Survei' : 'Konfirmasi Pesanan'"></span>
                             <span class="material-symbols-outlined">check_circle</span>
                         </button>
+
+                        {{-- Next for Transfer --}}
+                        <button type="button" x-show="!isSurvei && metodePembayaran === 'transfer'"
+                            @click="goStep(4)"
+                            class="bg-m3-primary text-m3-on-primary px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-m3-primary-container active:scale-95 transition-all flex items-center gap-2 cursor-pointer">
+                            Lanjut ke Pembayaran <span class="material-symbols-outlined">payments</span>
+                        </button>
+                    </div>
+                </section>
+
+
+                {{-- ═════════ STEP 4: Pembayaran Transfer ═════════ --}}
+                <section :class="currentStep === 4 ? 'step-section active' : 'step-section'"
+                    class="bg-m3-surface-container-lowest p-0 rounded-3xl shadow-sm overflow-hidden">
+
+                    {{-- Countdown Banner --}}
+                    <div class="bg-m3-primary text-m3-on-primary p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-3xl">timer</span>
+                            <div>
+                                <p class="font-bold text-lg leading-tight">Batas Waktu Transfer</p>
+                                <p class="text-xs opacity-80">Selesaikan sebelum waktu habis untuk mengamankan stok.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <template x-if="true">
+                                <div class="flex items-center gap-1.5">
+                                    <div class="bg-white/15 rounded-xl px-4 py-2 text-center min-w-[54px]">
+                                        <span class="text-2xl font-bold block" x-text="formatTime(totalSeconds).h"></span>
+                                        <span class="text-[9px] opacity-70 uppercase font-bold tracking-tighter">Jam</span>
+                                    </div>
+                                    <span class="text-xl font-bold">:</span>
+                                    <div class="bg-white/15 rounded-xl px-4 py-2 text-center min-w-[54px]">
+                                        <span class="text-2xl font-bold block" x-text="formatTime(totalSeconds).m"></span>
+                                        <span class="text-[9px] opacity-70 uppercase font-bold tracking-tighter">Menit</span>
+                                    </div>
+                                    <span class="text-xl font-bold">:</span>
+                                    <div class="bg-white/15 rounded-xl px-4 py-2 text-center min-w-[54px]">
+                                        <span class="text-2xl font-bold block" x-text="formatTime(totalSeconds).s"></span>
+                                        <span class="text-[9px] opacity-70 uppercase font-bold tracking-tighter">Detik</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="p-8 md:p-10 space-y-10">
+                        <div>
+                            <h2 class="text-3xl font-bold font-headline text-m3-primary mb-3 tracking-tight">Selesaikan Pembayaran</h2>
+                            <p class="text-m3-on-surface-variant text-sm leading-relaxed">
+                                Silakan transfer total tagihan ke rekening di bawah ini. Pastikan nominal sesuai agar verifikasi otomatis berjalan lancar.
+                            </p>
+                        </div>
+
+                        {{-- Bank Card --}}
+                        <div class="bg-m3-surface-container-low p-8 rounded-3xl space-y-6 border border-m3-outline-variant/30">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-m3-outline-variant/20">
+                                        <span class="font-black text-blue-800 text-xl italic">BCA</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] uppercase tracking-widest font-bold text-m3-on-surface-variant mb-0.5">Nama Bank</p>
+                                        <p class="font-bold text-m3-on-surface">Bank Central Asia</p>
+                                    </div>
+                                </div>
+                                <div class="sm:text-right">
+                                    <p class="text-[10px] uppercase tracking-widest font-bold text-m3-on-surface-variant mb-0.5">Atas Nama</p>
+                                    <p class="font-bold text-m3-on-surface">PT Smart Saka Breeding</p>
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-m3-outline-variant/30"></div>
+
+                            <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-white p-5 rounded-2xl border border-m3-outline-variant/20 shadow-sm">
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-widest font-bold text-m3-on-surface-variant mb-1">Nomor Rekening</p>
+                                    <p class="text-3xl font-bold text-m3-primary tracking-widest">8930 1234 5678</p>
+                                </div>
+                                <button type="button" @click="copyAccount('893012345678')"
+                                    class="flex items-center justify-center gap-2 px-6 py-3 bg-m3-primary/5 text-m3-primary rounded-full font-bold text-sm hover:bg-m3-primary hover:text-white transition-all border border-m3-primary/10 cursor-pointer">
+                                    <span class="material-symbols-outlined text-base cursor-pointer">content_copy</span>
+                                    Salin Nomor
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Upload Section --}}
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-bold text-m3-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-m3-primary">receipt_long</span>
+                                Unggah Bukti Transfer <span class="text-m3-error">*</span>
+                            </h3>
+
+                            <div x-ref="uploadArea"
+                                :class="uploadError ? 'border-m3-error bg-m3-error/5' : (fileName ? 'border-m3-primary bg-m3-primary/5' : 'border-m3-outline-variant bg-m3-surface-container-lowest')"
+                                class="border-2 border-dashed rounded-3xl p-8 transition-all text-center relative group cursor-pointer"
+                                @click="$refs.fileInput.click()">
+
+                                <input type="file" name="bukti_pembayaran" x-ref="fileInput" accept="image/*,.pdf" class="hidden" @change="handleFileUpload($event)">
+
+                                {{-- Placeholder --}}
+                                <div x-show="!fileName" class="py-4">
+                                    <div class="w-16 h-16 bg-m3-surface-container-low rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined text-3xl text-m3-outline">upload_file</span>
+                                    </div>
+                                    <p class="font-bold text-m3-on-surface mb-1">Klik untuk Unggah</p>
+                                    <p class="text-xs text-m3-on-surface-variant">Format JPG, PNG, PDF (Maks. 5MB)</p>
+                                </div>
+
+                                {{-- Preview --}}
+                                <div x-show="fileName" class="flex flex-col md:flex-row items-center gap-6 text-left">
+                                    <div class="w-24 h-24 rounded-2xl overflow-hidden bg-white shadow-sm border border-m3-outline-variant/30 flex-shrink-0">
+                                        <template x-if="filePreview">
+                                            <img :src="filePreview" class="w-full h-full object-cover">
+                                        </template>
+                                        <template x-if="!filePreview">
+                                            <div class="w-full h-full flex items-center justify-center bg-m3-surface-container">
+                                                <span class="material-symbols-outlined text-m3-outline">description</span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-bold text-m3-primary truncate" x-text="fileName"></p>
+                                        <p class="text-xs text-m3-on-surface-variant">Siap diunggah</p>
+                                    </div>
+                                    <button type="button" @click.stop="removeFile()" class="p-3 rounded-full hover:bg-m3-error/10 text-m3-error transition-colors cursor-pointer">
+                                        <span class="material-symbols-outlined">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <p x-show="uploadError" class="text-[11px] text-m3-error font-bold flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">error</span> Bukti transfer wajib diunggah
+                            </p>
+                        </div>
+
+                        {{-- Step 4 Navigation --}}
+                        <div class="flex justify-between items-center pt-6">
+                            <button type="button" @click="goStep(3)"
+                                class="text-m3-primary font-bold flex items-center gap-2 hover:-translate-x-1 transition-transform text-sm cursor-pointer">
+                                <span class="material-symbols-outlined text-lg">arrow_back</span> Kembali
+                            </button>
+                            <button type="submit"
+                                class="bg-m3-primary text-m3-on-primary px-12 py-5 rounded-full font-bold text-lg shadow-lg hover:bg-m3-primary-container active:scale-95 transition-all flex items-center gap-3 cursor-pointer">
+                                Konfirmasi Pembayaran <span class="material-symbols-outlined">check_circle</span>
+                            </button>
+                        </div>
                     </div>
                 </section>
 
@@ -1052,5 +1233,19 @@
     :address="config('smartsaka.address')"
     map-src="{{ config('smartsaka.maps_embed_src') }}"
 />
+
+{{-- Toast Notification --}}
+<div x-show="showToast"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 translate-y-4"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 translate-y-0"
+    x-transition:leave-end="opacity-0 translate-y-4"
+    class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-m3-primary text-white px-6 py-3 rounded-full shadow-2xl font-bold text-sm flex items-center gap-2"
+    style="display: none;">
+    <span class="material-symbols-outlined text-base">check_circle</span>
+    <span x-text="toastMsg"></span>
+</div>
 
 @endsection

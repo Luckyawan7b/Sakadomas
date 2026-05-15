@@ -487,6 +487,11 @@ class TransaksiController extends Controller
             Log::error('FCM notification failed in storePesananUser: ' . $e->getMessage());
         }
 
+        if ($isSurvei) {
+            $survei = $transaksi->survei->first();
+            return redirect()->route('survei.success', $survei->id_survei)->with('success', 'Pengajuan survei berhasil dikirim!');
+        }
+
         return redirect()->route('transaksi.riwayat')->with('success', 'Pesanan berhasil dibuat! Menunggu konfirmasi dari Admin.');
     }
 

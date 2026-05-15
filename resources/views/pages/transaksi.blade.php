@@ -227,12 +227,12 @@
             <table class="w-full table-auto">
                 <thead>
                     <tr class="bg-gray-50 text-left dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800">
-                        <th class="py-4 px-4 font-medium text-black dark:text-white">ID Transaksi</th>
-                        <th class="py-4 px-4 font-medium text-black dark:text-white">Pembeli</th>
-                        <th class="py-4 px-4 font-medium text-black dark:text-white">Pesanan Ternak</th>
-                        <th class="py-4 px-4 font-medium text-black dark:text-white">Total Harga & Kurir</th>
-                        <th class="py-4 px-4 font-medium text-black dark:text-white text-center">Status</th>
-                        <th class="py-4 px-4 font-medium text-black dark:text-white text-center">Aksi</th>
+                        <th class="py-4 px-4 font-medium text-black dark:text-white whitespace-nowrap">ID Transaksi</th>
+                        <th class="py-4 px-4 font-medium text-black dark:text-white whitespace-nowrap">Pembeli</th>
+                        <th class="py-4 px-4 font-medium text-black dark:text-white whitespace-nowrap">Total Harga & Kurir</th>
+                        <th class="py-4 px-4 font-medium text-black dark:text-white text-center whitespace-nowrap">Pembayaran</th>
+                        <th class="py-4 px-4 font-medium text-black dark:text-white text-center whitespace-nowrap">Status</th>
+                        <th class="py-4 px-4 font-medium text-black dark:text-white text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -252,11 +252,6 @@
                                 <span class="text-xs text-gray-500">{{ $transaksi->akun->no_hp ?? '-' }}</span>
                             </td>
 
-                            <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
-                                <span
-                                    class="font-medium capitalize">{{ $transaksi->ternak->jenis_ternak->jenis_ternak ?? 'Tidak Diketahui' }}</span><br>
-                                <span class="text-sm">Usia: {{ $transaksi->ternak->usia ?? '-' }} Bln</span>
-                            </td>
 
                             <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
                                 <span class="font-bold text-green-600 dark:text-green-400">Rp
@@ -269,6 +264,27 @@
                                 @else
                                     <span class="text-xs text-gray-500"><i class="fas fa-truck text-[10px]"></i>
                                         {{ $transaksi->kurir ?? '-' }} ({{ $transaksi->no_kurir ?? '-' }})</span>
+                                @endif
+                            </td>
+
+                            {{-- Pembayaran --}}
+                            <td class="py-4 px-4 text-center">
+                                @if($transaksi->metode_pembayaran === 'transfer')
+                                    @if($transaksi->bukti_pembayaran)
+                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-500/10 px-3 py-1.5 text-xs font-semibold text-green-700 dark:text-green-400">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            Bukti Ada
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-red-100 dark:bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            Belum Upload
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
+                                        💵 COD
+                                    </span>
                                 @endif
                             </td>
 
@@ -287,11 +303,11 @@
                             </td>
 
                             <td class="py-4 px-4 text-center">
-                                <div class="flex items-center justify-center space-x-3.5">
+                                <div class="flex items-center justify-center space-x-2">
                                     <button @click="modalEdit = true" type="button"
-                                        class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-yellow-500 text-white hover:bg-yellow-600">Edit</button>
+                                        class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer">Edit</button>
                                     <button @click="modalHapus = true" type="button"
-                                        class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-red-500 text-white hover:bg-red-600">Hapus</button>
+                                        class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-red-500 text-white hover:bg-red-600 cursor-pointer">Hapus</button>
                                 </div>
                             </td>
 
@@ -389,6 +405,24 @@
                                                 @endif
                                             @endif
                                         </div>
+
+                                        {{-- BUKTI TRANSFER BUTTON (in edit modal) --}}
+                                        @if($transaksi->bukti_pembayaran)
+                                            <div class="mb-5 rounded-lg border border-blue-200 dark:border-blue-800/30 p-4 bg-blue-50 dark:bg-blue-900/10">
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                        <span class="text-sm font-semibold text-blue-700 dark:text-blue-400">Bukti Transfer</span>
+                                                        <span class="text-xs font-bold text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">Total: Rp {{ number_format($transaksi->total_harga + $transaksi->ongkir, 0, ',', '.') }}</span>
+                                                    </div>
+                                                    <a href="{{ $transaksi->bukti_pembayaran }}" target="_blank" rel="noopener"
+                                                        class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-xs font-medium transition-colors cursor-pointer">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                        Lihat Foto Bukti
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        @endif
 
                                         {{-- FORM UPDATE STATUS --}}
                                         <form method="POST" action="{{ route('transaksi.update', $transaksi->id_transaksi) }}" class="flex flex-col gap-4">

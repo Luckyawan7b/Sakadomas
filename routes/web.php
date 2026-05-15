@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/transaksi/create', [TransaksiController::class, 'createPesananUser'])->name('transaksi.create');
     Route::post('/transaksi/create/store', [TransaksiController::class, 'storePesananUser'])->name('transaksi.create.store');
     Route::get('/transaksi/pembayaran/{id}', [TransaksiController::class, 'halamanPembayaran'])->name('transaksi.pembayaran');
+    Route::get('/transaksi/pengajuan-survei/{id}', [SurveiController::class, 'successPage'])->name('survei.success');
     Route::get('/transaksi/riwayat-saya', [TransaksiController::class, 'riwayatUser'])->name('transaksi.riwayat');
 
 

@@ -345,5 +345,17 @@ class SurveiController extends Controller
 
         return back()->with('success', 'Survei berhasil diajukan ulang!');
     }
+
+    public function successPage($id)
+    {
+        $survei = Survei::with(['akun', 'transaksi'])->where('id_akun', Auth::id())->findOrFail($id);
+
+        // Sisa waktu 24 jam dari dibuat
+        $batasWaktu = Carbon::parse($survei->created_at)->addHours(24);
+        $sisaDetik = max(0, Carbon::now()->diffInSeconds($batasWaktu, false));
+
+        return view('landing.pengajuan-survei', compact('survei', 'sisaDetik'));
+    }
 }
+
 
