@@ -8,5 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Jalankan cek transaksi otomatis setiap jam
-Schedule::command('app:check-transaksi')->hourly();
+// Jalankan cek transaksi otomatis setiap 15 menit
+Schedule::command('app:check-transaksi')->everyFifteenMinutes();

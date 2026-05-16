@@ -35,10 +35,10 @@
             {{-- ── Desktop Navigation ── --}}
             <ul class="hidden md:flex items-center gap-1" role="list">
                 <li><a href="{{ route('home') }}"
-                        class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Beranda</a>
+                        class="px-4 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('home') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:text-olive-600 hover:bg-olive-50' }}">Beranda</a>
                 </li>
                 <li><a href="{{ route('katalog') }}"
-                        class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Katalog
+                        class="px-4 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('katalog') || request()->routeIs('produk.detail') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:text-olive-600 hover:bg-olive-50' }}">Katalog
                         </a></li>
                 <li><a href="{{ route('home') }}#faq"
                         class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">FAQ</a>
@@ -46,10 +46,10 @@
                 @auth
                     @if(Auth::user()->role === 'pelanggan')
                     <li><a href="{{ route('transaksi.create') }}"
-                            class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Buat Pesanan</a>
+                            class="px-4 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('transaksi.create') || request()->routeIs('transaksi.pembayaran') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:text-olive-600 hover:bg-olive-50' }}">Buat Pesanan</a>
                     </li>
                     <li><a href="{{ route('transaksi.riwayat') }}"
-                            class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Riwayat</a>
+                            class="px-4 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('transaksi.riwayat') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:text-olive-600 hover:bg-olive-50' }}">Riwayat</a>
                     </li>
                     @endif
                 @endauth
@@ -173,18 +173,18 @@
         role="navigation" aria-label="Menu mobile">
         <div class="px-5 py-4 flex flex-col gap-1">
             <a href="{{ route('home') }}" @click="open = false"
-                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Beranda</a>
+                class="px-4 py-3 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('home') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:bg-olive-50' }}">Beranda</a>
             <a href="{{ route('katalog') }}" @click="open = false"
-                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Katalog
+                class="px-4 py-3 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('katalog') || request()->routeIs('produk.detail') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:bg-olive-50' }}">Katalog
                 Domba</a>
             <a href="{{ route('home') }}#faq" @click="open = false"
                 class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">FAQ</a>
             @auth
                 @if(Auth::user()->role === 'pelanggan')
                 <a href="{{ route('transaksi.create') }}" @click="open = false"
-                    class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Buat Pesanan</a>
+                    class="px-4 py-3 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('transaksi.create') || request()->routeIs('transaksi.pembayaran') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:bg-olive-50' }}">Buat Pesanan</a>
                 <a href="{{ route('transaksi.riwayat') }}" @click="open = false"
-                    class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Riwayat</a>
+                    class="px-4 py-3 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('transaksi.riwayat') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:bg-olive-50' }}">Riwayat</a>
                 @endif
             @endauth
 

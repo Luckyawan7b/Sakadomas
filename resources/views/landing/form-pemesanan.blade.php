@@ -387,9 +387,17 @@
                 this.loadingJadwal = false;
             }
         },
-        isTimeBooked(t) { return this.bookedTimes.includes(t); },
+        isTimePast(t) {
+            if (!this.selectedDate) return false;
+            const today = new Date();
+            const sel   = new Date(this.selectedDate);
+            if (sel.toDateString() !== today.toDateString()) return false;
+            const [h, m] = t.split(':').map(Number);
+            return (today.getHours() > h) || (today.getHours() === h && today.getMinutes() >= m);
+        },
+        isTimeBooked(t) { return this.bookedTimes.includes(t) || this.isTimePast(t); },
         selectTime(t) {
-            if (this.isTimeBooked(t)) return;
+            if (this.isTimeBooked(t) || this.isTimePast(t)) return;
             this.selectedTime = t;
         },
         get timeSlots() {
@@ -695,9 +703,10 @@
                                         }"
                                         class="px-3 py-3 rounded-2xl border-2 text-xs font-bold transition-all disabled:cursor-not-allowed cursor-pointer">
                                         <span class="material-symbols-outlined text-[16px] block mb-1"
-                                            x-text="isTimeBooked(t) ? 'block' : 'schedule'"></span>
+                                            x-text="isTimePast(t) ? 'history' : (bookedTimes.includes(t) ? 'block' : 'schedule')"></span>
                                         <span x-text="t"></span>
-                                        <span x-show="isTimeBooked(t)" class="block text-[9px] mt-0.5 opacity-70">Terisi</span>
+                                        <span x-show="isTimePast(t)" class="block text-[9px] mt-0.5 opacity-70">Lewat</span>
+                                        <span x-show="bookedTimes.includes(t) && !isTimePast(t)" class="block text-[9px] mt-0.5 opacity-70">Terisi</span>
                                     </button>
                                 </template>
                             </div>

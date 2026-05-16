@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Cloudinary\Cloudinary;
 use App\Services\FcmService;
 use App\Models\Transaksi;
@@ -65,11 +66,20 @@ class TransaksiController extends Controller
      */
     private function batalkanTransaksi(Transaksi $transaksi): void
     {
+        // Kembalikan ternak ke siap jual
         foreach ($transaksi->detailTransaksi as $detail) {
             Ternak::where('id_ternak', $detail->id_ternak)->update([
                 'status_jual' => 'siap jual',
             ]);
         }
+
+        // Batalkan semua survei aktif yang terkait
+        $transaksi->survei()
+            ->whereIn('status', ['pending', 'disetujui'])
+            ->update([
+                'status'    => 'batal',
+                'ket_admin' => 'Otomatis batal karena transaksi dibatalkan.',
+            ]);
     }
 
     // ================================================================
@@ -400,9 +410,17 @@ class TransaksiController extends Controller
             if ($bentrok) {
                 return back()->withErrors(['waktu_survei' => 'Maaf, jadwal pada tanggal dan jam tersebut sudah terisi. Silakan pilih waktu lain.'])->withInput();
             }
+
+            // 1.6. Validasi: waktu survei tidak boleh sudah lewat jika tanggalnya hari ini
+            if ($request->tanggal_survei === Carbon::today()->toDateString()) {
+                $jamSurvei = Carbon::createFromFormat('H:i', $request->waktu_survei);
+                if ($jamSurvei->lte(Carbon::now())) {
+                    return back()->withErrors(['waktu_survei' => 'Jam survei yang dipilih sudah lewat. Silakan pilih sesi waktu berikutnya.'])->withInput();
+                }
+            }
         }
 
-        // 2. Cek ketersediaan stok
+        // 2. Cek ketersediaan stok (dengan database lock untuk mencegah race condition)
         $harga_per_ekor = $request->total_harga / $request->total_jumlah;
 
         $stok_tersedia = Ternak::where('id_jenis_ternak', $request->id_jenis_ternak)
@@ -410,6 +428,7 @@ class TransaksiController extends Controller
             ->where('harga', $harga_per_ekor)
             ->where('status_jual', 'siap jual')
             ->where('status_ternak', 'sehat')
+            ->lockForUpdate()
             ->count();
 
         if ($stok_tersedia < $request->total_jumlah) {
@@ -525,7 +544,7 @@ class TransaksiController extends Controller
             'batal'     => (clone $allUserTrx)->where('status', 'batal')->count(),
         ];
 
-        return view('pages.riwayat-user', compact('data_transaksi', 'stats'));
+        return view('landing.riwayat-transaksi', compact('data_transaksi', 'stats'));
     }
 
     // ================================================================
@@ -699,6 +718,11 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::with('detailTransaksi')->findOrFail($id);
 
+        // Guard: Cegah assign ke transaksi yang bukan pending/diproses
+        if (!in_array($transaksi->status, ['pending', 'diproses'])) {
+            return back()->withErrors(['assign' => 'Tidak bisa assign ternak ke transaksi berstatus ' . $transaksi->status . '.']);
+        }
+
         if ($transaksi->detailTransaksi->count() >= $transaksi->total_jumlah) {
             return back()->withErrors(['assign' => 'Semua slot ternak sudah terisi.']);
         }
@@ -708,6 +732,11 @@ class TransaksiController extends Controller
         }
 
         $ternak = Ternak::findOrFail($request->id_ternak);
+
+        // Guard: Cegah assign ternak yang sudah di-booking transaksi lain
+        if ($ternak->status_jual !== 'siap jual') {
+            return back()->withErrors(['assign' => 'Ternak #' . $ternak->id_ternak . ' tidak tersedia (status: ' . $ternak->status_jual . ').']);
+        }
 
         DetailTransaksi::create([
             'sub_jumlah'   => 1,
