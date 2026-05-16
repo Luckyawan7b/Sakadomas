@@ -46,7 +46,6 @@ class LandingController extends Controller
 
         return view('landing.index', [
             'featuredProducts' => $featuredProducts,
-            'dummyImages'      => $this->getDummyImages(),
 
             // ── Config bisnis — dibaca dari config/smartsaka.php ──────────
             'waNumber' => config('smartsaka.wa_number'),
@@ -76,7 +75,6 @@ class LandingController extends Controller
         return view('landing.katalog', [
             'jenis_ternak'   => $jenis_ternak,
             'klasifikasi'    => $klasifikasiData,
-            'dummyImages'    => $this->getDummyImages(),
             'waNumber'       => config('smartsaka.wa_number'),
             'email'          => config('smartsaka.email'),
             'address'        => config('smartsaka.address'),

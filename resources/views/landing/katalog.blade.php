@@ -51,7 +51,9 @@
 
     {{-- HERO BANNER --}}
     <section class="relative bg-m3-surface-container-low pt-44 pb-28 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        {{-- <div class="absolute inset-0 z-0 bg-cover bg-center opacity-20" style="background-image: url('{{ asset('images/katalog.jpg') }}');"></div> --}}
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('{{ asset('images/katalog.jpg') }}'); background-size: cover; background-position: center;"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 ">
             <nav class="flex items-center space-x-2 text-sm font-label text-m3-on-surface-variant mb-6 tracking-wide">
                 <a href="{{ route('home') }}" class="hover:text-m3-primary transition-colors">Beranda</a>
                 <span class="material-symbols-outlined text-xs">chevron_right</span>
@@ -165,10 +167,22 @@
             return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
         },
 
-        getImage(breed) {
-            const images = @json($dummyImages);
-            const key = (breed || "").toLowerCase().replace(/[\s()]/g, "");
-            return images[key] || images["default"];
+        getImage(item) {
+            let breedKey = (item.breed || "crosstexel").toLowerCase().replace(/[\s()]/g, "");
+            // Handle if breed maps to etawa(pe) -> etawape -> etawa
+            if (breedKey.includes("etawa")) breedKey = "etawa";
+
+            let usiaKey = "indukan"; // default fallback
+            if (item.kategori_usia) {
+                const usia = item.kategori_usia.toLowerCase();
+                if (usia.includes("anakan") || usia.includes("bibit")) usiaKey = "anakan";
+                else if (usia.includes("doro") || usia.includes("muda")) usiaKey = "doro";
+                else if (usia.includes("indukan") || usia.includes("dewasa")) usiaKey = "indukan";
+            }
+
+            // Generate the dynamic path based on folder structure
+            // Added ?v=1.1 for cache busting since images were optimized
+            return `/images/${breedKey}/${usiaKey}.webp?v=1.1`;
         }
     }'
         x-init='
@@ -423,7 +437,7 @@
                             class="group bg-m3-surface-container-lowest rounded-[2rem] overflow-hidden shadow-[0_10px_30px_rgba(61,103,0,0.04)] transition-all hover:-translate-y-2 hover:shadow-[0_25px_60px_rgba(61,103,0,0.1)]">
                             {{-- Image --}}
                             <div class="relative h-52 overflow-hidden">
-                                <img :src="getImage(item.breed)" :alt="item.nama_produk"
+                                <img :src="getImage(item)" :alt="item.nama_produk"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                     loading="lazy" />
                                 <span

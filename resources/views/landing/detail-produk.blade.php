@@ -33,8 +33,17 @@
             {{-- Left Column: Image --}}
             <div class="lg:col-span-7 space-y-6">
                 @php
-                    $imageKey = strtolower(str_replace([' ', '(', ')'], '', $produk['breed']));
-                    $imageSrc = $dummyImages[$imageKey] ?? $dummyImages['default'];
+                    $breedKey = strtolower(str_replace([' ', '(', ')'], '', $produk['breed'] ?? 'crosstexel'));
+                    if (str_contains($breedKey, 'etawa')) $breedKey = 'etawa';
+
+                    $usiaKey = 'indukan';
+                    if (isset($produk['kategori_usia'])) {
+                        $usia = strtolower($produk['kategori_usia']);
+                        if (str_contains($usia, 'anakan') || str_contains($usia, 'bibit')) $usiaKey = 'anakan';
+                        elseif (str_contains($usia, 'doro') || str_contains($usia, 'muda')) $usiaKey = 'doro';
+                        elseif (str_contains($usia, 'indukan') || str_contains($usia, 'dewasa')) $usiaKey = 'indukan';
+                    }
+                    $imageSrc = asset("images/{$breedKey}/{$usiaKey}.webp?v=1.1");
                 @endphp
                 <div class="relative group aspect-[4/5] bg-m3-surface-container-low rounded-[2rem] overflow-hidden">
                     <img src="{{ $imageSrc }}" alt="{{ $produk['breed'] }} {{ $produk['jenis_kelamin'] }}"
@@ -188,8 +197,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     @foreach ($produkSerupa as $serupa)
                         @php
-                            $serupaImageKey = strtolower(str_replace([' ', '(', ')'], '', $serupa['breed']));
-                            $serupaImage = $dummyImages[$serupaImageKey] ?? $dummyImages['default'];
+                            $sBreedKey = strtolower(str_replace([' ', '(', ')'], '', $serupa['breed'] ?? 'crosstexel'));
+                            if (str_contains($sBreedKey, 'etawa')) $sBreedKey = 'etawa';
+
+                            $sUsiaKey = 'indukan';
+                            if (isset($serupa['kategori_usia'])) {
+                                $sUsia = strtolower($serupa['kategori_usia']);
+                                if (str_contains($sUsia, 'anakan') || str_contains($sUsia, 'bibit')) $sUsiaKey = 'anakan';
+                                elseif (str_contains($sUsia, 'doro') || str_contains($sUsia, 'muda')) $sUsiaKey = 'doro';
+                                elseif (str_contains($sUsia, 'indukan') || str_contains($sUsia, 'dewasa')) $sUsiaKey = 'indukan';
+                            }
+                            $serupaImage = asset("images/{$sBreedKey}/{$sUsiaKey}.webp?v=1.1");
                         @endphp
                         <a href="{{ route('produk.detail', $serupa['slug']) }}"
                             class="group bg-m3-surface rounded-[2.5rem] overflow-hidden hover:shadow-2xl hover:shadow-m3-primary/5 transition-all duration-500">

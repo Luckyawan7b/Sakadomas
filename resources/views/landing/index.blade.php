@@ -37,7 +37,7 @@
 
 
     {{-- ══════════════════════════════════════════════ TENTANG KAMI ══ --}}
-    {{-- <section id="tentang" class="py-24 lg:py-32 bg-cream-50 relative overflow-hidden" aria-labelledby="tentang-heading">
+    <section id="tentang" class="py-24 lg:py-32 bg-cream-50 relative overflow-hidden" aria-labelledby="tentang-heading">
         <div class="absolute right-0 top-0 w-1/3 h-full dot-grid opacity-20 pointer-events-none" aria-hidden="true"></div>
 
         <div class="max-w-7xl mx-auto px-5 lg:px-8">
@@ -116,7 +116,7 @@
                 </div>
             </div>
         </div>
-    </section> --}}
+    </section>
 
 
     {{-- ══════════════════════════════════════════════ KATALOG PRODUK ══ --}}
@@ -132,12 +132,33 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7 capitalize" role="list" aria-label="Daftar produk ternak">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7 capitalize" role="list"
+                aria-label="Daftar produk ternak">
                 @forelse ($featuredProducts as $index => $item)
                     <div role="listitem">
+                        @php
+                            $breedKey = strtolower(str_replace([' ', '(', ')'], '', $item['breed'] ?? 'crosstexel'));
+                            if (str_contains($breedKey, 'etawa')) {
+                                $breedKey = 'etawa';
+                            }
+
+                            $usiaKey = 'indukan';
+                            if (isset($item['kategori_usia'])) {
+                                $usia = strtolower($item['kategori_usia']);
+                                if (str_contains($usia, 'anakan') || str_contains($usia, 'bibit')) {
+                                    $usiaKey = 'anakan';
+                                } elseif (str_contains($usia, 'doro') || str_contains($usia, 'muda')) {
+                                    $usiaKey = 'doro';
+                                } elseif (str_contains($usia, 'indukan') || str_contains($usia, 'dewasa')) {
+                                    $usiaKey = 'indukan';
+                                }
+                            }
+                            $imageSrc = asset("images/{$breedKey}/{$usiaKey}.webp?v=1.1");
+                        @endphp
                         <x-landing.product-card :title="$item['nama_produk']" :description="$item['breed'] . ' kelas ' . $item['kelas_berat'] . '. ' . $item['weight_range']" :price="'Rp ' . number_format($item['harga'], 0, ',', '.')" :price-raw="$item['harga']"
-                            :image="$dummyImages[strtolower(str_replace(' ', '', $item['breed']))] ?? $dummyImages['default']" :badge="$item['kelas_berat']" :badge-color="$item['kelas_berat'] == 'Super' ? 'bark' : 'olive'" :category="$item['jenis_kelamin']"
-                            :delay="($index * 0.05) . 's'" :slug="$item['slug']" :id-jenis="$item['id_jenis']" :kelamin="$item['jenis_kelamin']" wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
+                            :image="$imageSrc" :badge="$item['kelas_berat']" :badge-color="$item['kelas_berat'] == 'Super' ? 'bark' : 'olive'" :category="$item['jenis_kelamin']" :delay="$index * 0.05 . 's'"
+                            :slug="$item['slug']" :id-jenis="$item['id_jenis']" :kelamin="$item['jenis_kelamin']"
+                            wa-number="{{ $waNumber ?? config('smartsaka.wa_number') }}" />
                     </div>
                 @empty
                     <div class="col-span-full py-20 text-center">
@@ -147,31 +168,33 @@
                 @endforelse
 
                 {{-- Card Lihat Katalog Lengkap --}}
-                @if($featuredProducts->isNotEmpty())
-                <div role="listitem">
-                    <article
-                        class="product-card bg-gradient-to-br from-olive-700 to-olive-900 rounded-[2.5rem] overflow-hidden shadow-sm reveal h-full flex flex-col justify-between"
-                        style="transition-delay: 0.35s">
-                        <div class="p-10">
-                            <div class="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center text-4xl mb-8"
-                                aria-hidden="true">🐑</div>
-                            <h3 class="font-serif text-3xl text-cream-50 mb-4 tracking-tight">Lihat Katalog Lengkap</h3>
-                            <p class="text-cream-200/80 text-base leading-relaxed mb-8">
-                                Telusuri seluruh koleksi ternak kami dengan berbagai kategori usia, berat, dan jenis unggulan lainnya.
-                            </p>
-                        </div>
-                        <div class="p-10 pt-0">
-                            <a href="{{ route('katalog') }}"
-                                class="inline-flex items-center gap-3 bg-white text-olive-800 font-bold text-sm px-8 py-4 rounded-2xl hover:bg-cream-100 transition-all group">
-                                Buka Katalog
-                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
-                    </article>
-                </div>
+                @if ($featuredProducts->isNotEmpty())
+                    <div role="listitem">
+                        <article
+                            class="product-card bg-gradient-to-br from-olive-700 to-olive-900 rounded-[2.5rem] overflow-hidden shadow-sm reveal h-full flex flex-col justify-between"
+                            style="transition-delay: 0.35s">
+                            <div class="p-10">
+                                <div class="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center text-4xl mb-8"
+                                    aria-hidden="true">🐑</div>
+                                <h3 class="font-serif text-3xl text-cream-50 mb-4 tracking-tight">Lihat Katalog Lengkap</h3>
+                                <p class="text-cream-200/80 text-base leading-relaxed mb-8">
+                                    Telusuri seluruh koleksi ternak kami dengan berbagai kategori usia, berat, dan jenis
+                                    unggulan lainnya.
+                                </p>
+                            </div>
+                            <div class="p-10 pt-0">
+                                <a href="{{ route('katalog') }}"
+                                    class="inline-flex items-center gap-3 bg-white text-olive-800 font-bold text-sm px-8 py-4 rounded-2xl hover:bg-cream-100 transition-all group">
+                                    Buka Katalog
+                                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+                    </div>
                 @endif
             </div>
         </div>
@@ -179,7 +202,7 @@
 
 
     {{-- ══════════════════════════════════════════════ KEUNGGULAN ══ --}}
-    {{-- <section id="keunggulan" class="py-24 lg:py-32 bg-cream-50" aria-labelledby="keunggulan-heading">
+    <section id="keunggulan" class="py-24 lg:py-32 bg-cream-50" aria-labelledby="keunggulan-heading">
         <div class="max-w-7xl mx-auto px-5 lg:px-8">
             <div class="flex justify-center mb-4">
                 <div class="section-badge reveal">Keunggulan</div>
@@ -241,7 +264,7 @@
                 </div>
             </div>
         </div>
-    </section> --}}
+    </section>
 
 
     {{-- ══════════════════════════════════════════════ FAQ (BARU) ══ --}}
