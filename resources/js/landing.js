@@ -17,6 +17,8 @@ import './bootstrap'; // axios setup + CSRF header
 
 /* ── Alpine.js — di-import dari node_modules, bukan CDN ── */
 import Alpine from 'alpinejs';
+import collapse from '@alpinejs/collapse';
+Alpine.plugin(collapse);
 window.Alpine = Alpine;
 Alpine.start();
 

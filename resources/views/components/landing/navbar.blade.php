@@ -37,19 +37,51 @@
                 <li><a href="{{ route('home') }}"
                         class="px-4 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('home') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:text-olive-600 hover:bg-olive-50' }}">Beranda</a>
                 </li>
+                
+                @guest
+                <li><a href="{{ url('/') }}#tentang"
+                        class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Tentang Kami</a>
+                </li>
+                <li><a href="{{ url('/') }}#keunggulan"
+                        class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Keunggulan</a>
+                </li>
+                @endguest
+
                 <li><a href="{{ route('katalog') }}"
                         class="px-4 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('katalog') || request()->routeIs('produk.detail') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:text-olive-600 hover:bg-olive-50' }}">Katalog
                         </a></li>
-                <li><a href="{{ route('home') }}#faq"
-                        class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">FAQ</a>
+                
+                @guest
+                <li><a href="#kontak"
+                        class="px-4 py-2 text-sm font-medium text-olive-800 hover:text-olive-600 hover:bg-olive-50 rounded-lg transition-all">Kontak</a>
                 </li>
+                @endguest
                 @auth
                     @if(Auth::user()->role === 'pelanggan')
-                    <li><a href="{{ route('transaksi.create') }}"
-                            class="px-4 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('transaksi.create') || request()->routeIs('transaksi.pembayaran') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:text-olive-600 hover:bg-olive-50' }}">Buat Pesanan</a>
+                    {{-- Dropdown Transaksi --}}
+                    <li class="relative" x-data="{ open: false }" @click.away="open = false">
+                        <button @click="open = !open"
+                            class="px-4 py-2 text-sm font-medium rounded-lg text-olive-800 hover:text-olive-600 hover:bg-olive-50 transition-all flex items-center gap-1 {{ request()->routeIs('transaksi.*') ? 'text-olive-900 bg-olive-100 font-bold' : '' }}">
+                            Transaksi
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" x-transition class="absolute left-0 mt-2 w-48 rounded-xl border border-olive-200 bg-cream-50 p-2 shadow-lg z-50" style="display: none;">
+                            <a href="{{ route('transaksi.create') }}" class="block px-3.5 py-2 text-sm font-medium text-olive-800 rounded-lg hover:bg-olive-100 transition-colors">Buat Pesanan</a>
+                            <a href="{{ route('transaksi.riwayat') }}" class="block px-3.5 py-2 text-sm font-medium text-olive-800 rounded-lg hover:bg-olive-100 transition-colors">Riwayat Pesanan</a>
+                        </div>
                     </li>
-                    <li><a href="{{ route('transaksi.riwayat') }}"
-                            class="px-4 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('transaksi.riwayat') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:text-olive-600 hover:bg-olive-50' }}">Riwayat</a>
+
+                    {{-- Dropdown Kunjungan/Survei --}}
+                    <li class="relative" x-data="{ open: false }" @click.away="open = false">
+                        <button @click="open = !open"
+                            class="px-4 py-2 text-sm font-medium rounded-lg text-olive-800 hover:text-olive-600 hover:bg-olive-50 transition-all flex items-center gap-1 {{ request()->routeIs('kunjungan.*') ? 'text-olive-900 bg-olive-100 font-bold' : '' }}">
+                            Kunjungan/Survei
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" x-transition class="absolute left-0 mt-2 w-48 rounded-xl border border-olive-200 bg-cream-50 p-2 shadow-lg z-50" style="display: none;">
+                            <a href="{{ route('kunjungan.index') }}" class="block px-3.5 py-2 text-sm font-medium text-olive-800 rounded-lg hover:bg-olive-100 transition-colors">Jadwal Kunjungan</a>
+                            <a href="{{ route('kunjungan.riwayat') }}" class="block px-3.5 py-2 text-sm font-medium text-olive-800 rounded-lg hover:bg-olive-100 transition-colors">Riwayat Kunjungan</a>
+                        </div>
                     </li>
                     @endif
                 @endauth
@@ -174,17 +206,49 @@
         <div class="px-5 py-4 flex flex-col gap-1">
             <a href="{{ route('home') }}" @click="open = false"
                 class="px-4 py-3 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('home') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:bg-olive-50' }}">Beranda</a>
+            
+            @guest
+            <a href="{{ url('/') }}#tentang" @click="open = false"
+                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Tentang Kami</a>
+            <a href="{{ url('/') }}#keunggulan" @click="open = false"
+                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Keunggulan</a>
+            @endguest
+
             <a href="{{ route('katalog') }}" @click="open = false"
                 class="px-4 py-3 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('katalog') || request()->routeIs('produk.detail') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:bg-olive-50' }}">Katalog
                 Domba</a>
-            <a href="{{ route('home') }}#faq" @click="open = false"
-                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">FAQ</a>
+
+            @guest
+            <a href="#kontak" @click="open = false"
+                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">Kontak</a>
+            @endguest
+            {{-- <a href="{{ route('home') }}#faq" @click="open = false"
+                class="px-4 py-3 text-sm font-medium text-olive-800 hover:bg-olive-50 rounded-lg transition-all">FAQ</a> --}}
             @auth
                 @if(Auth::user()->role === 'pelanggan')
-                <a href="{{ route('transaksi.create') }}" @click="open = false"
-                    class="px-4 py-3 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('transaksi.create') || request()->routeIs('transaksi.pembayaran') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:bg-olive-50' }}">Buat Pesanan</a>
-                <a href="{{ route('transaksi.riwayat') }}" @click="open = false"
-                    class="px-4 py-3 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('transaksi.riwayat') ? 'text-olive-900 bg-olive-100 font-bold' : 'text-olive-800 hover:bg-olive-50' }}">Riwayat</a>
+                {{-- Accordion Transaksi --}}
+                <div x-data="{ open: false }" class="w-full">
+                    <button @click="open = !open" class="w-full px-4 py-3 text-sm font-medium text-left text-olive-800 hover:bg-olive-50 rounded-lg transition-all flex items-center justify-between {{ request()->routeIs('transaksi.*') ? 'text-olive-900 bg-olive-100 font-bold' : '' }}">
+                        <span>Transaksi</span>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition class="pl-4 flex flex-col gap-1 mt-1" style="display: none;">
+                        <a href="{{ route('transaksi.create') }}" @click="open = false; $parent.open = false" class="px-4 py-2 text-xs font-medium text-olive-700 hover:bg-olive-50 rounded-lg transition-all">Buat Pesanan</a>
+                        <a href="{{ route('transaksi.riwayat') }}" @click="open = false; $parent.open = false" class="px-4 py-2 text-xs font-medium text-olive-700 hover:bg-olive-50 rounded-lg transition-all">Riwayat Pesanan</a>
+                    </div>
+                </div>
+
+                {{-- Accordion Kunjungan/Survei --}}
+                <div x-data="{ open: false }" class="w-full">
+                    <button @click="open = !open" class="w-full px-4 py-3 text-sm font-medium text-left text-olive-800 hover:bg-olive-50 rounded-lg transition-all flex items-center justify-between {{ request()->routeIs('kunjungan.*') ? 'text-olive-900 bg-olive-100 font-bold' : '' }}">
+                        <span>Kunjungan/Survei</span>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-transition class="pl-4 flex flex-col gap-1 mt-1" style="display: none;">
+                        <a href="{{ route('kunjungan.index') }}" @click="open = false; $parent.open = false" class="px-4 py-2 text-xs font-medium text-olive-700 hover:bg-olive-50 rounded-lg transition-all">Jadwal Kunjungan</a>
+                        <a href="{{ route('kunjungan.riwayat') }}" @click="open = false; $parent.open = false" class="px-4 py-2 text-xs font-medium text-olive-700 hover:bg-olive-50 rounded-lg transition-all">Riwayat Kunjungan</a>
+                    </div>
+                </div>
                 @endif
             @endauth
 

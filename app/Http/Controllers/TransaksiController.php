@@ -420,21 +420,6 @@ class TransaksiController extends Controller
             }
         }
 
-        // 2. Cek ketersediaan stok (dengan database lock untuk mencegah race condition)
-        $harga_per_ekor = $request->total_harga / $request->total_jumlah;
-
-        $stok_tersedia = Ternak::where('id_jenis_ternak', $request->id_jenis_ternak)
-            ->where('jenis_kelamin', $request->jenis_kelamin_pesanan)
-            ->where('harga', $harga_per_ekor)
-            ->where('status_jual', 'siap jual')
-            ->where('status_ternak', 'sehat')
-            ->lockForUpdate()
-            ->count();
-
-        if ($stok_tersedia < $request->total_jumlah) {
-            return back()->withErrors(['stok' => 'Mohon maaf, stok domba kriteria ini tidak mencukupi (tersedia: ' . $stok_tersedia . ' ekor).'])->withInput();
-        }
-
         // 2.5 Kalkulasi Ongkir
         $ongkir = 0;
         if ($request->metode_pengiriman === 'dikirim') {
@@ -463,36 +448,60 @@ class TransaksiController extends Controller
             $uploadedFileUrl = $this->uploadKeCloudinary($request->file('bukti_pembayaran'));
         }
 
-        // 4. Buat Transaksi
-        $now = Carbon::now();
-        $transaksi = Transaksi::create([
-            'id_akun'               => Auth::id(),
-            'id_jenis_ternak'       => $request->id_jenis_ternak,
-            'jenis_kelamin_pesanan' => $request->jenis_kelamin_pesanan,
-            'tgl_transaksi'         => $now,
-            'total_jumlah'          => $request->total_jumlah,
-            'total_harga'           => $request->total_harga,
-            'metode_pembayaran'     => $isSurvei ? null : $request->metode_pembayaran,
-            'bukti_pembayaran'      => $uploadedFileUrl,
-            'metode_pengiriman'     => $request->metode_pengiriman,
-            'ongkir'                => $ongkir,
-            'kurir'                 => null,
-            'no_kurir'              => null,
-            'status'                => 'pending',
-            'is_survei'             => $isSurvei,
-            'batas_survei'          => $isSurvei ? $now->copy()->addDays(7)->toDateString() : null,
-        ]);
+        // 4. Jalankan seluruh proses database di dalam Transaction untuk mengaktifkan lockForUpdate
+        try {
+            $transaksi = DB::transaction(function() use ($request, $isSurvei, $ongkir, $uploadedFileUrl) {
+                $harga_per_ekor = $request->total_harga / $request->total_jumlah;
 
-        // 5. Buat Survei jika diminta
-        if ($isSurvei) {
-            $tgl_survei_gabungan = $request->tanggal_survei . ' ' . $request->waktu_survei . ':00';
-            Survei::create([
-                'tgl_survei'    => $tgl_survei_gabungan,
-                'status'        => 'pending',
-                'ket'           => $request->ket_survei ?? 'Survei untuk transaksi #TRX-' . $transaksi->id_transaksi,
-                'id_akun'       => Auth::id(),
-                'id_transaksi'  => $transaksi->id_transaksi,
-            ]);
+                // Cek ketersediaan stok (menggunakan get() lalu count() untuk kompatibilitas PostgreSQL lockForUpdate)
+                $stok_tersedia_rows = Ternak::where('id_jenis_ternak', $request->id_jenis_ternak)
+                    ->where('jenis_kelamin', $request->jenis_kelamin_pesanan)
+                    ->where('harga', $harga_per_ekor)
+                    ->where('status_jual', 'siap jual')
+                    ->where('status_ternak', 'sehat')
+                    ->lockForUpdate()
+                    ->get();
+
+                if ($stok_tersedia_rows->count() < $request->total_jumlah) {
+                    throw new \Exception('Mohon maaf, stok domba kriteria ini tidak mencukupi (tersedia: ' . $stok_tersedia_rows->count() . ' ekor).');
+                }
+
+                // Buat Transaksi
+                $now = Carbon::now();
+                $trx = Transaksi::create([
+                    'id_akun'               => Auth::id(),
+                    'id_jenis_ternak'       => $request->id_jenis_ternak,
+                    'jenis_kelamin_pesanan' => $request->jenis_kelamin_pesanan,
+                    'tgl_transaksi'         => $now,
+                    'total_jumlah'          => $request->total_jumlah,
+                    'total_harga'           => $request->total_harga,
+                    'metode_pembayaran'     => $isSurvei ? null : $request->metode_pembayaran,
+                    'bukti_pembayaran'      => $uploadedFileUrl,
+                    'metode_pengiriman'     => $request->metode_pengiriman,
+                    'ongkir'                => $ongkir,
+                    'kurir'                 => null,
+                    'no_kurir'              => null,
+                    'status'                => 'pending',
+                    'is_survei'             => $isSurvei,
+                    'batas_survei'          => $isSurvei ? $now->copy()->addDays(7)->toDateString() : null,
+                ]);
+
+                // Buat Survei jika diminta
+                if ($isSurvei) {
+                    $tgl_survei_gabungan = $request->tanggal_survei . ' ' . $request->waktu_survei . ':00';
+                    Survei::create([
+                        'tgl_survei'    => $tgl_survei_gabungan,
+                        'status'        => 'pending',
+                        'ket'           => $request->ket_survei ?? 'Survei untuk transaksi #TRX-' . $trx->id_transaksi,
+                        'id_akun'       => Auth::id(),
+                        'id_transaksi'  => $trx->id_transaksi,
+                    ]);
+                }
+
+                return $trx;
+            });
+        } catch (\Exception $e) {
+            return back()->withErrors(['stok' => $e->getMessage()])->withInput();
         }
 
         // Kirim push notification ke semua admin

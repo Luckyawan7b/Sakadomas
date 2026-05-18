@@ -66,19 +66,42 @@ class SurveiController extends Controller
     }
 
     // ================================================================
-    // PELANGGAN: Halaman Jadwal Kunjungan (Kunjungan mandiri saja)
+    // PELANGGAN: Halaman Jadwal Kunjungan (Semua aktif)
     // ================================================================
     public function indexUser()
     {
         $user = Auth::user();
 
-        $data_survei = Survei::with(['akun'])
+        $semuaSurvei = Survei::with(['akun', 'transaksi'])
                         ->where('id_akun', $user->id_akun)
-                        ->whereNull('id_transaksi')
                         ->orderBy('tgl_survei', 'desc')
                         ->get();
 
-        return view('pages.kunjungan-user', compact('data_survei'));
+        $jadwalAktif = $semuaSurvei->filter(function ($survei) {
+            return in_array(strtolower($survei->status), ['pending', 'disetujui']);
+        });
+
+        $riwayatTerbaru = $semuaSurvei->filter(function ($survei) {
+            return in_array(strtolower($survei->status), ['selesai', 'batal']);
+        })->take(3); // Menampilkan maksimal 3 riwayat terbaru
+
+        return view('landing.survei', compact('jadwalAktif', 'riwayatTerbaru'));
+    }
+
+    // ================================================================
+    // PELANGGAN: Halaman Semua Riwayat Survei
+    // ================================================================
+    public function riwayatUser()
+    {
+        $user = Auth::user();
+
+        $riwayatSemua = Survei::with(['akun', 'transaksi'])
+                        ->where('id_akun', $user->id_akun)
+                        ->whereIn('status', ['selesai', 'batal'])
+                        ->orderBy('tgl_survei', 'desc')
+                        ->get();
+
+        return view('landing.riwayat_survei', compact('riwayatSemua'));
     }
 
     // ================================================================
@@ -138,7 +161,8 @@ class SurveiController extends Controller
         $request->validate([
             'tanggal_survei' => 'required|date|after_or_equal:today|before_or_equal:' . $maxDate,
             'waktu_survei' => 'required',
-            'ket' => 'nullable|string',
+            'tujuan' => 'nullable|string',
+            'catatan' => 'nullable|string',
         ]);
 
         if ($this->cekBentrokanJadwal($request->tanggal_survei, $request->waktu_survei)) {
@@ -147,10 +171,25 @@ class SurveiController extends Controller
 
         $tgl_survei_gabungan = $request->tanggal_survei . ' ' . $request->waktu_survei . ':00';
 
+        $ket_gabungan = '';
+        if ($request->tujuan) {
+            $tujuanList = [
+                '1' => 'Konsultasi Pembelian / Kemitraan',
+                '2' => 'Melihat Hewan Kurban',
+                '3' => 'Melihat Bibit Ternak',
+                '4' => 'Lainnya'
+            ];
+            $tujuanText = $tujuanList[$request->tujuan] ?? $request->tujuan;
+            $ket_gabungan .= "Tujuan: " . $tujuanText . "\n";
+        }
+        if ($request->catatan) {
+            $ket_gabungan .= "Catatan: " . $request->catatan;
+        }
+
         Survei::create([
             'tgl_survei' => $tgl_survei_gabungan,
             'status' => 'pending',
-            'ket' => $request->ket,
+            'ket' => $ket_gabungan ?: null,
             'id_akun' => Auth::id(),
             'id_transaksi' => null,
         ]);
@@ -236,11 +275,15 @@ class SurveiController extends Controller
     public function updateUser(Request $request, $id)
     {
         $survei = Survei::where('id_akun', Auth::id())
-                    ->whereNull('id_transaksi')
-                    ->findOrFail($id);
+                    ->findOrFail($id); // Allow updating trx-linked too
 
-        if (strtolower(trim($survei->status)) !== 'pending') {
-            abort(403, 'Anda hanya dapat mengubah jadwal yang masih berstatus Pending.');
+        // Check 1x24 hours rule
+        if (Carbon::parse($survei->tgl_survei)->diffInHours(now(), false) > -24) {
+            return back()->withErrors(['survei' => 'Batas waktu perubahan jadwal adalah 1x24 Jam sebelum pelaksanaan.']);
+        }
+
+        if (strtolower(trim($survei->status)) !== 'pending' && strtolower(trim($survei->status)) !== 'disetujui') {
+            abort(403, 'Anda hanya dapat mengubah jadwal yang masih aktif.');
         }
 
         $maxDate = Carbon::now()->addDays(7)->toDateString();
@@ -248,7 +291,6 @@ class SurveiController extends Controller
         $request->validate([
             'tanggal_survei' => 'required|date|after_or_equal:today|before_or_equal:' . $maxDate,
             'waktu_survei' => 'required',
-            'ket' => 'nullable|string',
         ]);
 
         if ($this->cekBentrokanJadwal($request->tanggal_survei, $request->waktu_survei, $id)) {
@@ -259,7 +301,7 @@ class SurveiController extends Controller
 
         $survei->update([
             'tgl_survei' => $tgl_survei_gabungan,
-            'ket' => $request->ket,
+            'status' => 'pending' // Revert to pending for re-approval
         ]);
 
         return back()->with('success', 'Jadwal kunjungan berhasil diperbarui.');
@@ -279,17 +321,39 @@ class SurveiController extends Controller
     // ================================================================
     // PELANGGAN: Batalkan kunjungan mandiri (hanya jika pending)
     // ================================================================
-    public function deleteUser($id)
+    public function deleteUser(Request $request, $id)
     {
         $survei = Survei::where('id_akun', Auth::id())
-                    ->whereNull('id_transaksi')
                     ->findOrFail($id);
 
-        if (strtolower(trim($survei->status)) !== 'pending') {
-            abort(403, 'Anda hanya dapat membatalkan jadwal yang masih berstatus Pending.');
+        // Check 1x24 hours rule
+        if (Carbon::parse($survei->tgl_survei)->diffInHours(now(), false) > -24) {
+            return back()->withErrors(['survei' => 'Batas waktu pembatalan adalah 1x24 Jam sebelum pelaksanaan.']);
         }
 
-        $survei->delete();
+        if (strtolower(trim($survei->status)) !== 'pending' && strtolower(trim($survei->status)) !== 'disetujui') {
+            abort(403, 'Anda hanya dapat membatalkan jadwal yang masih aktif.');
+        }
+
+        $request->validate([
+            'alasan' => 'required|string'
+        ]);
+
+        $alasanList = [
+            '1' => 'Jadwal Bentrok',
+            '2' => 'Sudah Beli di Tempat Lain',
+            '3' => 'Berubah Pikiran',
+            '4' => 'Lokasi Terlalu Jauh',
+            '5' => 'Lainnya'
+        ];
+        $alasanText = $alasanList[$request->alasan] ?? $request->alasan;
+        
+        $ketBatal = "\nAlasan Batal: " . $alasanText;
+
+        $survei->update([
+            'status' => 'batal',
+            'ket' => $survei->ket . $ketBatal
+        ]);
 
         return back()->with('success', 'Jadwal kunjungan berhasil dibatalkan.');
     }

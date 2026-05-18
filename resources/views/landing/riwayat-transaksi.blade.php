@@ -22,8 +22,9 @@
 
     <main class="pt-24 flex-1">
         <!-- Header Hero Section -->
-        <header class="bg-m3-surface-container-low pt-12 pb-20 px-8">
-            <div class="max-w-7xl mx-auto">
+        <header class="relative bg-m3-surface-container-low pt-12 pb-20 px-8 overflow-hidden">
+            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('{{ asset('images/katalog.jpg') }}'); background-size: cover; background-position: center;"></div>
+            <div class="max-w-7xl mx-auto relative z-10">
                 <nav class="flex items-center space-x-2 text-sm text-m3-on-surface-variant mb-6 tracking-wide font-label">
                     <a href="{{ route('home') }}" class="hover:text-m3-primary transition-colors">Beranda</a>
                     <span class="material-symbols-outlined text-xs">chevron_right</span>
@@ -43,7 +44,7 @@
             searchQuery: '{{ request('q') }}',
             statusFilter: '{{ request('status', 'semua') }}'
         }">
-            
+
             {{-- Flash Message Sukses --}}
             @if (session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" x-transition
@@ -59,28 +60,76 @@
             @endif
 
             <div class="bg-white rounded-3xl shadow-[0_20px_50px_rgba(61,103,0,0.08)] overflow-hidden border border-m3-surface-container-high">
-                
+
                 <!-- Toolbar: Search & Filter -->
                 <form action="{{ route('transaksi.riwayat') }}" method="GET" class="p-6 md:p-8 border-b border-m3-surface-container-high bg-m3-surface-container-lowest flex flex-col lg:flex-row gap-4 justify-between items-center">
-                    
+
                     <!-- Search Bar -->
                     <div class="relative w-full lg:w-96">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-m3-outline">search</span>
                         <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari ID Transaksi..." class="w-full pl-12 pr-4 py-3 rounded-full bg-m3-surface-container-low border-none focus:ring-2 focus:ring-m3-primary/50 text-sm placeholder:text-m3-outline transition-all text-m3-on-surface outline-none font-medium">
                     </div>
-                    
+
                     <!-- Filters -->
                     <div class="flex flex-wrap lg:flex-nowrap gap-3 w-full lg:w-auto">
-                        <div class="relative flex-1 lg:flex-none">
-                            <select name="status" onchange="this.form.submit()" class="w-full px-5 py-3 pr-10 rounded-full bg-m3-surface-container-low border-none focus:ring-2 focus:ring-m3-primary/50 text-sm font-bold text-m3-on-surface appearance-none cursor-pointer hover:bg-m3-surface-variant transition-all outline-none">
-                                <option value="semua" {{ request('status') == 'semua' ? 'selected' : '' }}>Semua Status</option>
-                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu Pembayaran</option>
-                                <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses / Survei</option>
-                                <option value="dikirim" {{ request('status') == 'dikirim' ? 'selected' : '' }}>Dalam Pengiriman</option>
-                                <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                <option value="batal" {{ request('status') == 'batal' ? 'selected' : '' }}>Dibatalkan</option>
-                            </select>
-                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-m3-outline text-sm">expand_more</span>
+                        <!-- Custom Alpine.js Dropdown for Status Filter -->
+                        <div class="relative flex-1 lg:flex-none" x-data="{
+                            open: false,
+                            statusValue: '{{ request('status', 'semua') }}',
+                            statusLabel: '',
+                            init() {
+                                const labels = {
+                                    'semua': 'Semua Status',
+                                    'pending': 'Pending',
+                                    'diproses': 'Diproses / Survei',
+                                    'dikirim': 'Dalam Pengiriman',
+                                    'selesai': 'Selesai',
+                                    'batal': 'Dibatalkan'
+                                };
+                                this.statusLabel = labels[this.statusValue] || 'Semua Status';
+                            },
+                            selectOption(val, label) {
+                                this.statusValue = val;
+                                this.statusLabel = label;
+                                this.open = false;
+                                this.$nextTick(() => {
+                                    this.$el.closest('form').submit();
+                                });
+                            }
+                        }" @click.away="open = false">
+                            <!-- Hidden Input to submit via form -->
+                            <input type="hidden" name="status" :value="statusValue">
+
+                            <button type="button" @click="open = !open" class="w-full min-w-[210px] px-5 py-3 pr-10 rounded-full bg-m3-surface-container-low border-none focus:ring-2 focus:ring-m3-primary/50 text-sm font-bold text-m3-on-surface text-left hover:bg-m3-surface-variant transition-all outline-none flex items-center justify-between cursor-pointer">
+                                <span x-text="statusLabel"></span>
+                            </button>
+                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-m3-outline text-sm transition-transform duration-200" :class="{ 'rotate-180': open }">expand_more</span>
+
+                            <!-- Dropdown Menu Options -->
+                            <div x-show="open"
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 class="absolute right-0 left-0 mt-2 rounded-2xl border border-m3-surface-container-high bg-white p-2 shadow-lg z-50 overflow-hidden"
+                                 style="display: none;">
+                                <template x-for="opt in [
+                                    {val: 'semua', label: 'Semua Status'},
+                                    {val: 'pending', label: 'Pending'},
+                                    {val: 'diproses', label: 'Diproses / Survei'},
+                                    {val: 'dikirim', label: 'Dalam Pengiriman'},
+                                    {val: 'selesai', label: 'Selesai'},
+                                    {val: 'batal', label: 'Dibatalkan'}
+                                ]" :key="opt.val">
+                                    <button type="button" @click="selectOption(opt.val, opt.label)"
+                                            class="flex w-full items-center px-4 py-2.5 rounded-xl text-sm font-semibold text-m3-on-surface hover:bg-m3-surface-container-low transition-colors text-left cursor-pointer"
+                                            :class="{ 'bg-m3-primary/10 text-m3-primary': statusValue === opt.val }">
+                                        <span x-text="opt.label"></span>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                         <a href="{{ route('transaksi.create') }}" class="shrink-0 bg-m3-primary text-m3-on-primary rounded-full px-5 py-3 font-bold text-sm flex items-center gap-2 hover:bg-m3-primary-container hover:text-m3-on-primary-container transition-colors shadow-sm">
                             <span class="material-symbols-outlined text-[20px]">add</span> Buat Pesanan
@@ -107,7 +156,7 @@
                                     $st = strtolower($trx->status);
                                     // Mapping status to colors
                                     $statusConfig = match($st) {
-                                        'pending'  => ['label' => 'Menunggu Bayar', 'bg' => 'bg-yellow-50', 'text' => 'text-yellow-700', 'border' => 'border-yellow-200', 'dot' => 'bg-yellow-500', 'step' => 1],
+                                        'pending'  => ['label' => 'Pending', 'bg' => 'bg-yellow-50', 'text' => 'text-yellow-700', 'border' => 'border-yellow-200', 'dot' => 'bg-yellow-500', 'step' => 1],
                                         'diproses' => ['label' => 'Diproses / Survei', 'bg' => 'bg-blue-50', 'text' => 'text-blue-700', 'border' => 'border-blue-200', 'dot' => 'bg-blue-500', 'step' => 2],
                                         'dikirim'  => ['label' => 'Dalam Pengiriman', 'bg' => 'bg-purple-50', 'text' => 'text-purple-700', 'border' => 'border-purple-200', 'dot' => 'bg-purple-500', 'step' => 3],
                                         'selesai'  => ['label' => 'Selesai', 'bg' => 'bg-green-50', 'text' => 'text-green-700', 'border' => 'border-green-200', 'dot' => 'bg-green-500', 'step' => 4],
@@ -122,11 +171,11 @@
                                     <td class="py-5 px-6 pl-8 align-top">
                                         <div class="font-bold text-m3-primary text-base mb-1">#TRX-{{ $trx->id_transaksi }}</div>
                                         <div class="text-[13px] text-m3-on-surface-variant flex items-center gap-1.5 font-medium font-label">
-                                            <span class="material-symbols-outlined text-[14px]">calendar_today</span> 
+                                            <span class="material-symbols-outlined text-[14px]">calendar_today</span>
                                             {{ \Carbon\Carbon::parse($trx->tgl_transaksi)->translatedFormat('d M Y, H:i') }}
                                         </div>
                                     </td>
-                                    
+
                                     {{-- Pesanan Ternak --}}
                                     <td class="py-5 px-6 align-top">
                                         <div class="font-bold text-m3-on-surface mb-1 capitalize">
@@ -138,7 +187,7 @@
                                             </div>
                                         @endif
                                     </td>
-                                    
+
                                     {{-- Total Harga & Kurir --}}
                                     <td class="py-5 px-6 align-top">
                                         <div class="font-bold text-m3-on-surface text-base mb-1">
@@ -152,7 +201,7 @@
                                             @endif
                                         </div>
                                     </td>
-                                    
+
                                     {{-- Pembayaran --}}
                                     <td class="py-5 px-6 align-top">
                                         <div class="font-bold text-m3-on-surface mb-1 capitalize">
@@ -165,7 +214,7 @@
                                                 </div>
                                             @else
                                                 <div class="text-[13px] text-yellow-600 font-bold flex items-center gap-1">
-                                                    <span class="material-symbols-outlined text-[14px]">pending_actions</span> Menunggu Bayar
+                                                    <span class="material-symbols-outlined text-[14px]">pending_actions</span> Pending
                                                 </div>
                                             @endif
                                         @elseif($trx->metode_pembayaran === 'cash')
@@ -174,11 +223,11 @@
                                             <div class="text-[13px] text-m3-outline font-medium">-</div>
                                         @endif
                                     </td>
-                                    
+
                                     {{-- Status --}}
                                     <td class="py-5 px-6 align-top">
                                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-extrabold tracking-wide uppercase {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }} border {{ $statusConfig['border'] }}">
-                                            <span class="w-1.5 h-1.5 rounded-full {{ $statusConfig['dot'] }} {{ $st === 'diproses' ? 'animate-pulse' : '' }}"></span> 
+                                            <span class="w-1.5 h-1.5 rounded-full {{ $statusConfig['dot'] }} {{ $st === 'diproses' ? 'animate-pulse' : '' }}"></span>
                                             {{ $statusConfig['label'] }}
                                         </span>
                                         @if($trx->is_survei)
@@ -193,7 +242,7 @@
                                             @endif
                                         @endif
                                     </td>
-                                    
+
                                     {{-- Aksi --}}
                                     <td class="py-5 px-6 pr-8 align-top text-center w-36">
                                         {{-- Conditional Primary Button --}}
@@ -213,7 +262,7 @@
                                                             </div>
                                                             <h4 class="mb-2 text-xl font-bold font-headline text-m3-on-surface">Pesanan Diterima?</h4>
                                                             <p class="mb-8 text-sm text-m3-on-surface-variant font-medium leading-relaxed">Apakah Anda yakin telah menerima pesanan <strong>#TRX-{{ $trx->id_transaksi }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
-                                                            
+
                                                             <form action="{{ route('transaksi.selesai', $trx->id_transaksi) }}" method="POST" class="flex justify-center gap-3">
                                                                 @csrf
                                                                 <button type="button" @click="showModalTerima = false" class="rounded-full border border-m3-surface-container-high bg-m3-surface-container-low px-6 py-3 text-sm font-bold text-m3-on-surface hover:bg-m3-surface-container transition-colors w-full">Belum</button>
@@ -237,7 +286,7 @@
                                 <tr x-show="openDetail" x-collapse x-cloak class="bg-m3-surface-container-low border-b border-m3-surface-container-high">
                                     <td colspan="6" class="px-8 py-6">
                                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                            
+
                                             {{-- LEFT COLUMN: Tracking & Assigned Animals --}}
                                             <div>
                                                 {{-- Progress Tracker (hanya jika bukan batal) --}}
@@ -255,9 +304,10 @@
                                                         @foreach ($steps as $i => $s)
                                                             <div class="flex flex-col items-center flex-1">
                                                                 <div class="flex items-center w-full">
-                                                                    @if($i > 0)
-                                                                        <div class="h-1 flex-1 rounded {{ $statusConfig['step'] >= $s['step'] ? 'bg-m3-primary' : 'bg-m3-surface-variant' }}"></div>
-                                                                    @endif
+                                                                    <!-- Left Connector -->
+                                                                    <div class="h-1 flex-1 rounded {{ $i > 0 ? ($statusConfig['step'] >= $s['step'] ? 'bg-m3-primary' : 'bg-m3-surface-variant') : 'bg-transparent' }}"></div>
+                                                                    
+                                                                    <!-- Circle Node -->
                                                                     <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
                                                                         {{ $statusConfig['step'] >= $s['step'] ? 'bg-m3-primary text-white shadow-md' : 'bg-m3-surface-variant text-m3-outline' }}">
                                                                         @if($statusConfig['step'] > $s['step'])
@@ -266,9 +316,9 @@
                                                                             {{ $s['step'] }}
                                                                         @endif
                                                                     </div>
-                                                                    @if($i < count($steps) - 1)
-                                                                        <div class="h-1 flex-1 rounded {{ $statusConfig['step'] > $s['step'] ? 'bg-m3-primary' : 'bg-m3-surface-variant' }}"></div>
-                                                                    @endif
+                                                                    
+                                                                    <!-- Right Connector -->
+                                                                    <div class="h-1 flex-1 rounded {{ $i < count($steps) - 1 ? ($statusConfig['step'] > $s['step'] ? 'bg-m3-primary' : 'bg-m3-surface-variant') : 'bg-transparent' }}"></div>
                                                                 </div>
                                                                 <span class="text-[11px] mt-2 font-bold {{ $statusConfig['step'] >= $s['step'] ? 'text-m3-primary' : 'text-m3-outline' }}">{{ $s['label'] }}</span>
                                                             </div>
@@ -290,8 +340,8 @@
                                                                 <div>
                                                                     <span class="font-bold text-m3-primary mr-2">#{{ $detail->id_ternak }}</span>
                                                                     <span class="text-xs text-m3-on-surface-variant font-medium">
-                                                                        {{ $detail->ternak->jenis_ternak->jenis_ternak ?? '-' }} &bull; 
-                                                                        {{ $detail->ternak->berat ?? '-' }}kg &bull; 
+                                                                        {{ $detail->ternak->jenis_ternak->jenis_ternak ?? '-' }} &bull;
+                                                                        {{ $detail->ternak->berat ?? '-' }}kg &bull;
                                                                         <span class="capitalize">{{ $detail->ternak->jenis_kelamin ?? '-' }}</span>
                                                                     </span>
                                                                 </div>
@@ -369,8 +419,8 @@
 
                                                                 {{-- Tombol Ajukan Ulang --}}
                                                                 @if(strtolower($surveiAktif->status) === 'batal' && $trx->batas_survei && \Carbon\Carbon::parse($trx->batas_survei)->isFuture() && $st !== 'batal')
-                                                                    <div class="mt-4 pt-4 border-t border-red-200" 
-                                                                         x-data="{ 
+                                                                    <div class="mt-4 pt-4 border-t border-red-200"
+                                                                         x-data="{
                                                                              showFormResubmit: false,
                                                                              selectedDate: '',
                                                                              bookedTimes: [],
@@ -392,12 +442,12 @@
                                                                             @csrf
                                                                             <div class="relative w-full sm:w-auto">
                                                                                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-m3-outline">calendar_month</span>
-                                                                                <input type="text" name="tanggal_survei" required placeholder="Pilih Tanggal" 
+                                                                                <input type="text" name="tanggal_survei" required placeholder="Pilih Tanggal"
                                                                                     x-model="selectedDate"
-                                                                                    class="pl-9 pr-3 py-2 rounded-xl border border-m3-surface-variant text-xs w-full focus:ring-1 focus:ring-m3-primary outline-none" 
-                                                                                    x-init="flatpickr($el, { 
-                                                                                        dateFormat: 'Y-m-d', 
-                                                                                        minDate: 'today', 
+                                                                                    class="pl-9 pr-3 py-2 rounded-xl border border-m3-surface-variant text-xs w-full focus:ring-1 focus:ring-m3-primary outline-none"
+                                                                                    x-init="flatpickr($el, {
+                                                                                        dateFormat: 'Y-m-d',
+                                                                                        minDate: 'today',
                                                                                         maxDate: '{{ $trx->batas_survei }}',
                                                                                         onChange: function(selectedDates, dateStr) {
                                                                                             selectedDate = dateStr;
@@ -422,7 +472,7 @@
                                                                             $sisaWaktu = \Carbon\Carbon::parse($surveiAktif->tgl_survei)->addHours(24);
                                                                         @endphp
                                                                         <div class="rounded-2xl bg-yellow-50 p-4 mb-4 border border-yellow-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                                                                             x-data="{ 
+                                                                             x-data="{
                                                                                  deadline: new Date('{{ $sisaWaktu->toIso8601String() }}').getTime(),
                                                                                  now: new Date().getTime(),
                                                                                  timeLeft: 0,
@@ -529,7 +579,7 @@
                             @endforelse
                     </table>
                 </div>
-                
+
                 <!-- Pagination -->
                 @if ($data_transaksi->hasPages())
                     <div class="p-6 md:px-8 border-t border-m3-surface-container-high bg-m3-surface-container-lowest">

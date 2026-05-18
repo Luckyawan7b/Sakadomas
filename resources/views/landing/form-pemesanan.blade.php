@@ -78,6 +78,7 @@
 
 {{-- ── HERO BANNER ── --}}
 <header class="bg-m3-surface-container-low pt-36 pb-28 px-8 overflow-hidden relative">
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('{{ asset('images/katalog.jpg') }}'); background-size: cover; background-position: center;"></div>
     <div class="max-w-7xl mx-auto relative z-10">
         {{-- Breadcrumb --}}
         <nav class="flex items-center flex-wrap gap-x-2 gap-y-1 text-sm font-label text-m3-on-surface-variant mb-6 tracking-wide">
@@ -392,7 +393,7 @@
             const today = new Date();
             const sel   = new Date(this.selectedDate);
             if (sel.toDateString() !== today.toDateString()) return false;
-            const [h, m] = t.split(':').map(Number);
+            const [h, m] = t.split(":").map(Number);
             return (today.getHours() > h) || (today.getHours() === h && today.getMinutes() >= m);
         },
         isTimeBooked(t) { return this.bookedTimes.includes(t) || this.isTimePast(t); },

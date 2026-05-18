@@ -237,7 +237,7 @@
                 </thead>
                 <tbody>
                     @forelse ($data_transaksi as $transaksi)
-                        <tr x-data="{ modalEdit: {{ $errors->any() && old('_method') === 'PUT' && old('id_transaksi_edit') == $transaksi->id_transaksi ? 'true' : 'false' }}, modalHapus: false }"
+                        <tr x-data="{ modalEdit: {{ $errors->any() && old('_method') === 'PUT' && old('id_transaksi_edit') == $transaksi->id_transaksi ? 'true' : 'false' }} }"
                             class="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
 
                             <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
@@ -283,7 +283,7 @@
                                     @endif
                                 @else
                                     <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
-                                        💵 COD
+                                        Cash On Delivery
                                     </span>
                                 @endif
                             </td>
@@ -303,11 +303,9 @@
                             </td>
 
                             <td class="py-4 px-4 text-center">
-                                <div class="flex items-center justify-center space-x-2">
+                                <div class="flex items-center justify-center">
                                     <button @click="modalEdit = true" type="button"
-                                        class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer">Edit</button>
-                                    <button @click="modalHapus = true" type="button"
-                                        class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-red-500 text-white hover:bg-red-600 cursor-pointer">Hapus</button>
+                                        class="inline-flex items-center justify-center font-semibold gap-2 rounded-xl transition px-4 py-2 text-sm bg-brand-500 text-white hover:bg-brand-600 cursor-pointer shadow-sm">Detail / Edit</button>
                                 </div>
                             </td>
 
@@ -347,14 +345,16 @@
                                                 <div class="mb-3 rounded-md bg-brand-50 dark:bg-brand-900/10 border border-brand-100 dark:border-brand-800/30 p-3">
                                                     <p class="text-xs font-semibold text-brand-700 dark:text-brand-400 mb-1.5">Kriteria Pesanan User</p>
                                                     <div class="flex flex-wrap gap-2">
-                                                        <span class="inline-flex items-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
-                                                            🐑 {{ $transaksi->jenisTernak->jenis_ternak ?? '-' }}
+                                                        <span class="capitalize inline-flex items-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
+                                                            {{-- 🐑  --}}
+                                                            {{ $transaksi->jenisTernak->jenis_ternak ?? '-' }}
                                                         </span>
                                                         <span class="inline-flex items-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
-                                                            {{ $jkPesanan == 'jantan' ? '♂' : '♀' }} {{ ucfirst($jkPesanan) }}
+                                                            {{-- {{ $jkPesanan == 'jantan' ? '♂' : '♀' }}  --}}
+                                                            {{ ucfirst($jkPesanan) }}
                                                         </span>
                                                         <span class="inline-flex items-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-green-700 dark:text-green-400">
-                                                            💰 Rp {{ number_format($hargaPerEkor, 0, ',', '.') }}/ekor
+                                                             Rp {{ number_format($hargaPerEkor, 0, ',', '.') }}/ekor
                                                         </span>
                                                     </div>
                                                 </div>
@@ -475,31 +475,6 @@
                                 </div>
                             </template>
 
-                            {{-- MODAL HAPUS TRANSAKSI --}}
-                            <template x-teleport="body">
-                                <div x-show="modalHapus" style="display: none;"
-                                    class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
-                                    @click.self="modalHapus = false">
-                                    <div
-                                        class="relative w-full max-w-[400px] rounded-3xl bg-white p-6 dark:bg-gray-900 text-center">
-                                        <h4 class="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">
-                                            Batalkan/Hapus?</h4>
-                                        <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Yakin ingin menghapus data
-                                            <strong>#TRX-{{ $transaksi->id_transaksi }}</strong>? Tindakan ini permanen.
-                                        </p>
-                                        <form method="POST"
-                                            action="{{ route('transaksi.delete', $transaksi->id_transaksi) }}"
-                                            class="flex justify-center gap-3">
-                                            @csrf @method('DELETE')
-                                            <button @click="modalHapus = false" type="button"
-                                                class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">Batal</button>
-                                            <button type="submit"
-                                                class="rounded-lg bg-red-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-600">Ya,
-                                                Hapus!</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </template>
 
                         </tr>
                     @empty
@@ -519,5 +494,5 @@
         @endif
     </div>
 
-    
+
 @endsection

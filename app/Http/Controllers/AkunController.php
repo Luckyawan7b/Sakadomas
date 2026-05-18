@@ -198,8 +198,14 @@ class AkunController extends Controller
 
     public function profile()
     {
-        return view('pages.profile', [
-            'title' => 'Profile'
+        if (Auth::user()->role === 'admin') {
+            return view('pages.profile', [
+                'title' => 'Profile'
+            ]);
+        }
+
+        return view('landing.profil', [
+            'title' => 'Profil Saya | Smart-Saka'
         ]);
     }
 

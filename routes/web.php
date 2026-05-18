@@ -102,8 +102,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
-    // Kunjungan Mandiri Pelanggan
+    // Kunjungan & Survei Pelanggan
     Route::get('/kunjungan', [SurveiController::class, 'indexUser'])->name('kunjungan.index');
+    Route::get('/kunjungan/riwayat', [SurveiController::class, 'riwayatUser'])->name('kunjungan.riwayat');
     Route::post('/kunjungan/store', [SurveiController::class, 'storeUser'])->name('kunjungan.store');
     Route::put('/kunjungan/{id}', [SurveiController::class, 'updateUser'])->name('kunjungan.update');
     Route::delete('/kunjungan/{id}', [SurveiController::class, 'deleteUser'])->name('kunjungan.delete');
