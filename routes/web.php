@@ -164,6 +164,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/transaksi/update/{id}', [TransaksiController::class, 'updateAdmin'])->name('transaksi.update');
     Route::delete('/transaksi/hapus/{id}', [TransaksiController::class, 'deleteAdmin'])->name('transaksi.delete');
     Route::get('/transaksi/rekap', [TransaksiController::class, 'rekapAdmin'])->name('transaksi.rekap');
+    Route::get('/transaksi/{id}/invoice', [TransaksiController::class, 'printInvoiceAdmin'])->name('transaksi.invoice');
 
 
 });

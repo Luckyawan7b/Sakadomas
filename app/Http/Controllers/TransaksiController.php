@@ -15,6 +15,7 @@ use App\Models\Kamar;
 use App\Models\Survei;
 use App\Models\DetailTransaksi;
 use App\Models\Keuangan;
+use App\Jobs\ProcessInvoiceEmailJob;
 use Carbon\Carbon;
 
 class TransaksiController extends Controller
@@ -200,6 +201,11 @@ class TransaksiController extends Controller
             };
         } catch (\Throwable $e) {
             Log::error('FCM notification failed in updateAdmin: ' . $e->getMessage());
+        }
+
+        // Dispatch Invoice Email Job jika status selesai
+        if ($newStatus === 'selesai') {
+            ProcessInvoiceEmailJob::dispatch($transaksi);
         }
 
         return back()->with('success', 'Status transaksi berhasil diperbarui.');
@@ -773,6 +779,25 @@ class TransaksiController extends Controller
         $detail->delete();
 
         return back()->with('success', 'Ternak berhasil dihapus dari pesanan.');
+    }
+
+    // ================================================================
+    // 14. ADMIN: CETAK INVOICE
+    // ================================================================
+    public function printInvoiceAdmin($id)
+    {
+        $transaksi = Transaksi::with([
+            'akun.desa.kecamatan',
+            'jenisTernak',
+            'detailTransaksi.ternak.jenis_ternak',
+            'survei',
+        ])->findOrFail($id);
+
+        // Generate nomor invoice
+        $tglFormatted = Carbon::parse($transaksi->tgl_transaksi)->format('Ymd');
+        $noInvoice = 'INV/' . $tglFormatted . '/TRX-' . $transaksi->id_transaksi;
+
+        return view('pages.invoice', compact('transaksi', 'noInvoice'));
     }
 
 }
