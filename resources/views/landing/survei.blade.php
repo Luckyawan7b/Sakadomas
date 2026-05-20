@@ -153,9 +153,9 @@
                                 id: {{ $survei->id_survei }},
                                 tanggal: '{{ \Carbon\Carbon::parse($survei->tgl_survei)->format('Y-m-d') }}',
                                 waktu: '{{ \Carbon\Carbon::parse($survei->tgl_survei)->format('H:i') }}'
-                            }; modalEdit = true" class="flex-1 bg-surface-container-low text-primary font-bold py-3 rounded-xl hover:bg-primary hover:text-white transition-all text-sm">Ubah Jadwal</button>
+                            }; modalEdit = true" class="flex-1 bg-surface-container-low text-primary font-bold py-3 rounded-xl hover:bg-primary hover:text-white transition-all text-sm cursor-pointer">Ubah Jadwal</button>
 
-                            <button @click="batalId = {{ $survei->id_survei }}; modalBatal = true" class="flex-1 bg-white border border-error/30 text-error font-bold py-3 rounded-xl hover:bg-error-container transition-all text-sm">Batalkan</button>
+                            <button @click="batalId = {{ $survei->id_survei }}; modalBatal = true" class="flex-1 bg-white border border-error/30 text-error font-bold py-3 rounded-xl hover:bg-error-container transition-all text-sm cursor-pointer">Batalkan</button>
                         @endif
                     </div>
                 </div>
@@ -171,7 +171,7 @@
         <!-- RIGHT COLUMN: Riwayat Survei -->
         <div class="space-y-6">
             <button @click="modalTambah = true"
-            class="w-full flex items-center justify-center gap-2 bg-primary px-8 py-4 rounded-2xl shadow-lg shadow-primary/20 text-white font-bold hover:bg-primary-container transition-all active:scale-95 text-lg">
+            class="w-full flex items-center justify-center gap-2 bg-primary px-8 py-4 rounded-2xl shadow-lg shadow-primary/20 text-white font-bold hover:bg-primary-container transition-all active:scale-95 text-lg cursor-pointer">
                 <span class="material-symbols-outlined">add</span> Ajukan Kunjungan Baru
             </button>
             <h2 class="text-2xl font-extrabold text-on-surface mb-6 flex items-center gap-2">
@@ -235,7 +235,7 @@
                 <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
                     <div class="px-8 py-6 border-b border-surface-container-high flex justify-between items-center bg-surface-container-lowest shrink-0">
                         <h3 class="text-xl font-extrabold text-on-surface">Ajukan Kunjungan Baru</h3>
-                        <button @click="modalTambah = false" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-variant transition-all">
+                        <button @click="modalTambah = false" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-variant transition-all cursor-pointer">
                             <span class="material-symbols-outlined text-[20px]">close</span>
                         </button>
                     </div>
@@ -262,17 +262,44 @@
                         }">
                         @csrf
 
-                        <div class="mb-6">
+                        <div class="mb-6" x-data="{
+                            open: false,
+                            selectedVal: '',
+                            selectedLabel: 'Pilih tujuan...',
+                            options: [
+                                { val: '1', label: 'Konsultasi Pembelian / Kemitraan' },
+                                { val: '2', label: 'Melihat Hewan Kurban' },
+                                { val: '3', label: 'Melihat Bibit Ternak' },
+                                { val: '4', label: 'Lainnya' }
+                            ]
+                        }" @click.away="open = false">
                             <label class="block text-sm font-bold text-on-surface mb-2">Tujuan Kunjungan <span class="text-error">*</span></label>
+                            <input type="text" name="tujuan" :value="selectedVal" class="sr-only" required>
                             <div class="relative">
-                                <select name="tujuan" class="w-full px-5 py-3.5 pr-10 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/50 text-sm font-bold text-on-surface appearance-none cursor-pointer outline-none" required>
-                                    <option value="" disabled selected>Pilih tujuan...</option>
-                                    <option value="1">Konsultasi Pembelian / Kemitraan</option>
-                                    <option value="2">Melihat Hewan Kurban</option>
-                                    <option value="3">Melihat Bibit Ternak</option>
-                                    <option value="4">Lainnya</option>
-                                </select>
-                                <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+                                <button type="button" @click="open = !open" 
+                                    class="w-full px-5 py-3.5 rounded-xl bg-surface-container-low text-left text-sm font-bold text-on-surface cursor-pointer focus:ring-2 focus:ring-primary/50 outline-none flex items-center justify-between">
+                                    <span x-text="selectedLabel" :class="selectedVal ? 'text-on-surface' : 'text-outline-variant'"></span>
+                                    <svg class="w-5 h-5 transition-transform duration-200 text-outline shrink-0"
+                                        :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <div x-show="open" 
+                                    x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="transform opacity-0 scale-95"
+                                    x-transition:enter-end="transform opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="transform opacity-100 scale-100"
+                                    x-transition:leave-end="transform opacity-0 scale-95"
+                                    class="absolute z-[60] left-0 right-0 mt-2 bg-white border border-surface-container-high rounded-xl shadow-lg max-h-60 overflow-y-auto py-1"
+                                    style="display: none;">
+                                    <template x-for="opt in options" :key="opt.val">
+                                        <div @click="selectedVal = opt.val; selectedLabel = opt.label; open = false" 
+                                            class="px-5 py-3 hover:bg-surface-container-low cursor-pointer text-sm font-bold text-on-surface transition-colors"
+                                            x-text="opt.label"></div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 
@@ -311,7 +338,7 @@
                             <textarea name="catatan" class="w-full px-5 py-3.5 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/50 text-sm font-medium text-on-surface outline-none resize-none" rows="3" placeholder="Contoh: Ingin bertemu dengan Pak Budi..."></textarea>
                         </div>
 
-                        <button type="submit" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-primary-container active:scale-95 transition-all shadow-lg shadow-primary/20">
+                        <button type="submit" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-primary-container active:scale-95 transition-all shadow-lg shadow-primary/20 cursor-pointer">
                             Kirim Pengajuan
                         </button>
                     </form>
@@ -328,7 +355,7 @@
                 <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
                     <div class="px-8 py-6 border-b border-surface-container-high flex justify-between items-center bg-surface-container-lowest">
                         <h3 class="text-xl font-extrabold text-on-surface">Ubah Jadwal Survei</h3>
-                        <button @click="modalEdit = false" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-variant transition-all">
+                        <button @click="modalEdit = false" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-variant transition-all cursor-pointer">
                             <span class="material-symbols-outlined text-[20px]">close</span>
                         </button>
                     </div>
@@ -383,7 +410,7 @@
                                 </template>
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-primary-container active:scale-95 transition-all">
+                        <button type="submit" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-primary-container active:scale-95 transition-all cursor-pointer">
                             Simpan Jadwal Baru
                         </button>
                     </form>
@@ -397,7 +424,7 @@
         <div x-show="modalBatal" style="display: none;" class="fixed inset-0 z-50">
             <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-sm transition-opacity" @click="modalBatal = false"></div>
             <div class="fixed inset-0 flex items-center justify-center p-4">
-                <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-error/10">
+                <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md transform transition-all border border-error/10">
                     <div class="p-8 text-center border-b border-surface-container-high">
                         <div class="w-16 h-16 rounded-full bg-error-container mx-auto flex items-center justify-center mb-4">
                             <span class="material-symbols-outlined text-error text-3xl">warning</span>
@@ -405,28 +432,55 @@
                         <h3 class="text-xl font-extrabold text-on-surface mb-2">Batalkan Survei?</h3>
                         <p class="text-sm text-on-surface-variant font-medium">Aksi ini tidak dapat diurungkan. Anda harus membuat jadwal survei baru jika berubah pikiran.</p>
                     </div>
-                    <form method="POST" :action="'/kunjungan/' + batalId" class="p-8 bg-surface-container-lowest">
+                    <form method="POST" :action="'/kunjungan/' + batalId" class="p-8 bg-surface-container-lowest rounded-b-[22px]">
                         @csrf
                         @method('DELETE')
-                        <div class="mb-8">
+                        <div class="mb-8" x-data="{
+                            open: false,
+                            selectedVal: '',
+                            selectedLabel: 'Pilih alasan...',
+                            options: [
+                                { val: '1', label: 'Jadwal Bentrok' },
+                                { val: '2', label: 'Sudah Beli di Tempat Lain' },
+                                { val: '3', label: 'Berubah Pikiran' },
+                                { val: '4', label: 'Lokasi Terlalu Jauh' },
+                                { val: '5', label: 'Lainnya' }
+                            ]
+                        }" @click.away="open = false">
                             <label class="block text-sm font-bold text-on-surface mb-2 text-left">Alasan Pembatalan <span class="text-error">*</span></label>
+                            <input type="text" name="alasan" :value="selectedVal" class="sr-only" required>
                             <div class="relative text-left">
-                                <select name="alasan" class="w-full px-5 py-3.5 pr-10 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-error/50 text-sm font-bold text-on-surface appearance-none cursor-pointer outline-none" required>
-                                    <option value="" disabled selected>Pilih alasan...</option>
-                                    <option value="1">Jadwal Bentrok</option>
-                                    <option value="2">Sudah Beli di Tempat Lain</option>
-                                    <option value="3">Berubah Pikiran</option>
-                                    <option value="4">Lokasi Terlalu Jauh</option>
-                                    <option value="5">Lainnya</option>
-                                </select>
-                                <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+                                <button type="button" @click="open = !open" 
+                                    class="w-full px-5 py-3.5 rounded-xl bg-surface-container-low text-left text-sm font-bold text-on-surface cursor-pointer focus:ring-2 focus:ring-error/50 outline-none flex items-center justify-between">
+                                    <span x-text="selectedLabel" :class="selectedVal ? 'text-on-surface' : 'text-outline-variant'"></span>
+                                    <svg class="w-5 h-5 transition-transform duration-200 text-outline shrink-0"
+                                        :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <div x-show="open" 
+                                    x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="transform opacity-0 scale-95"
+                                    x-transition:enter-end="transform opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="transform opacity-100 scale-100"
+                                    x-transition:leave-end="transform opacity-0 scale-95"
+                                    class="absolute z-[60] left-0 right-0 mt-2 bg-white border border-surface-container-high rounded-xl shadow-lg max-h-60 overflow-y-auto py-1"
+                                    style="display: none;">
+                                    <template x-for="opt in options" :key="opt.val">
+                                        <div @click="selectedVal = opt.val; selectedLabel = opt.label; open = false" 
+                                            class="px-5 py-3 hover:bg-surface-container-low cursor-pointer text-sm font-bold text-on-surface transition-colors"
+                                            x-text="opt.label"></div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                         <div class="flex gap-3">
-                            <button type="button" @click="modalBatal = false" class="flex-1 bg-surface-container-high text-on-surface font-bold py-3.5 rounded-xl hover:bg-surface-variant active:scale-95 transition-all">
+                            <button type="button" @click="modalBatal = false" class="flex-1 bg-surface-container-high text-on-surface font-bold py-3.5 rounded-xl hover:bg-surface-variant active:scale-95 transition-all cursor-pointer">
                                 Kembali
                             </button>
-                            <button type="submit" class="flex-1 bg-error text-white font-bold py-3.5 rounded-xl hover:bg-[#a41717] active:scale-95 transition-all flex items-center justify-center gap-2">
+                            <button type="submit" class="flex-1 bg-error text-white font-bold py-3.5 rounded-xl hover:bg-[#a41717] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
                                 Batalkan
                             </button>
                         </div>

@@ -55,11 +55,59 @@
                     <span class="material-symbols-outlined">history</span> Riwayat Survei
                 </a>
 
+                {{-- Card Pengaturan Notifikasi --}}
+                <div class="px-6 py-4 rounded-2xl bg-surface-container-low border border-surface-container-high flex flex-col gap-3 mt-2"
+                     x-data="{
+                         hasPermission: ('Notification' in window) && Notification.permission === 'granted',
+                         isLoading: false,
+                         async toggleNotification() {
+                             this.isLoading = true;
+                             if (this.hasPermission) {
+                                 const success = await window.removeToken();
+                                 if (success) {
+                                     this.hasPermission = false;
+                                     if (window.showToast) window.showToast('Notifikasi berhasil dinonaktifkan.');
+                                 }
+                             } else {
+                                 const success = await window.requestPermissionAndToken();
+                                 if (success) {
+                                     this.hasPermission = true;
+                                     if (window.showToast) window.showToast('Notifikasi berhasil diaktifkan!');
+                                 } else {
+                                     alert('Gagal mengaktifkan notifikasi. Pastikan Anda mengizinkan notifikasi pada pengaturan browser.');
+                                 }
+                             }
+                             this.isLoading = false;
+                         }
+                     }">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-bold text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[20px]" :class="hasPermission ? 'text-primary' : 'text-outline'">
+                                notifications
+                            </span>
+                            Notifikasi
+                        </span>
+                        
+                        <!-- Toggle Switch -->
+                        <button type="button" 
+                                @click="toggleNotification()" 
+                                :disabled="isLoading"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50"
+                                :class="hasPermission ? 'bg-primary' : 'bg-outline-variant'">
+                            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                  :class="hasPermission ? 'translate-x-5' : 'translate-x-0'"></span>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-on-surface-variant leading-relaxed font-medium">
+                        Dapatkan pemberitahuan real-time untuk status pesanan, kunjungan, dan update lainnya.
+                    </p>
+                </div>
+
                 <hr class="border-surface-container-high my-2 mx-4">
 
                 <form method="POST" action="{{ route('logout') }}" class="mt-auto">
                     @csrf
-                    <button type="submit" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-error hover:bg-error-container hover:text-error font-bold transition-all group">
+                    <button type="submit" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-error hover:bg-error-container hover:text-error font-bold transition-all group cursor-pointer">
                         <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">logout</span> Keluar
                     </button>
                 </form>
@@ -87,7 +135,7 @@
             <div class="bg-white rounded-3xl shadow-[0_20px_50px_rgba(61,103,0,0.04)] border border-surface-container-high overflow-hidden">
                 <div class="px-8 py-6 border-b border-surface-container-high flex justify-between items-center bg-surface-container-lowest">
                     <h3 class="text-xl font-extrabold font-headline text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-primary">badge</span> Informasi Personal</h3>
-                    <button @click="modalEditProfile = true" class="text-primary font-bold text-sm hover:underline flex items-center gap-1">
+                    <button @click="modalEditProfile = true" class="text-primary font-bold text-sm hover:underline flex items-center gap-1 cursor-pointer">
                         <span class="material-symbols-outlined text-[16px]">edit_note</span> Edit
                     </button>
                 </div>
@@ -131,7 +179,7 @@
                         <p class="text-base font-bold text-on-surface mb-1">Password</p>
                         <p class="text-sm text-on-surface-variant font-medium">Pastikan untuk memperbarui password Anda secara berkala agar akun tetap aman.</p>
                     </div>
-                    <button @click="modalGantiPassword = true" class="bg-surface-container-low border border-surface-container-high text-primary font-bold px-6 py-3 rounded-xl hover:bg-surface-variant transition-all whitespace-nowrap active:scale-95">
+                    <button @click="modalGantiPassword = true" class="bg-surface-container-low border border-surface-container-high text-primary font-bold px-6 py-3 rounded-xl hover:bg-surface-variant transition-all whitespace-nowrap active:scale-95 cursor-pointer">
                         Ganti Password
                     </button>
                 </div>
@@ -221,8 +269,8 @@
                     </div>
 
                     <div class="px-8 py-6 border-t border-surface-container-high bg-surface-container-lowest flex justify-end gap-4 shrink-0">
-                        <button type="button" @click="modalEditProfile = false" class="px-6 py-3.5 rounded-xl font-bold text-on-surface-variant hover:bg-surface-container-low transition-all">Batal</button>
-                        <button type="submit" class="px-8 py-3.5 rounded-xl font-bold bg-primary text-white hover:bg-primary-container shadow-md shadow-primary/20 transition-all active:scale-95">Simpan Perubahan</button>
+                        <button type="button" @click="modalEditProfile = false" class="px-6 py-3.5 rounded-xl font-bold text-on-surface-variant hover:bg-surface-container-low transition-all cursor-pointer">Batal</button>
+                        <button type="submit" class="px-8 py-3.5 rounded-xl font-bold bg-primary text-white hover:bg-primary-container shadow-md shadow-primary/20 transition-all active:scale-95 cursor-pointer">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
@@ -270,7 +318,7 @@
                     </div>
 
                     <div class="px-8 py-6 border-t border-surface-container-high bg-surface-container-lowest">
-                        <button type="submit" class="w-full px-8 py-4 rounded-xl font-bold bg-primary text-white hover:bg-primary-container shadow-md shadow-primary/20 transition-all active:scale-95">Perbarui Password</button>
+                        <button type="submit" class="w-full px-8 py-4 rounded-xl font-bold bg-primary text-white hover:bg-primary-container shadow-md shadow-primary/20 transition-all active:scale-95 cursor-pointer">Perbarui Password</button>
                     </div>
                 </form>
             </div>

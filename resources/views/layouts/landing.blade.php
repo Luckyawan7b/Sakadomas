@@ -114,6 +114,28 @@
     @yield('content')
 
 
+    @auth
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (window.initFirebase) {
+                    window.initFirebase().then(supported => {
+                        if (supported && Notification.permission === 'granted') {
+                            window.requestPermissionAndToken();
+                        }
+                    });
+                }
+                
+                window.addEventListener('fcm-message', (e) => {
+                    const title = e.detail.notification?.title || 'Notifikasi';
+                    const body = e.detail.notification?.body || '';
+                    if (window.showToast) {
+                        window.showToast(title + ': ' + body);
+                    }
+                });
+            });
+        </script>
+    @endauth
+
     @stack('scripts')
 </body>
 

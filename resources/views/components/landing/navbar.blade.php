@@ -172,7 +172,7 @@
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
-                                    class="flex items-center w-full gap-3 px-3 py-2.5 font-medium text-red-600 rounded-lg text-sm hover:bg-red-50 transition-colors">
+                                    class="flex items-center w-full gap-3 px-3 py-2.5 font-medium text-red-600 rounded-lg text-sm hover:bg-red-50 transition-colors cursor-pointer">
                                     <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -279,7 +279,7 @@
                 <form method="POST" action="{{ route('logout') }}" class="mt-1">
                     @csrf
                     <button type="submit"
-                        class="w-full text-left px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                        class="w-full text-left px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer">
                         Keluar
                     </button>
                 </form>

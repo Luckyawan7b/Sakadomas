@@ -14,6 +14,8 @@
  */
 
 import './bootstrap'; // axios setup + CSRF header
+import './firebase'; // Firebase SDK/Messaging setup
+
 
 /* ── Alpine.js — di-import dari node_modules, bukan CDN ── */
 import Alpine from 'alpinejs';
