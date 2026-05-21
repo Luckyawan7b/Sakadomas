@@ -1,12 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mb-6">
-        <h2 class="text-title-md2 font-bold text-black dark:text-white">
-            Buat Pesanan Baru
-        </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pilih jenis hewan ternak yang Anda inginkan. Kami hanya
-            menjual hewan yang 100% sehat dan siap jual.</p>
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                Buat Transaksi Offline (Admin)
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Buat transaksi offline tanpa melalui sistem. Transaksi langsung berstatus 'Selesai' dan ternak otomatis di-assign.</p>
+        </div>
+        <a href="{{ route('transaksi.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali
+        </a>
     </div>
 
     @if ($errors->any())
@@ -20,16 +25,19 @@
     @endif
 
     {{-- Form Pembelian --}}
-    <form method="POST" action="{{ route('transaksi.create.store') }}" enctype="multipart/form-data"
+    <form method="POST" action="{{ route('transaksi.store.admin') }}" enctype="multipart/form-data"
         x-data='{
             rawData: @json($jenis_ternak),
+            ternakList: @json($ternak_list),
             ongkirInfo: @json($ongkirInfo),
             selectedKategori: "",
             selectedKelas: "",
             selectedKey: "",
-            jumlah: 1,
+            selectedTernakIds: [],
+            jumlah: 0,
             metode: "transfer",
             metodePengiriman: "dikirim",
+            ongkir: 0,
             isSurvei: false,
             waktuSurvei: "",
             tanggalSurvei: "",
@@ -38,18 +46,14 @@
             loadingJadwal: false,
 
             init() {
-                // Auto-fill dari URL parameters (dari halaman Katalog / Detail Produk)
-                const params = new URLSearchParams(window.location.search);
-                const jenisParam = params.get("jenis");
-                const kelaminParam = params.get("kelamin");
-                const hargaParam = params.get("harga");
+                const oldJenis = @json(old('id_jenis_ternak'));
+                const oldKelamin = @json(old('jenis_kelamin_pesanan'));
+                const oldTernakIds = @json(old('id_ternak') ?? []);
 
-                if (jenisParam && kelaminParam && hargaParam) {
-                    // Cari item yang cocok berdasarkan parameter
+                if (oldJenis && oldKelamin) {
                     const match = this.rawData.find(item =>
-                        String(item.id_jenis) === jenisParam &&
-                        item.jenis_kelamin === kelaminParam &&
-                        String(item.harga) === hargaParam
+                        String(item.id_jenis) === String(oldJenis) &&
+                        item.jenis_kelamin === oldKelamin
                     );
                     if (match) {
                         this.selectedKategori = match.nama_produk;
@@ -57,10 +61,47 @@
                             this.selectedKelas = match.kelas_berat;
                             this.$nextTick(() => {
                                 this.selectedKey = match.nama_produk + "_" + match.kelas_berat + "_" + match.jenis_kelamin + "_" + match.harga;
+                                this.$nextTick(() => {
+                                    if (oldTernakIds.length > 0) {
+                                        this.selectedTernakIds = oldTernakIds.map(id => String(id));
+                                    }
+                                });
                             });
                         });
                     }
+                } else {
+                    // Auto-fill dari URL parameters (dari halaman Katalog / Detail Produk)
+                    const params = new URLSearchParams(window.location.search);
+                    const jenisParam = params.get("jenis");
+                    const kelaminParam = params.get("kelamin");
+                    const hargaParam = params.get("harga");
+
+                    if (jenisParam && kelaminParam && hargaParam) {
+                        // Cari item yang cocok berdasarkan parameter
+                        const match = this.rawData.find(item =>
+                            String(item.id_jenis) === jenisParam &&
+                            item.jenis_kelamin === kelaminParam &&
+                            String(item.harga) === hargaParam
+                        );
+                        if (match) {
+                            this.selectedKategori = match.nama_produk;
+                            this.$nextTick(() => {
+                                this.selectedKelas = match.kelas_berat;
+                                        this.$nextTick(() => {
+                                    this.selectedKey = match.nama_produk + "_" + match.kelas_berat + "_" + match.jenis_kelamin + "_" + match.harga;
+                                });
+                            });
+                        }
+                    }
                 }
+
+                // Initialize watch for selectedTernakIds to auto-update jumlah
+                this.$watch("selectedTernakIds", val => {
+                    this.jumlah = val.length;
+                });
+
+                // Initialize ongkir
+                this.ongkir = this.ongkirInfo ? this.ongkirInfo.ongkir : 0;
             },
 
             fetchBookedTimes() {
@@ -100,18 +141,26 @@
                     (item.nama_produk + "_" + item.kelas_berat + "_" + item.jenis_kelamin + "_" + item.harga) === this.selectedKey
                 ) || null;
             },
-            get totalHarga() {
-                return this.selectedItem ? this.selectedItem.harga * this.jumlah : 0;
+            get filteredTernak() {
+                if(!this.selectedItem) return [];
+                return this.ternakList.filter(item =>
+                    String(item.id_jenis) === String(this.selectedItem.id_jenis) &&
+                    item.nama_produk === this.selectedItem.nama_produk &&
+                    item.kelas_berat === this.selectedItem.kelas_berat &&
+                    item.jenis_kelamin === this.selectedItem.jenis_kelamin &&
+                    String(item.harga) === String(this.selectedItem.harga)
+                );
             },
-            get ongkir() {
-                if (this.metodePengiriman === "ambil_sendiri") return 0;
-                return this.ongkirInfo ? this.ongkirInfo.ongkir : 0;
+            get totalHarga() {
+                if (!this.selectedItem) return 0;
+                let selectedSheep = this.filteredTernak.filter(t => this.selectedTernakIds.includes(String(t.id_ternak)));
+                return selectedSheep.reduce((sum, t) => sum + Number(t.harga), 0);
             },
             get grandTotal() {
                 return this.totalHarga + this.ongkir;
             },
             get dalamJangkauan() {
-                return this.ongkirInfo ? this.ongkirInfo.dalam_jangkauan : false;
+                return true;
             },
             get maxSurveiDate() {
                 let d = new Date();
@@ -125,37 +174,39 @@
         class="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
         @csrf
+
+        {{-- ============================================================ --}}
+        {{-- LEFT COLUMN: Form Cards (2/3 width on xl) --}}
+        {{-- ============================================================ --}}
         <div class="xl:col-span-2 flex flex-col gap-6">
 
             {{-- 1. Card Detail Pesanan --}}
-            <div
-                class="rounded-sm border border-gray-200 bg-white p-6 shadow-default dark:border-gray-800 dark:bg-gray-900">
-                <h3 class="mb-5 border-b border-gray-200 pb-2 font-medium text-black dark:border-gray-700 dark:text-white">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <h3 class="mb-5 border-b border-gray-200 pb-3 text-base font-semibold text-black dark:border-gray-700 dark:text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     Detail Pesanan Ternak
                 </h3>
 
                 <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                     {{-- Kategori Produk --}}
                     <div class="md:col-span-2">
-                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih Kategori
-                            Produk</label>
-                        <select x-model="selectedKategori" @change="selectedKelas = ''; selectedKey = ''; jumlah = 1"
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih Kategori Produk</label>
+                        <select x-model="selectedKategori" @change="selectedKelas = ''; selectedKey = ''; selectedTernakIds = []"
                             required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white capitalize">
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white capitalize transition-colors">
                             <option value="" disabled>-- Pilih Kategori (Breed + Usia) --</option>
                             <template x-for="kat in kategoriOptions" :key="kat">
-                                <option :value="kat" x-text="kat"></option>
+                                <option :value="kat" x-text="kat" class="capitalize"></option>
                             </template>
                         </select>
                     </div>
 
                     {{-- Kelas Berat --}}
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih Kelas
-                            Berat</label>
-                        <select x-model="selectedKelas" @change="selectedKey = ''; jumlah = 1" required
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih Kelas Berat</label>
+                        <select x-model="selectedKelas" @change="selectedKey = ''; selectedTernakIds = []" required
                             :disabled="!selectedKategori"
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:disabled:bg-gray-800">
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:disabled:bg-gray-800 transition-colors">
                             <option value="" disabled>-- Pilih Kelas (Standard/Super) --</option>
                             <template x-for="kls in kelasOptions" :key="kls">
                                 <option :value="kls" x-text="kls"></option>
@@ -165,14 +216,13 @@
 
                     {{-- Jenis Kelamin --}}
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih Jenis
-                            Kelamin</label>
-                        <select x-model="selectedKey" required :disabled="!selectedKelas"
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:disabled:bg-gray-800">
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih Jenis Kelamin</label>
+                        <select x-model="selectedKey" @change="selectedTernakIds = []" required :disabled="!selectedKelas"
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:disabled:bg-gray-800 capitalize transition-colors">
                             <option value="" disabled>-- Pilih Kelamin --</option>
                             <template x-for="opt in genderOptions"
                                 :key="opt.nama_produk + '_' + opt.kelas_berat + '_' + opt.jenis_kelamin + '_' + opt.harga">
-                                <option
+                                <option class="capitalize"
                                     :value="opt.nama_produk + '_' + opt.kelas_berat + '_' + opt.jenis_kelamin + '_' + opt.harga"
                                     x-text="(opt.jenis_kelamin.toUpperCase()) + ' - ' + formatRupiah(opt.harga) + ' (Stok: ' + opt.stok + ')'">
                                 </option>
@@ -180,14 +230,48 @@
                         </select>
                     </div>
 
+                    {{-- Checklist Pilih Ternak --}}
+                    <div class="md:col-span-2" x-show="selectedKey" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 -translate-y-2"
+                        x-transition:enter-end="opacity-100 translate-y-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-400">Pilih Ternak yang Dijual</label>
+                            <label class="flex items-center gap-2 text-xs font-semibold text-brand-500 dark:text-brand-400 cursor-pointer select-none">
+                                <input type="checkbox"
+                                    @change="if($el.checked) { selectedTernakIds = filteredTernak.map(t => String(t.id_ternak)) } else { selectedTernakIds = [] }"
+                                    :checked="filteredTernak.length > 0 && selectedTernakIds.length === filteredTernak.length"
+                                    class="rounded text-brand-500 focus:ring-brand-500 w-4 h-4 dark:bg-gray-900 border-gray-300 dark:border-gray-700">
+                                Pilih Semua (<span x-text="filteredTernak.length"></span>)
+                            </label>
+                        </div>
+                        <div class="space-y-1.5 max-h-56 overflow-y-auto pr-1 border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-800/40">
+                            <template x-for="t in filteredTernak" :key="t.id_ternak">
+                                <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white dark:hover:bg-gray-800 cursor-pointer text-xs transition-all duration-150 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-sm">
+                                    <input type="checkbox" name="id_ternak[]" :value="String(t.id_ternak)" x-model="selectedTernakIds"
+                                        class="rounded text-brand-500 focus:ring-brand-500 w-4 h-4 dark:bg-gray-900 border-gray-300 dark:border-gray-700">
+                                    <div class="flex-1">
+                                        <span class="font-bold text-brand-500">#TRK-<span x-text="t.id_ternak"></span></span>
+                                        <span class="text-gray-500 dark:text-gray-400">
+                                            &bull; <span x-text="t.berat"></span>kg &bull; Usia <span x-text="t.usia"></span> bln
+                                            <template x-if="t.kamar_info">
+                                                <span>&bull; <span x-text="t.kamar_info"></span></span>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </label>
+                            </template>
+                            <template x-if="filteredTernak.length === 0">
+                                <p class="text-xs text-gray-500 italic py-2 text-center">Tidak ada stok ternak siap jual untuk kriteria ini.</p>
+                            </template>
+                        </div>
+                    </div>
+
                     {{-- Input Jumlah --}}
                     <div class="md:col-span-2">
-                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Jumlah
-                            Pesanan</label>
-                        <input type="number" name="total_jumlah" x-model.number="jumlah" required min="1"
-                            :disabled="!selectedKey"
-                            @input="if(selectedItem && jumlah > selectedItem.stok) jumlah = selectedItem.stok"
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm focus:border-brand-500 disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:disabled:bg-gray-800">
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Jumlah Pesanan</label>
+                        <input type="number" name="total_jumlah" :value="jumlah" readonly required min="1"
+                            class="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 cursor-not-allowed">
+                        <p class="text-xs text-gray-500 mt-1">Jumlah pesanan terisi otomatis berdasarkan jumlah ternak yang dicentang di atas.</p>
                     </div>
 
                     <input type="hidden" name="id_jenis_ternak" :value="selectedItem?.id_jenis || ''">
@@ -195,96 +279,19 @@
                     <input type="hidden" name="total_harga" :value="totalHarga">
                 </div>
             </div>
+            {{-- END Card Detail Pesanan --}}
 
-            {{-- 2. Card Opsi Survei --}}
-            <div
-                class="rounded-sm border border-gray-200 bg-white p-6 shadow-default dark:border-gray-800 dark:bg-gray-900">
-                <h3 class="mb-5 border-b border-gray-200 pb-2 font-medium text-black dark:border-gray-700 dark:text-white">
-                    Opsi Survei Kandang
-                </h3>
+            {{-- Opsi Survei Kandang dihapus untuk Admin --}}
 
-                <div class="flex flex-col gap-5">
-                    <label class="flex cursor-pointer items-center gap-3">
-                        <input type="checkbox" name="is_survei" value="1" x-model="isSurvei"
-                            class="w-5 h-5 text-brand-600 focus:ring-brand-500 rounded border-gray-300">
-                        <span class="font-medium text-gray-800 dark:text-white">Saya ingin melakukan survei langsung ke
-                            kandang sebelum hewan dikirim</span>
-                    </label>
-
-                    {{-- Form Survei --}}
-                    <div x-show="isSurvei" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 -translate-y-2"
-                        x-transition:enter-end="opacity-100 translate-y-0"
-                        class="flex flex-col gap-4 p-5 rounded-lg border border-brand-100 bg-brand-50/50 dark:border-brand-900 dark:bg-brand-900/10"
-                        style="display: none;">
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {{-- Tanggal Survei --}}
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tanggal
-                                    Survei <span class="text-red-500">*</span></label>
-                                <input type="text" name="tanggal_survei" :required="isSurvei" x-model="tanggalSurvei"
-                                    x-init="typeof flatpickr !== 'undefined' ? flatpickr($el, {
-                                        dateFormat: 'Y-m-d',
-                                        minDate: 'today',
-                                        maxDate: new Date().fp_incr(7),
-                                        onChange: function(selectedDates, dateStr) {
-                                            tanggalSurvei = dateStr;
-                                            fetchBookedTimes();
-                                        }
-                                    }) : null"
-                                    class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                                    placeholder="Pilih Tanggal (maks 7 hari)">
-                            </div>
-
-                            {{-- Waktu Survei --}}
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Waktu
-                                    Survei <span class="text-red-500">*</span></label>
-                                <input type="hidden" name="waktu_survei" x-model="waktuSurvei" :required="isSurvei">
-                                <div class="grid grid-cols-2 gap-2 sm:grid-cols-4" :class="loadingJadwal ? 'opacity-50 pointer-events-none' : ''">
-                                    <template x-for="time in ['09:00', '11:00', '13:00', '15:00']" :key="time">
-                                        <button type="button"
-                                            @click="if(!bookedTimes.includes(time)) waktuSurvei = time"
-                                            :disabled="bookedTimes.includes(time) || loadingJadwal"
-                                            :class="{
-                                                'bg-brand-500 text-white border-brand-500 shadow-md transform scale-105': waktuSurvei === time,
-                                                'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600 dark:border-gray-700': bookedTimes.includes(time),
-                                                'bg-white text-gray-700 border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-white/5': waktuSurvei !== time && !bookedTimes.includes(time)
-                                            }"
-                                            class="flex items-center justify-center rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-200"
-                                            x-text="time">
-                                        </button>
-                                    </template>
-                                </div>
-                                <p x-show="loadingJadwal" class="text-[10px] text-brand-600 mt-1 animate-pulse">Memeriksa ketersediaan...</p>
-                            </div>
-                        </div>
-
-                        {{-- Keterangan Survei --}}
-                        <div>
-                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Keterangan
-                                (Opsional)</label>
-                            <textarea name="ket_survei" rows="2" placeholder="Contoh: Ingin melihat langsung kualitas bulu dan berat badan..."
-                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"></textarea>
-                        </div>
-
-                        <div
-                            class="rounded-md bg-amber-50 p-3 text-sm text-amber-800 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30">
-                            <i class="fas fa-info-circle mr-1"></i> Jika Anda memilih survei, <b>metode pembayaran</b> akan ditentukan <b>setelah survei selesai</b>.
-                            Anda memiliki waktu 24 jam setelah survei selesai untuk melakukan pembayaran (transfer).
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 2.5 Card Metode Pengiriman --}}
-            <div x-show="!isSurvei" x-transition:enter="transition ease-out duration-300"
+            {{-- 2. Card Metode Pengiriman --}}
+            <div x-show="!isSurvei"
+                x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 -translate-y-2"
                 x-transition:enter-end="opacity-100 translate-y-0"
-                class="rounded-sm border border-gray-200 bg-white p-6 shadow-default dark:border-gray-800 dark:bg-gray-900"
+                class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
                 style="display: none;" x-cloak>
-                <h3 class="mb-5 border-b border-gray-200 pb-2 font-medium text-black dark:border-gray-700 dark:text-white">
+                <h3 class="mb-5 border-b border-gray-200 pb-3 text-base font-semibold text-black dark:border-gray-700 dark:text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
                     Metode Pengiriman
                 </h3>
 
@@ -326,7 +333,7 @@
                     </div>
 
                     {{-- Card Ambil Sendiri --}}
-                    <div @click="metodePengiriman = 'ambil_sendiri'"
+                    <div @click="metodePengiriman = 'ambil_sendiri'; ongkir = 0"
                         :class="{
                             'border-green-500 bg-green-50/50 dark:border-green-500 dark:bg-green-500/10 ring-1 ring-green-500': metodePengiriman === 'ambil_sendiri',
                             'cursor-pointer hover:border-green-400 hover:bg-gray-50 dark:hover:bg-gray-800': true
@@ -350,24 +357,50 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {{-- 3. Card Pembayaran — HIDDEN jika survei --}}
-            <div x-show="!isSurvei" x-transition:enter="transition ease-out duration-300"
+                {{-- Input Manual untuk Ongkir, Kurir, No Kurir jika dikirim --}}
+                <div x-show="metodePengiriman === 'dikirim'" x-transition class="mt-6 space-y-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+                    <h4 class="font-semibold text-gray-800 dark:text-white text-sm">Informasi Kurir & Ongkir</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Ongkos Kirim (Rp)</label>
+                            <input type="number" id="input_ongkir" name="ongkir" x-model.number="ongkir" :disabled="metodePengiriman !== 'dikirim'" required min="0"
+                                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white transition-colors">
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">Nama Kurir</label>
+                            <input type="text" id="input_kurir" name="kurir" placeholder="Nama Kurir (opsional)"
+                                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white transition-colors">
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">No HP Kurir</label>
+                            <input type="text" id="input_no_kurir" name="no_kurir" placeholder="No HP Kurir (opsional)"
+                                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white transition-colors">
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="ongkir" value="0" :disabled="metodePengiriman === 'dikirim'">
+            </div>
+            {{-- END Card Metode Pengiriman --}}
+
+            {{-- 3. Card Pembayaran --}}
+            <div x-show="!isSurvei"
+                x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 -translate-y-2"
                 x-transition:enter-end="opacity-100 translate-y-0"
-                class="rounded-sm border border-gray-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-900 p-6"
+                class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 p-6"
                 style="display: none;" x-cloak>
-                <h3 class="font-medium text-black dark:text-white mb-5 border-b border-gray-200 dark:border-gray-700 pb-2">
+                <h3 class="text-base font-semibold text-black dark:text-white mb-5 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                     Metode Pembayaran
                 </h3>
                 <div class="flex flex-col gap-5">
                     <div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <label
-                                class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-300 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                                class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-300 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-all duration-200"
                                 :class="metode === 'transfer' ?
-                                    'border-brand-500 bg-brand-50/50 dark:border-brand-500 dark:bg-brand-500/10' : ''">
+                                    'border-brand-500 bg-brand-50/50 dark:border-brand-500 dark:bg-brand-500/10 ring-1 ring-brand-500' : ''">
                                 <input type="radio" name="metode_pembayaran" value="transfer" x-model="metode"
                                     class="w-4 h-4 text-brand-600 focus:ring-brand-500">
                                 <div>
@@ -376,9 +409,9 @@
                             </label>
 
                             <label
-                                class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-300 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                                class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-300 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-all duration-200"
                                 :class="metode === 'cash' ?
-                                    'border-brand-500 bg-brand-50/50 dark:border-brand-500 dark:bg-brand-500/10' : ''">
+                                    'border-brand-500 bg-brand-50/50 dark:border-brand-500 dark:bg-brand-500/10 ring-1 ring-brand-500' : ''">
                                 <input type="radio" name="metode_pembayaran" value="cash" x-model="metode"
                                     class="w-4 h-4 text-brand-600 focus:ring-brand-500">
                                 <div>
@@ -416,7 +449,7 @@
                         {{-- Upload Bukti --}}
                         <div class="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800/30">
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Upload Bukti Transfer <span class="text-red-500">*</span>
+                                Upload Bukti Transfer <span class="text-xs text-gray-500">(Opsional)</span>
                             </label>
                             <div class="flex items-center gap-3">
                                 <label for="uploadBukti" class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-brand-600 hover:shadow-md">
@@ -424,108 +457,126 @@
                                     Upload
                                 </label>
                                 <input type="file" id="uploadBukti" x-ref="buktiTransfer" name="bukti_pembayaran" accept="image/*"
-                                    :required="!isSurvei && metode === 'transfer'"
                                     class="hidden"
                                     @change="fileName = $refs.buktiTransfer.files.length > 0 ? $refs.buktiTransfer.files[0].name : ''">
                                 <span class="text-sm text-gray-600 dark:text-gray-400 italic truncate max-w-[200px] sm:max-w-xs"
                                     x-text="fileName ? fileName : 'Belum ada file dipilih'">
                                 </span>
                             </div>
-                            <p class="mt-2.5 text-xs text-red-500 font-medium italic">
-                                * Perhatian: Pesanan dengan metode Transfer yang telah dikirimkan bukti pembayarannya tidak dapat dibatalkan.
-                            </p>
                         </div>
                     </div>
                 </div>
             </div>
+            {{-- END Card Pembayaran --}}
 
-            {{-- Info jika survei aktif --}}
-            <div x-show="isSurvei" x-transition
-                class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800/30 dark:bg-blue-900/20"
-                style="display: none;">
-                <div class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
-                    <div class="text-sm text-blue-800 dark:text-blue-300">
-                        <p class="font-semibold mb-1">Pembayaran Ditunda</p>
-                        <p>Karena Anda memilih opsi survei, metode pembayaran dan upload bukti transfer akan tersedia <b>setelah survei selesai</b>. Anda memiliki <b>24 jam</b> setelah survei selesai untuk menyelesaikan pembayaran (transfer).</p>
-                    </div>
-                </div>
-            </div>
         </div>
+        {{-- END LEFT COLUMN --}}
 
-        {{-- 4. Ringkasan Pesanan --}}
+        {{-- ============================================================ --}}
+        {{-- RIGHT COLUMN: Ringkasan Pesanan (1/3 width, sticky sidebar) --}}
+        {{-- ============================================================ --}}
         <div class="xl:col-span-1">
-            <div
-                class="sticky top-24 rounded-sm border border-gray-200 bg-white p-6 shadow-default dark:border-gray-800 dark:bg-gray-900">
-                <h3 class="mb-5 border-b border-gray-200 pb-2 font-medium text-black dark:border-gray-700 dark:text-white">
-                    Ringkasan Pesanan
-                </h3>
+            <div class="sticky top-24 space-y-4">
+                {{-- Summary Card --}}
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <h3 class="mb-5 border-b border-gray-200 pb-3 text-base font-semibold text-black dark:border-gray-700 dark:text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z"/></svg>
+                        Ringkasan Pesanan
+                    </h3>
 
-                <div x-show="selectedItem" style="display: none;">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm text-gray-600 dark:text-gray-400" x-text="selectedItem?.nama_produk"></span>
-                        <span class="text-sm font-medium dark:text-white" x-text="selectedItem?.jenis_kelamin.toUpperCase()"></span>
-                    </div>
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm text-gray-600 dark:text-gray-400"
-                            x-text="jumlah + ' Ekor x ' + formatRupiah(selectedItem?.harga)"></span>
-                        <span class="text-sm font-medium dark:text-white" x-text="formatRupiah(totalHarga)"></span>
-                    </div>
+                    {{-- Content when product is selected --}}
+                    <div x-show="selectedItem" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                        style="display: none;" x-cloak>
 
-                    {{-- Ongkir line --}}
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Ongkos Kirim</span>
-                        <span class="text-sm font-medium" :class="ongkir === 0 ? 'text-green-600 dark:text-green-400' : 'dark:text-white'"
-                            x-text="ongkir === 0 ? 'Gratis' : formatRupiah(ongkir)"></span>
-                    </div>
-
-                    {{-- Metode Pengiriman badge --}}
-                    <div class="mt-2 mb-4 p-3 rounded-lg text-xs"
-                        :class="metodePengiriman === 'dikirim'
-                            ? 'bg-brand-50 text-brand-700 dark:bg-brand-900/10 dark:text-brand-400'
-                            : 'bg-green-50 text-green-700 dark:bg-green-900/10 dark:text-green-400'">
-                        <div class="flex items-center gap-2">
-                            <template x-if="metodePengiriman === 'dikirim'">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
-                            </template>
-                            <template x-if="metodePengiriman === 'ambil_sendiri'">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                            </template>
-                            <b x-text="metodePengiriman === 'dikirim' ? 'Dikirim ke Alamat' : 'Ambil di Peternakan'"></b>
+                        {{-- Product Info --}}
+                        <div class="flex justify-between items-start mb-3 pb-3 border-b border-dashed border-gray-200 dark:border-gray-700">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800 dark:text-white capitalize" x-text="selectedItem?.nama_produk"></p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5" x-text="'Kelas ' + selectedItem?.kelas_berat"></p>
+                            </div>
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                                :class="selectedItem?.jenis_kelamin === 'jantan'
+                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                    : 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'"
+                                x-text="selectedItem?.jenis_kelamin.toUpperCase()">
+                            </span>
                         </div>
-                    </div>
 
-                    <div x-show="isSurvei"
-                        class="mt-2 mb-4 p-3 bg-amber-50 rounded-lg text-xs text-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
-                        <b>+ Opsi Survei Kandang</b><br>
-                        Jadwal: <span x-text="tanggalSurvei ? tanggalSurvei : '...' "></span> Pukul <span
-                            x-text="waktuSurvei ? waktuSurvei : '...' "></span>
-                        <p class="mt-1 text-[10px] opacity-75">Pembayaran akan dilakukan setelah survei selesai</p>
-                    </div>
+                        {{-- Line Items --}}
+                        <div class="space-y-2.5 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 dark:text-gray-400"
+                                    x-text="jumlah + ' Ekor x ' + formatRupiah(selectedItem?.harga)"></span>
+                                <span class="font-medium text-gray-800 dark:text-white" x-text="formatRupiah(totalHarga)"></span>
+                            </div>
 
-                    <div x-show="!isSurvei && metode"
-                        class="mt-2 mb-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                        <b>Metode Bayar:</b> <span x-text="metode === 'transfer' ? 'Transfer Bank' : 'Cash (COD)'"></span>
-                    </div>
-
-                    <div class="border-t pt-4">
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold dark:text-white">Total Tagihan</span>
-                            <span class="text-xl font-bold text-brand-600" x-text="formatRupiah(grandTotal)"></span>
+                            {{-- Ongkir line --}}
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">Ongkos Kirim</span>
+                                <span class="font-medium" :class="ongkir === 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-800 dark:text-white'"
+                                    x-text="ongkir === 0 ? 'Gratis' : formatRupiah(ongkir)"></span>
+                            </div>
                         </div>
+
+                        {{-- Metode Pengiriman badge --}}
+                        <div class="mb-3 p-3 rounded-lg text-xs"
+                            :class="metodePengiriman === 'dikirim'
+                                ? 'bg-brand-50 text-brand-700 dark:bg-brand-900/10 dark:text-brand-400'
+                                : 'bg-green-50 text-green-700 dark:bg-green-900/10 dark:text-green-400'">
+                            <div class="flex items-center gap-2">
+                                <template x-if="metodePengiriman === 'dikirim'">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                                </template>
+                                <template x-if="metodePengiriman === 'ambil_sendiri'">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                </template>
+                                <b x-text="metodePengiriman === 'dikirim' ? 'Dikirim ke Alamat' : 'Ambil di Peternakan'"></b>
+                            </div>
+                        </div>
+
+                        {{-- Metode Pembayaran badge --}}
+                        <div x-show="metode"
+                            class="mb-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                            <b>Metode Bayar:</b> <span x-text="metode === 'transfer' ? 'Transfer Bank' : 'Cash (COD)'"></span>
+                        </div>
+
+                        {{-- Grand Total --}}
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-gray-800 dark:text-white">Total Tagihan</span>
+                                <span class="text-xl font-bold text-brand-600 dark:text-brand-400" x-text="formatRupiah(grandTotal)"></span>
+                            </div>
+                        </div>
+
+                        {{-- Submit Button --}}
+                        <button type="submit"
+                            :disabled="jumlah === 0"
+                            :class="jumlah === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-600 hover:shadow-lg'"
+                            class="w-full mt-6 bg-brand-500 text-white py-3.5 rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span>Konfirmasi Transaksi</span>
+                        </button>
                     </div>
-                    <button type="submit"
-                        :disabled="metodePengiriman === 'dikirim' && !dalamJangkauan"
-                        :class="metodePengiriman === 'dikirim' && !dalamJangkauan ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-600'"
-                        class="w-full mt-6 bg-brand-500 text-white py-3 rounded-lg font-bold transition">
-                        <span x-text="isSurvei ? 'Ajukan Pesanan + Survei' : 'Konfirmasi Pesanan'"></span>
-                    </button>
+
+                    {{-- Placeholder when no product is selected --}}
+                    <div x-show="!selectedItem" class="text-center py-8">
+                        <svg class="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">Pilih produk untuk melihat ringkasan.</p>
+                    </div>
                 </div>
 
-                <div x-show="!selectedItem" class="text-center py-4 text-gray-500 text-sm italic">
-                    Pilih produk untuk melihat ringkasan.
+                {{-- Quick Info Card --}}
+                <div class="rounded-xl border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-800/30 dark:bg-amber-900/10">
+                    <div class="flex items-start gap-2.5">
+                        <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <p class="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">Transaksi offline langsung berstatus <b>Selesai</b> dan tercatat di laporan keuangan secara otomatis.</p>
+                    </div>
                 </div>
             </div>
         </div>
+        {{-- END RIGHT COLUMN --}}
+
     </form>
 @endsection
+

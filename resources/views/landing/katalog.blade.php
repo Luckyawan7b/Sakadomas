@@ -471,7 +471,7 @@
                                     </div>
                                     <div class="bg-m3-surface-container-low p-2 rounded-xl text-center">
                                         <span class="material-symbols-outlined text-m3-primary text-base block"
-                                            x-text="item.jenis_kelamin === 'Jantan' ? 'male' : 'female'"></span>
+                                            x-text="(item.jenis_kelamin || '').toLowerCase() === 'jantan' ? 'male' : 'female'"></span>
                                         <span class="text-[9px] font-bold text-m3-on-surface-variant"
                                             x-text="item.jenis_kelamin"></span>
                                     </div>

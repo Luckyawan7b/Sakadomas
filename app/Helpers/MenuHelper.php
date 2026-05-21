@@ -215,14 +215,21 @@ class MenuHelper
                             'path' => '/transaksi',
                         ],
                         [
-                            'name' => 'Buat Transaksi',
-                            'path' => '/transaksi/create',
-                        ],
-                        [
                             'name' => 'Rekap Transaksi',
                             'path' => '/transaksi/rekap',
                         ]
                     ],
+                ]
+            ]
+        ],
+        [
+            'title' => 'Manajemen Keuangan',
+            'items' => [
+                [
+                    'name' => 'Keuangan',
+                    'icon' => 'charts',
+                    'path' => '/keuangan',
+                    'roles' => ['admin'],
                 ]
             ]
         ],

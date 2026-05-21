@@ -115,8 +115,8 @@
             <!-- Toolbar (Search & Filter) -->
             <div class="p-6 md:p-8 border-b border-surface-container-high flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-container-lowest">
                 <!-- Search -->
-                <div class="relative w-full md:w-96">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+                <div class="relative w-full md:w-96 flex items-center">
+                    <span class="material-symbols-outlined absolute left-4 text-outline pointer-events-none select-none">search</span>
                     <input type="text" x-model="search" placeholder="Cari ID Survei atau Tujuan..." class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/50 text-sm font-bold text-on-surface outline-none">
                 </div>
                 

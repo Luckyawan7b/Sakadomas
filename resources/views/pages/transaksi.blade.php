@@ -1,224 +1,50 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- BUNGKUSAN UTAMA UNTUK MODAL TAMBAH --}}
-    <div x-data="{ modalTambah: {{ $errors->any() && !old('_method') ? 'true' : 'false' }} }">
-        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h2 class="text-title-md2 font-bold text-black dark:text-white">
-                    Operasional Transaksi
-                </h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pantau pesanan yang berstatus Pending hingga
-                    Dikirim.</p>
+    {{-- Flash Messages --}}
+    @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)"
+             class="mb-4 flex items-center justify-between rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 border border-green-200">
+            <div class="flex items-center gap-2">
+                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                {{ session('success') }}
             </div>
-
-            {{-- Tombol Tambah Data --}}
-            <button @click="modalTambah = true" type="button"
-                class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-3 text-sm bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600">
-                <svg class="fill-current w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 4.5v15m7.5-7.5h-15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-                Tambah Transaksi
+            <button @click="show = false" class="text-green-500 hover:text-green-700">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-
-        {{-- MODAL TAMBAH TRANSAKSI --}}
-        <template x-teleport="body">
-            <div x-show="modalTambah" style="display: none;"
-                class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
-                @click.self="modalTambah = false">
-                <div class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
-                    x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100">
-
-                    <div class="mb-6">
-                        <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">Transaksi Baru</h4>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Pembeli otomatis di-set ke akun Admin.</p>
-                    </div>
-
-                    @if ($errors->any() && !old('_method'))
-                        <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200">
-                            {{ $errors->first() }}
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('transaksi.store') }}" enctype="multipart/form-data"
-                        class="flex flex-col gap-5"
-                        x-data='{
-                              selectedKandang: "",
-                              selectedKamar: "",
-                              selectedTernak: "{{ old('id_ternak', '') }}",
-                              semuaKamar: @json($data_kamar ?? []),
-                              semuaTernak: @json($data_ternak ?? []),
-
-                              get kamarTersedia() {
-                                  if (this.selectedKandang === "kosong") return [{id_kamar: "kosong", nomor_kamar: "Kosong (Tanpa Kamar)"}];
-                                  return this.semuaKamar.filter(k => k.id_kandang == this.selectedKandang);
-                              },
-
-                              get ternakTersedia() {
-                                  let filtered = this.semuaTernak;
-                                  if (this.selectedKandang === "kosong") {
-                                      filtered = filtered.filter(t => t.id_kamar == null);
-                                  } else if (this.selectedKamar && this.selectedKamar !== "kosong") {
-                                      filtered = filtered.filter(t => t.id_kamar == this.selectedKamar);
-                                  } else {
-                                      return [];
-                                  }
-                                  return filtered;
-                              },
-
-                              autoFillHarga() {
-                                  let t = this.semuaTernak.find(x => x.id_ternak == this.selectedTernak);
-                                  if(t) { $refs.hargaInput.value = t.harga; }
-                              }
-                          }'>
-                        @csrf
-
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih
-                                    Kandang</label>
-                                <select x-model="selectedKandang"
-                                    @change="selectedKamar = ''; selectedTernak = ''; $refs.hargaInput.value = ''" required
-                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
-                                    <option value="" disabled>Pilih Kandang...</option>
-                                    @foreach ($data_kandang ?? [] as $kd)
-                                        <option value="{{ $kd->id_kandang }}">Kandang {{ $kd->nomor_kandang }}</option>
-                                    @endforeach
-                                    <option value="kosong" class="text-red-500 font-semibold">Kosong (Tanpa Kandang)
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih
-                                    Kamar</label>
-                                <select x-model="selectedKamar" @change="selectedTernak = ''; $refs.hargaInput.value = ''"
-                                    required
-                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
-                                    <option value="" disabled x-show="!selectedKandang">Pilih Kandang Dulu</option>
-                                    <option value="" disabled x-show="selectedKandang">Pilih Kamar...</option>
-                                    <template x-for="kamar in kamarTersedia" :key="kamar.id_kamar">
-                                        <option :value="kamar.id_kamar"
-                                            x-text="kamar.nomor_kamar === 'Kosong (Tanpa Kamar)' ? kamar.nomor_kamar : 'Kamar ' + kamar.nomor_kamar">
-                                        </option>
-                                    </template>
-                                </select>
-                            </div>
-
-                            {{-- <div>
-                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih Ternak</label>
-                                <select name="id_ternak" x-model="selectedTernak" @change="autoFillHarga" required class="dark:bg-gray-900 h-11 w-full rounded-lg border border-brand-500 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-brand-500 dark:text-white ring-1 ring-brand-500">
-                                    <option value="" disabled x-show="!selectedKamar">Pilih Kamar Dulu</option>
-                                    <option value="" disabled x-show="selectedKamar">Pilih Ternak...</option>
-                                    <template x-for="t in ternakTersedia" :key="t.id_ternak">
-                                        <option :value="t.id_ternak" x-text="'#ID-' + t.id_ternak + ' (' + (t.jenis_ternak ? t.jenis_ternak.jenis_ternak : 'Domba') + ')'"></option>
-                                    </template>
-                                </select>
-                            </div> --}}
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih
-                                        Ternak</label>
-                                    {{-- <select name="id_ternak" x-model="selectedTernak" @change="autoFillHarga" required class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white ring-1 ring-brand-500 border-brand-500">
-                                        <option value="" disabled>-- Pilih Ternak --</option>
-                                        <template x-for="t in semuaTernak" :key="t.id_ternak">
-                                            <option :value="t.id_ternak" x-text="'#ID-' + t.id_ternak + ' (' + t.jenis_ternak.jenis_ternak + ')'"></option>
-                                        </template>
-                                    </select> --}}
-                                    <select name="id_ternak" x-model="selectedTernak" @change="autoFillHarga" required
-                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-brand-500 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-brand-500 dark:text-white ring-1 ring-brand-500">
-                                        <option value="" disabled x-show="!selectedKamar">Pilih Kamar Dulu</option>
-                                        <option value="" disabled x-show="selectedKamar">Pilih Ternak...</option>
-                                        <template x-for="t in ternakTersedia" :key="t.id_ternak">
-                                            <option :value="t.id_ternak"
-                                                x-text="'#ID-' + t.id_ternak + ' (' + (t.jenis_ternak ? t.jenis_ternak.jenis_ternak : 'Domba') + ')'">
-                                            </option>
-                                        </template>
-                                    </select>
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label
-                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Jumlah
-                                            (Ekor)</label>
-                                        <input type="number" name="total_jumlah" value="1" required min="1"
-                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                    </div>
-                                    <div>
-                                        <label
-                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Total
-                                            Harga (Rp)</label>
-                                        <input type="number" name="total_harga" x-ref="hargaInput"
-                                            value="{{ old('total_harga') }}" required min="0"
-                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Metode
-                                        Pembayaran</label>
-                                    <select name="metode_pembayaran" required
-                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                        <option value="transfer">Transfer Bank</option>
-                                        <option value="cod">Cash on Delivery (COD)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Status
-                                        Transaksi</label>
-                                    <select name="status" required
-                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                        <option value="pending">Pending</option>
-                                        <option value="diproses">Diproses</option>
-                                        <option value="dikirim">Dikirim</option>
-                                        <option value="selesai">Selesai</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Nama Kurir
-                                         <span class="text-xs text-gray-500">(Opsional)</span></label>
-                                    <input type="text" name="kurir" placeholder="Nama kurir"
-                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                </div>
-
-                                <div>
-                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">No HP Kurir <span class="text-xs text-gray-500">(Opsional)</span></label>
-                                    <input type="text" name="no_kurir" placeholder="Contoh: 08123456789"
-                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div>
-                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Bukti
-                                Pembayaran <span class="text-xs text-gray-500">(Opsional, Maks 2MB)</span></label>
-                            <input type="file" name="bukti_pembayaran" accept="image/*"
-                                class="dark:bg-gray-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white file:mr-4 file:rounded-md file:border-0 file:bg-brand-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-600">
-                        </div>
-
-                        <div class="flex items-center gap-3 mt-4 justify-end">
-                            <button @click="modalTambah = false" type="button"
-                                class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 sm:w-auto">Batal</button>
-                            <button type="submit"
-                                class="rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">Buat
-                                Transaksi</button>
-                        </div>
-                    </form>
-                </div>
+    @endif
+    @if(session('error'))
+        <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 5000)"
+             class="mb-4 flex items-center justify-between rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 border border-red-200">
+            <div class="flex items-center gap-2">
+                <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                {{ session('error') }}
             </div>
-        </template>
+            <button @click="show = false" class="text-red-500 hover:text-red-700">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    @endif
+
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                Operasional Transaksi
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pantau pesanan yang berstatus Pending hingga
+                Dikirim.</p>
+        </div>
+
+        {{-- Tombol Tambah Data --}}
+        <a href="{{ route('transaksi.create.admin') }}"
+            class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-3 text-sm bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600">
+            <svg class="fill-current w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4.5v15m7.5-7.5h-15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+            Tambah Transaksi
+        </a>
     </div>
 
     {{-- TABEL DATA --}}
@@ -237,7 +63,7 @@
                 </thead>
                 <tbody>
                     @forelse ($data_transaksi as $transaksi)
-                        <tr x-data="{ modalEdit: {{ $errors->any() && old('_method') === 'PUT' && old('id_transaksi_edit') == $transaksi->id_transaksi ? 'true' : 'false' }} }"
+                        <tr x-data="{ modalEdit: {{ (session('open_modal_trx') == $transaksi->id_transaksi || ($errors->any() && old('_method') === 'PUT' && old('id_transaksi_edit') == $transaksi->id_transaksi)) ? 'true' : 'false' }} }"
                             class="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
 
                             <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
@@ -315,6 +141,19 @@
                                     class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
                                     @click.self="modalEdit = false">
                                     <div class="no-scrollbar relative w-full max-w-[600px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
+                                        x-data="{
+                                             selectedTernak: [],
+                                             maxSelect: {{ $transaksi->total_jumlah - $transaksi->detailTransaksi->count() }},
+                                             toggleTernak(id) {
+                                                 if (this.selectedTernak.includes(id)) {
+                                                     this.selectedTernak = this.selectedTernak.filter(x => x !== id);
+                                                 } else {
+                                                     if (this.selectedTernak.length < this.maxSelect) {
+                                                         this.selectedTernak.push(id);
+                                                     }
+                                                 }
+                                             }
+                                        }"
                                         x-transition:enter="transition ease-out duration-200"
                                         x-transition:enter-start="opacity-0 scale-95"
                                         x-transition:enter-end="opacity-100 scale-100">
@@ -322,6 +161,16 @@
                                             <h4 class="mb-1 text-xl font-semibold text-gray-800 dark:text-white/90">Update Transaksi #TRX-{{ $transaksi->id_transaksi }}</h4>
                                             <p class="text-sm text-gray-500">Pesanan: {{ $transaksi->total_jumlah }} ekor &bull; Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</p>
                                         </div>
+
+                                        @if ($errors->any() && (old('id_transaksi_edit') == $transaksi->id_transaksi || session('open_modal_trx') == $transaksi->id_transaksi))
+                                            <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200">
+                                                <ul class="list-disc list-inside">
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
 
                                         {{-- SECTION: ASSIGN TERNAK --}}
                                         @php
@@ -346,11 +195,9 @@
                                                     <p class="text-xs font-semibold text-brand-700 dark:text-brand-400 mb-1.5">Kriteria Pesanan User</p>
                                                     <div class="flex flex-wrap gap-2">
                                                         <span class="capitalize inline-flex items-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
-                                                            {{-- 🐑  --}}
                                                             {{ $transaksi->jenisTernak->jenis_ternak ?? '-' }}
                                                         </span>
                                                         <span class="inline-flex items-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
-                                                            {{-- {{ $jkPesanan == 'jantan' ? '♂' : '♀' }}  --}}
                                                             {{ ucfirst($jkPesanan) }}
                                                         </span>
                                                         <span class="inline-flex items-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 text-xs font-medium text-green-700 dark:text-green-400">
@@ -388,15 +235,35 @@
 
                                             @if($transaksi->detailTransaksi->count() < $transaksi->total_jumlah)
                                                 @if($ternakCocok->count() > 0)
-                                                    <form action="{{ route('transaksi.assign', $transaksi->id_transaksi) }}" method="POST" class="flex gap-2">
+                                                    <form action="{{ route('transaksi.assign', $transaksi->id_transaksi) }}" method="POST" class="space-y-3">
                                                         @csrf
-                                                        <select name="id_ternak" required class="dark:bg-gray-900 flex-1 h-9 rounded-lg border border-gray-300 bg-transparent px-3 text-sm dark:border-gray-700 dark:text-white">
-                                                            <option value="" disabled selected>Pilih Ternak ({{ $ternakCocok->count() }} tersedia)...</option>
+                                                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Pilih Ternak yang Ingin Di-assign (Maks <span x-text="maxSelect"></span>):</label>
+                                                        <div class="space-y-1.5 max-h-40 overflow-y-auto pr-1 border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-gray-50 dark:bg-gray-800/40">
                                                             @foreach($ternakCocok as $t)
-                                                                <option value="{{ $t->id_ternak }}">#{{ $t->id_ternak }} &mdash; {{ $t->berat }}kg, Usia {{ $t->usia }} bln (Kamar {{ $t->kamar->nomor_kamar ?? '-' }})</option>
+                                                                <label class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-xs transition duration-150 border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
+                                                                    <input type="checkbox" name="id_ternak[]" value="{{ $t->id_ternak }}"
+                                                                           :disabled="selectedTernak.length >= maxSelect && !selectedTernak.includes('{{ $t->id_ternak }}')"
+                                                                           @change="toggleTernak('{{ $t->id_ternak }}')"
+                                                                           class="rounded text-brand-500 focus:ring-brand-500 w-4 h-4 dark:bg-gray-900 border-gray-300 dark:border-gray-700">
+                                                                    <div class="flex-1">
+                                                                        <span class="font-bold text-gray-750 dark:text-white">#{{ $t->id_ternak }}</span>
+                                                                        <span class="text-gray-500 dark:text-gray-400">
+                                                                            &bull; {{ $t->berat }}kg &bull; Usia {{ $t->usia }} bln
+                                                                            @if($t->kamar)
+                                                                                &bull; Kamar {{ $t->kamar->nomor_kamar }} (Kandang {{ $t->kamar->kandang->nomor_kandang ?? '-' }})
+                                                                            @endif
+                                                                        </span>
+                                                                    </div>
+                                                                </label>
                                                             @endforeach
-                                                        </select>
-                                                        <button type="submit" class="rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-600 whitespace-nowrap">+ Assign</button>
+                                                        </div>
+                                                        <div class="flex items-center justify-between mt-2 text-xs">
+                                                            <span class="text-gray-500" x-text="`Terpilih: ${selectedTernak.length} dari ${maxSelect} ekor`"></span>
+                                                            <button type="submit" :disabled="selectedTernak.length === 0"
+                                                                    class="rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                                Assign Terpilih
+                                                            </button>
+                                                        </div>
                                                     </form>
                                                 @else
                                                     <div class="rounded-md bg-red-50 dark:bg-red-900/20 p-2.5 text-xs text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/30">
@@ -446,11 +313,19 @@
                                                 <select name="status" required class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
                                                     <option value="pending" {{ $st == 'pending' ? 'selected' : '' }}>Pending</option>
                                                     <option value="diproses" {{ $st == 'diproses' ? 'selected' : '' }}>Diproses (Dikemas)</option>
-                                                    <option value="dikirim" {{ $st == 'dikirim' ? 'selected' : '' }}>Dalam Pengiriman</option>
-                                                    <option value="selesai" {{ $st == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                                    
+                                                    @if ($transaksi->detailTransaksi->count() >= $transaksi->total_jumlah)
+                                                        <option value="dikirim" {{ $st == 'dikirim' ? 'selected' : '' }}>Dalam Pengiriman</option>
+                                                        <option value="selesai" {{ $st == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                                    @endif
+                                                    
                                                     <option value="batal" {{ $st == 'batal' ? 'selected' : '' }}>Batal</option>
                                                 </select>
-                                                <p class="mt-1 text-xs text-gray-500">Peringatan: 'Selesai' memindahkan ke Rekap, 'Batal' mengembalikan stok ternak.</p>
+                                                @if ($transaksi->detailTransaksi->count() < $transaksi->total_jumlah)
+                                                    <p class="mt-1 text-xs text-amber-600 font-medium">⚠️ Pilihan 'Dalam Pengiriman' & 'Selesai' disembunyikan karena ternak di-assign belum lengkap ({{ $transaksi->detailTransaksi->count() }}/{{ $transaksi->total_jumlah }}).</p>
+                                                @else
+                                                    <p class="mt-1 text-xs text-gray-500">Peringatan: 'Selesai' memindahkan ke Rekap, 'Batal' mengembalikan stok ternak.</p>
+                                                @endif
                                             </div>
 
                                             @if($transaksi->metode_pengiriman === 'dikirim')
@@ -468,10 +343,6 @@
 
                                             <div class="flex items-center gap-3 mt-4 justify-end">
                                                 <button @click="modalEdit = false" type="button" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">Batal</button>
-                                                <a href="{{ route('transaksi.invoice', $transaksi->id_transaksi) }}" target="_blank" class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                                                    Cetak Invoice
-                                                </a>
                                                 <button type="submit" class="rounded-lg bg-yellow-500 px-4 py-2 text-sm font-medium text-white hover:bg-yellow-600">Update Data</button>
                                             </div>
                                         </form>

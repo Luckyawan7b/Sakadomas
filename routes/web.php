@@ -11,6 +11,7 @@ use App\Http\Controllers\MonitorController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\KeuanganController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,44 +55,14 @@ Route::middleware('guest')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    // Dashboard & Global
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Route::get('/', [LandingController::class, 'index'])->name('home');
-
-
     Route::post('/logout', [AkunController::class, 'logout'])->name('logout');
 
     Route::get('/profile', [AkunController::class, 'profile'])->name('profile');
     Route::put('/profile/update', [AkunController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [AkunController::class, 'updatePassword'])->name('profile.password');
 
-
-
+    // Halaman checkout - check role di controller untuk redirect admin
     Route::get('/transaksi/create', [TransaksiController::class, 'createPesananUser'])->name('transaksi.create');
-    Route::post('/transaksi/create/store', [TransaksiController::class, 'storePesananUser'])->name('transaksi.create.store');
-    Route::get('/transaksi/pembayaran/{id}', [TransaksiController::class, 'halamanPembayaran'])->name('transaksi.pembayaran');
-    Route::get('/transaksi/pengajuan-survei/{id}', [SurveiController::class, 'successPage'])->name('survei.success');
-    Route::get('/transaksi/riwayat-saya', [TransaksiController::class, 'riwayatUser'])->name('transaksi.riwayat');
-
-
-
-    // User: Batalkan pesanan
-    Route::post('/transaksi/{id}/cancel', [TransaksiController::class, 'cancelPesananUser'])->name('transaksi.cancel');
-
-    // User: Selesaikan pesanan (konfirmasi terima)
-    Route::post('/transaksi/{id}/selesai', [TransaksiController::class, 'selesaiPesananUser'])->name('transaksi.selesai');
-
-    // User: Upload bukti pembayaran setelah survei selesai
-    Route::post('/transaksi/{id}/upload-bukti', [TransaksiController::class, 'uploadBuktiUser'])->name('transaksi.upload-bukti');
-
-    // User: Ajukan ulang survei yang dibatalkan
-    Route::post('/transaksi/{id}/ajukan-survei', [SurveiController::class, 'ajukanUlang'])->name('transaksi.ajukan-survei');
-
-    // Admin: Assign & remove ternak dari detail_transaksi
-    Route::post('/transaksi/{id}/assign', [TransaksiController::class, 'assignTernakAdmin'])->name('transaksi.assign');
-    Route::delete('/transaksi/detail/{id}', [TransaksiController::class, 'removeDetailTernakAdmin'])->name('transaksi.detail.remove');
-
 
     // API Publik yang butuh login
     Route::get('/api/jadwal/cek', [SurveiController::class, 'cekJadwal'])->name('jadwal.cek');
@@ -108,6 +79,16 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::post('/kunjungan/store', [SurveiController::class, 'storeUser'])->name('kunjungan.store');
     Route::put('/kunjungan/{id}', [SurveiController::class, 'updateUser'])->name('kunjungan.update');
     Route::delete('/kunjungan/{id}', [SurveiController::class, 'deleteUser'])->name('kunjungan.delete');
+
+    // Transaksi Pelanggan
+    Route::post('/transaksi/create/store', [TransaksiController::class, 'storePesananUser'])->name('transaksi.create.store');
+    Route::get('/transaksi/pembayaran/{id}', [TransaksiController::class, 'halamanPembayaran'])->name('transaksi.pembayaran');
+    Route::get('/transaksi/pengajuan-survei/{id}', [SurveiController::class, 'successPage'])->name('survei.success');
+    Route::get('/transaksi/riwayat-saya', [TransaksiController::class, 'riwayatUser'])->name('transaksi.riwayat');
+    Route::post('/transaksi/{id}/cancel', [TransaksiController::class, 'cancelPesananUser'])->name('transaksi.cancel');
+    Route::post('/transaksi/{id}/selesai', [TransaksiController::class, 'selesaiPesananUser'])->name('transaksi.selesai');
+    Route::post('/transaksi/{id}/upload-bukti', [TransaksiController::class, 'uploadBuktiUser'])->name('transaksi.upload-bukti');
+    Route::post('/transaksi/{id}/ajukan-survei', [SurveiController::class, 'ajukanUlang'])->name('transaksi.ajukan-survei');
 });
 
 /*
@@ -117,6 +98,13 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
 */
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
+
+    // Dashboard Admin
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Admin: Assign & remove ternak dari detail_transaksi
+    Route::post('/transaksi/{id}/assign', [TransaksiController::class, 'assignTernakAdmin'])->name('transaksi.assign');
+    Route::delete('/transaksi/detail/{id}', [TransaksiController::class, 'removeDetailTernakAdmin'])->name('transaksi.detail.remove');
 
     // Manajemen Kunjungan (Survei) — Admin
     Route::get('/survei', [SurveiController::class, 'indexAdmin'])->name('survei.index');
@@ -160,11 +148,19 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Transaksi
     Route::get('/transaksi', [TransaksiController::class, 'indexAdmin'])->name('transaksi.index');
+    Route::get('/transaksi/buat', [TransaksiController::class, 'createAdminForm'])->name('transaksi.create.admin');
+    Route::post('/transaksi/buat', [TransaksiController::class, 'storeAdminForm'])->name('transaksi.store.admin');
     Route::post('/transaksi/tambah', [TransaksiController::class, 'storeAdmin'])->name('transaksi.store');
     Route::put('/transaksi/update/{id}', [TransaksiController::class, 'updateAdmin'])->name('transaksi.update');
     Route::delete('/transaksi/hapus/{id}', [TransaksiController::class, 'deleteAdmin'])->name('transaksi.delete');
     Route::get('/transaksi/rekap', [TransaksiController::class, 'rekapAdmin'])->name('transaksi.rekap');
     Route::get('/transaksi/{id}/invoice', [TransaksiController::class, 'printInvoiceAdmin'])->name('transaksi.invoice');
+
+    // Keuangan
+    Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan.index');
+    Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store');
+    Route::put('/keuangan/{id}', [KeuanganController::class, 'update'])->name('keuangan.update');
+    Route::get('/keuangan/pdf', [KeuanganController::class, 'downloadPdf'])->name('keuangan.pdf');
 
 
 });

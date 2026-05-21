@@ -15,6 +15,7 @@ use App\Models\Kamar;
 use App\Models\Survei;
 use App\Models\DetailTransaksi;
 use App\Models\Keuangan;
+use App\Models\JenisTernak;
 use App\Jobs\ProcessInvoiceEmailJob;
 use Carbon\Carbon;
 
@@ -52,14 +53,16 @@ class TransaksiController extends Controller
             ]);
         }
 
-        // Buat record keuangan
-        Keuangan::create([
-            'ket'             => 'Pemasukan dari transaksi #TRX-' . $transaksi->id_transaksi,
-            'tanggal'         => Carbon::now()->toDateString(),
-            'nominal'         => $transaksi->total_harga + $transaksi->ongkir,
-            'jenis_keuangan'  => 'pemasukan',
-            'id_transaksi'    => $transaksi->id_transaksi,
-        ]);
+        // Buat atau update record keuangan (upsert)
+        Keuangan::updateOrCreate(
+            ['id_transaksi' => $transaksi->id_transaksi],
+            [
+                'ket'             => 'Pemasukan dari transaksi #TRX-' . $transaksi->id_transaksi,
+                'tanggal'         => Carbon::now()->toDateString(),
+                'nominal'         => $transaksi->total_harga + $transaksi->ongkir,
+                'jenis_keuangan'  => 'pemasukan',
+            ]
+        );
     }
 
     /**
@@ -100,8 +103,215 @@ class TransaksiController extends Controller
 
         $data_kandang = Kandang::all();
         $data_kamar = Kamar::all();
+        $data_jenis_ternak = JenisTernak::all();
 
-        return view('pages.transaksi', compact('data_transaksi', 'data_ternak', 'data_kandang', 'data_kamar'));
+        return view('pages.transaksi', compact('data_transaksi', 'data_ternak', 'data_kandang', 'data_kamar', 'data_jenis_ternak'));
+    }
+
+    // ================================================================
+    // 1.5. INPUT TRANSAKSI OFFLINE DARI ADMIN
+    // ================================================================
+    public function createAdminForm()
+    {
+        $ternak_tersedia = Ternak::with(['jenis_ternak', 'kamar.kandang'])
+            ->where('status_jual', 'siap jual')
+            ->where('status_ternak', 'sehat')
+            ->get();
+
+        // 1. Baca value.json agar rentang berat tidak di-hardcode
+        $jsonPath = public_path('json/value.json');
+        $klasifikasiData = [];
+        if (\Illuminate\Support\Facades\File::exists($jsonPath)) {
+            $klasifikasiData = json_decode(\Illuminate\Support\Facades\File::get($jsonPath), true)['ternak_klasifikasi'] ?? [];
+        }
+
+        $mapped_ternak = $ternak_tersedia->map(function ($item) use ($klasifikasiData) {
+            $usia = $item->usia;
+            $berat = $item->berat;
+            $breed = ucwords(strtolower($item->jenis_ternak->jenis_ternak ?? ''));
+
+            // 2. Samakan nama jenis DB dengan JSON
+            $mapJenis = [
+                'crosstexel' => 'Cross Texel',
+                'merino' => 'Merino',
+                'etawa' => 'Etawa (PE)'
+            ];
+            $searchJenis = $mapJenis[strtolower($breed)] ?? $breed;
+
+            // 3. Tentukan Kategori Usia
+            if ($usia <= 5) { $katUsia = 'Anakan/Bibit'; }
+            elseif ($usia <= 11) { $katUsia = 'Doro/Muda'; }
+            else { $katUsia = 'Indukan/Dewasa'; }
+
+            // 4. Pencarian Kelas Berat Dinamis (Mencocokkan dengan JSON)
+            $kelasBerat = 'Uncategorized';
+            foreach ($klasifikasiData as $dataBreed) {
+                if ($dataBreed['breed_name'] === $searchJenis) {
+                    foreach ($dataBreed['age_categories'] as $ageCat) {
+                        if ($ageCat['category_name'] === $katUsia) {
+                            $lastClass = null;
+                            foreach ($ageCat['weight_classes'] as $wClass) {
+                                $lastClass = $wClass;
+                                // Cek apakah berat sesuai dengan rentang min & max di JSON
+                                if ($berat >= $wClass['min_weight'] && $berat <= $wClass['max_weight']) {
+                                    $kelasBerat = $wClass['class_name'];
+                                    break 3; // Keluar dari loop jika sudah ketemu
+                                }
+                            }
+                            
+                            // Jika berat di luar jangkauan (kurang dari min atau lebih dari max)
+                            if ($kelasBerat === 'Uncategorized' && $lastClass) {
+                                if ($berat > $lastClass['max_weight']) {
+                                    $kelasBerat = $lastClass['class_name'];
+                                } else {
+                                    $kelasBerat = $ageCat['weight_classes'][0]['class_name'];
+                                }
+                                break 2; // Keluar dari loop breed_name
+                            }
+                        }
+                    }
+                }
+            }
+
+            return [
+                'id_ternak' => $item->id_ternak,
+                'id_jenis' => $item->id_jenis_ternak,
+                'nama_produk' => $breed . ' - ' . $katUsia,
+                'kelas_berat' => $kelasBerat,
+                'jenis_kelamin' => $item->jenis_kelamin,
+                'harga' => $item->harga,
+                'berat' => $item->berat,
+                'usia' => $item->usia,
+                'kamar_info' => $item->kamar ? ('Kamar ' . $item->kamar->nomor_kamar . ' (Kandang ' . ($item->kamar->kandang->nomor_kandang ?? '-') . ')') : null,
+            ];
+        })
+        ->filter(function($item) {
+            // Sembunyikan jika beratnya anomali (tidak masuk rentang JSON mana pun)
+            return $item['kelas_berat'] !== 'Uncategorized';
+        });
+
+        // Grouping untuk opsi kategori/jenis di frontend
+        $jenis_ternak = $mapped_ternak->groupBy(function ($item) {
+            return $item['nama_produk'] . $item['kelas_berat'] . $item['jenis_kelamin'] . $item['harga'];
+        })
+        ->map(function ($group) {
+            $first = $group->first();
+            return [
+                'id_jenis' => $first['id_jenis'],
+                'nama_produk' => $first['nama_produk'],
+                'kelas_berat' => $first['kelas_berat'],
+                'jenis_kelamin' => $first['jenis_kelamin'],
+                'harga' => $first['harga'],
+                'stok' => $group->count()
+            ];
+        })
+        ->values();
+
+        $ternak_list = $mapped_ternak->values();
+
+        $ongkirInfo = [
+            'jarak_km' => 0,
+            'ongkir' => 0,
+            'dalam_jangkauan' => true,
+        ];
+
+        return view('pages.transaksi-user', compact('jenis_ternak', 'ternak_list', 'ongkirInfo'));
+    }
+
+    public function storeAdminForm(Request $request)
+    {
+        $request->validate([
+            'id_jenis_ternak'       => 'required|exists:jenis_ternak,id_jenis_ternak',
+            'jenis_kelamin_pesanan' => 'required|string|in:jantan,betina',
+            'id_ternak'             => 'required|array|min:1',
+            'id_ternak.*'           => 'required|exists:ternak,id_ternak',
+            'metode_pembayaran'     => 'required|string|in:transfer,cash',
+            'bukti_pembayaran'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'metode_pengiriman'     => 'required|in:dikirim,ambil_sendiri',
+            'ongkir'                => 'required|integer|min:0',
+            'kurir'                 => 'nullable|string|max:50',
+            'no_kurir'              => 'nullable|string|max:20',
+        ]);
+
+        $uploadedFileUrl = null;
+        if ($request->hasFile('bukti_pembayaran')) {
+            $uploadedFileUrl = $this->uploadKeCloudinary($request->file('bukti_pembayaran'));
+        }
+
+        $transaksi = null;
+        try {
+            $transaksi = DB::transaction(function() use ($request, $uploadedFileUrl) {
+                // 1. Ambil dan kunci stok ternak yang dipilih
+                $stok_tersedia = Ternak::whereIn('id_ternak', $request->id_ternak)
+                    ->where('status_jual', 'siap jual')
+                    ->where('status_ternak', 'sehat')
+                    ->lockForUpdate()
+                    ->get();
+
+                if ($stok_tersedia->count() !== count($request->id_ternak)) {
+                    throw new \Exception('Beberapa ternak yang dipilih tidak tersedia atau tidak sehat.');
+                }
+
+                // Verifikasi bahwa seluruh ternak yang dipilih memiliki id_jenis_ternak dan jenis_kelamin yang sesuai
+                foreach ($stok_tersedia as $ternak) {
+                    if ($ternak->id_jenis_ternak != $request->id_jenis_ternak || $ternak->jenis_kelamin !== $request->jenis_kelamin_pesanan) {
+                        throw new \Exception('Ada ternak terpilih yang tidak cocok dengan kriteria jenis atau jenis kelamin.');
+                    }
+                }
+
+                $total_jumlah = $stok_tersedia->count();
+                $total_harga = $stok_tersedia->sum('harga');
+
+                // 2. Buat Transaksi langsung selesai
+                $now = Carbon::now();
+                $trx = Transaksi::create([
+                    'id_akun'               => Auth::id(),
+                    'id_jenis_ternak'       => $request->id_jenis_ternak,
+                    'jenis_kelamin_pesanan' => $request->jenis_kelamin_pesanan,
+                    'tgl_transaksi'         => $now,
+                    'total_jumlah'          => $total_jumlah,
+                    'total_harga'           => $total_harga,
+                    'metode_pembayaran'     => $request->metode_pembayaran,
+                    'bukti_pembayaran'      => $uploadedFileUrl,
+                    'metode_pengiriman'     => $request->metode_pengiriman,
+                    'ongkir'                => $request->ongkir,
+                    'kurir'                 => ($request->metode_pengiriman === 'ambil_sendiri') ? null : ($request->kurir ?? '-'),
+                    'no_kurir'              => ($request->metode_pengiriman === 'ambil_sendiri') ? null : ($request->no_kurir ?? '-'),
+                    'status'                => 'selesai',
+                    'is_survei'             => false,
+                ]);
+
+                // 3. Assign specific sheep & set status to terjual, cage/room to null
+                foreach ($stok_tersedia as $ternak) {
+                    DetailTransaksi::create([
+                        'sub_jumlah'   => 1,
+                        'sub_total'    => $ternak->harga,
+                        'id_ternak'    => $ternak->id_ternak,
+                        'id_transaksi' => $trx->id_transaksi,
+                    ]);
+
+                    $ternak->update([
+                        'status_jual' => 'terjual',
+                        'id_kamar'    => null,
+                    ]);
+                }
+
+                // 4. Catat Keuangan
+                Keuangan::create([
+                    'id_transaksi'   => $trx->id_transaksi,
+                    'ket'            => 'Pemasukan dari transaksi offline #TRX-' . $trx->id_transaksi,
+                    'tanggal'        => $now->toDateString(),
+                    'nominal'        => $trx->total_harga + $trx->ongkir,
+                    'jenis_keuangan' => 'pemasukan',
+                ]);
+
+                return $trx;
+            });
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
+
+        return redirect()->route('transaksi.index')->with('success', 'Transaksi offline berhasil dibuat dan langsung diselesaikan.');
     }
 
     // ================================================================
@@ -161,6 +371,16 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::with('detailTransaksi')->findOrFail($id);
         $newStatus = $request->status;
 
+        // Validasi kecocokan jumlah ternak yang di-assign sebelum transaksi diselesaikan atau dikirim
+        if (in_array($newStatus, ['selesai', 'dikirim'])) {
+            $assignedCount = $transaksi->detailTransaksi->count();
+            if ($assignedCount < $transaksi->total_jumlah) {
+                return back()->withErrors([
+                    'status' => 'Tidak dapat mengubah status ke ' . ucfirst($newStatus) . '. Harap assign semua ternak terlebih dahulu (baru ter-assign ' . $assignedCount . ' dari ' . $transaksi->total_jumlah . ' ekor).'
+                ])->withInput()->with('open_modal_trx', $id);
+            }
+        }
+
         $updateData = [
             'status'   => $newStatus,
             'kurir'    => ($transaksi->metode_pengiriman === 'ambil_sendiri') ? null : ($request->kurir ?? $transaksi->kurir),
@@ -179,6 +399,11 @@ class TransaksiController extends Controller
             $this->selesaikanTransaksi($transaksi);
         } elseif ($newStatus == 'batal') {
             $this->batalkanTransaksi($transaksi);
+            // Hapus record keuangan jika dibatalkan
+            Keuangan::where('id_transaksi', $transaksi->id_transaksi)->delete();
+        } else {
+            // Hapus record keuangan jika diubah dari selesai ke status lain
+            Keuangan::where('id_transaksi', $transaksi->id_transaksi)->delete();
         }
 
         // Kirim push notification ke pelanggan
@@ -217,6 +442,8 @@ class TransaksiController extends Controller
     public function deleteAdmin($id)
     {
         $transaksi = Transaksi::findOrFail($id);
+        // Hapus record keuangan terkait sebelum menghapus transaksi
+        Keuangan::where('id_transaksi', $id)->delete();
         $transaksi->delete();
 
         return back()->with('success', 'Data transaksi berhasil dihapus.');
@@ -260,6 +487,10 @@ class TransaksiController extends Controller
     // ================================================================
     public function createPesananUser()
     {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return redirect()->route('transaksi.create.admin', request()->query());
+        }
+
         $ternak_tersedia = Ternak::with('jenis_ternak')
             ->where('status_jual', 'siap jual')
             ->where('status_ternak', 'sehat')
@@ -275,7 +506,7 @@ class TransaksiController extends Controller
         $jenis_ternak = $ternak_tersedia->map(function ($item) use ($klasifikasiData) {
             $usia = $item->usia;
             $berat = $item->berat;
-            $breed = $item->jenis_ternak->jenis_ternak ?? '';
+            $breed = ucwords(strtolower($item->jenis_ternak->jenis_ternak ?? ''));
 
             // 2. Samakan nama jenis DB dengan JSON
             $mapJenis = [
@@ -609,6 +840,8 @@ class TransaksiController extends Controller
 
         $this->batalkanTransaksi($transaksi);
         $transaksi->update(['status' => 'batal']);
+        // Hapus record keuangan jika ada saat user membatalkan pesanan
+        Keuangan::where('id_transaksi', $transaksi->id_transaksi)->delete();
 
         // Kirim push notification ke admin
         try {
@@ -728,42 +961,60 @@ class TransaksiController extends Controller
     public function assignTernakAdmin(Request $request, $id)
     {
         $request->validate([
-            'id_ternak' => 'required|exists:ternak,id_ternak',
+            'id_ternak' => 'required',
         ]);
 
         $transaksi = Transaksi::with('detailTransaksi')->findOrFail($id);
 
         // Guard: Cegah assign ke transaksi yang bukan pending/diproses
         if (!in_array($transaksi->status, ['pending', 'diproses'])) {
-            return back()->withErrors(['assign' => 'Tidak bisa assign ternak ke transaksi berstatus ' . $transaksi->status . '.']);
+            return back()->withErrors(['assign' => 'Tidak bisa assign ternak ke transaksi berstatus ' . $transaksi->status . '.'])->with('open_modal_trx', $id);
         }
 
-        if ($transaksi->detailTransaksi->count() >= $transaksi->total_jumlah) {
-            return back()->withErrors(['assign' => 'Semua slot ternak sudah terisi.']);
+        $ids = is_array($request->id_ternak) ? $request->id_ternak : [$request->id_ternak];
+
+        $currentCount = $transaksi->detailTransaksi->count();
+        $limit = $transaksi->total_jumlah;
+
+        if ($currentCount + count($ids) > $limit) {
+            return back()->withErrors(['assign' => 'Jumlah ternak yang dipilih melebihi sisa slot yang tersedia (butuh ' . ($limit - $currentCount) . ' ekor lagi).'])->with('open_modal_trx', $id);
         }
 
-        if ($transaksi->detailTransaksi->where('id_ternak', $request->id_ternak)->count() > 0) {
-            return back()->withErrors(['assign' => 'Ternak ini sudah di-assign ke transaksi ini.']);
+        DB::beginTransaction();
+        try {
+            foreach ($ids as $id_ternak) {
+                // Skip if already assigned
+                if ($transaksi->detailTransaksi->where('id_ternak', $id_ternak)->count() > 0) {
+                    continue;
+                }
+
+                $ternak = Ternak::findOrFail($id_ternak);
+
+                // Guard: Cegah assign ternak yang sudah di-booking transaksi lain
+                if ($ternak->status_jual !== 'siap jual') {
+                    throw new \Exception('Ternak #' . $ternak->id_ternak . ' tidak tersedia (status: ' . $ternak->status_jual . ').');
+                }
+
+                DetailTransaksi::create([
+                    'sub_jumlah'   => 1,
+                    'sub_total'    => $ternak->harga,
+                    'id_ternak'    => $ternak->id_ternak,
+                    'id_transaksi' => $transaksi->id_transaksi,
+                ]);
+
+                // Booking ternak yang di-assign
+                $ternak->update(['status_jual' => 'booking']);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['assign' => $e->getMessage()])->with('open_modal_trx', $id);
         }
 
-        $ternak = Ternak::findOrFail($request->id_ternak);
-
-        // Guard: Cegah assign ternak yang sudah di-booking transaksi lain
-        if ($ternak->status_jual !== 'siap jual') {
-            return back()->withErrors(['assign' => 'Ternak #' . $ternak->id_ternak . ' tidak tersedia (status: ' . $ternak->status_jual . ').']);
-        }
-
-        DetailTransaksi::create([
-            'sub_jumlah'   => 1,
-            'sub_total'    => $ternak->harga,
-            'id_ternak'    => $ternak->id_ternak,
-            'id_transaksi' => $transaksi->id_transaksi,
+        return back()->with([
+            'success' => 'Ternak berhasil di-assign ke pesanan.',
+            'open_modal_trx' => $transaksi->id_transaksi
         ]);
-
-        // Booking ternak yang di-assign
-        $ternak->update(['status_jual' => 'booking']);
-
-        return back()->with('success', 'Ternak #' . $ternak->id_ternak . ' berhasil di-assign ke pesanan.');
     }
 
     // ================================================================
@@ -772,13 +1023,17 @@ class TransaksiController extends Controller
     public function removeDetailTernakAdmin($id)
     {
         $detail = DetailTransaksi::findOrFail($id);
+        $id_transaksi = $detail->id_transaksi;
 
         // Kembalikan status ternak
         Ternak::where('id_ternak', $detail->id_ternak)->update(['status_jual' => 'siap jual']);
 
         $detail->delete();
 
-        return back()->with('success', 'Ternak berhasil dihapus dari pesanan.');
+        return back()->with([
+            'success' => 'Ternak berhasil dihapus dari pesanan.',
+            'open_modal_trx' => $id_transaksi
+        ]);
     }
 
     // ================================================================
