@@ -508,7 +508,10 @@
                                     <div class="flex items-center gap-3">
                                         <div class="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300" title="Jenis Kelamin">
                                             @if($ternak->jenis_kelamin === 'jantan')
-                                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m0-8h-8m8 0L8 16"></path></svg>
+                                                <svg class="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                    <circle cx="10" cy="14" r="5"/>
+                                                    <path d="M21 3l-6.5 6.5M21 3h-5M21 3v5"/>
+                                                </svg>
                                             @else
                                                 <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11a4 4 0 100-8 4 4 0 000 8zm0 0v9m-3-3h6"></path></svg>
                                             @endif
@@ -698,10 +701,10 @@
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Harga
-                                                            Jual (Rp)</label>
+                                                            Jual (Rp) <span class="text-xs text-brand-500 font-normal">(Otomatis)</span></label>
                                                         <input type="number" name="harga"
-                                                            value="{{ $ternak->harga }}" required min="0"
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                                            value="{{ $ternak->harga }}" readonly
+                                                            class="dark:bg-gray-800 h-11 w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">
                                                     </div>
 
                                                     <div>

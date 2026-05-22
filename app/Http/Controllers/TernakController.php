@@ -124,7 +124,7 @@ class TernakController extends Controller
             }
         }
 
-        $hargaOtomatis = $this->hitungHargaOtomatis(
+        $hargaOtomatis = self::hitungHargaOtomatis(
             $request->id_jenis_ternak,
             $request->usia,
             $request->berat,
@@ -162,7 +162,6 @@ class TernakController extends Controller
             'jenis_kelamin' => 'required|in:jantan,betina',
             'usia' => 'required|integer|min:0',
             'berat' => 'required|numeric|min:0',
-            'harga' => 'required|numeric|min:0',
             'status_ternak' => 'required|in:sehat,sakit,hamil,mati',
             'status_jual' => 'required|in:tidak dijual,siap jual,booking,terjual',
         ]);
@@ -182,6 +181,13 @@ class TernakController extends Controller
             }
         }
 
+        $hargaOtomatis = self::hitungHargaOtomatis(
+            $request->id_jenis_ternak,
+            $request->usia,
+            $request->berat,
+            $request->jenis_kelamin
+        );
+
         // 4. Update Data jika Lolos Validasi
         $ternak->update([
             'id_jenis_ternak' => $request->id_jenis_ternak,
@@ -189,7 +195,7 @@ class TernakController extends Controller
             'jenis_kelamin' => $request->jenis_kelamin,
             'usia' => $request->usia,
             'berat' => $request->berat,
-            'harga' => $request->harga,
+            'harga' => $hargaOtomatis,
             'status_ternak' => $request->status_ternak,
             'status_jual' => $request->status_jual,
             'last_update' => \Carbon\Carbon::now(),
@@ -277,7 +283,7 @@ class TernakController extends Controller
         return view('pages.grafik-ternak', compact('ternak', 'riwayat_penyakit', 'chartLabels', 'chartIdeal', 'chartAktual'));
     }
 
-    private function hitungHargaOtomatis($id_jenis_ternak, $usia, $berat, $jenis_kelamin)
+    public static function hitungHargaOtomatis($id_jenis_ternak, $usia, $berat, $jenis_kelamin)
     {
         $jsonPath = public_path('json/value.json');
         if (!File::exists($jsonPath)) return 0;
@@ -304,12 +310,34 @@ class TernakController extends Controller
 
                 foreach ($breed['age_categories'] as $ageCat) {
                     if ($ageCat['category_name'] === $kategoriUsia) {
+                        $standardClass = null;
+                        $mediumClass = null;
+                        $superClass = null;
+                        
                         foreach ($ageCat['weight_classes'] as $wClass) {
-                            // Cek apakah berat masuk dalam rentang kelas
-                            if ($berat >= $wClass['min_weight'] && $berat <= $wClass['max_weight']) {
-                                $keyKelamin = ucfirst(strtolower($jenis_kelamin));
-                                return $wClass['prices'][$keyKelamin] ?? 0;
+                            if (strtolower($wClass['class_name']) === 'standard') {
+                                $standardClass = $wClass;
+                            } elseif (strtolower($wClass['class_name']) === 'medium') {
+                                $mediumClass = $wClass;
+                            } elseif (strtolower($wClass['class_name']) === 'super') {
+                                $superClass = $wClass;
                             }
+                        }
+                        
+                        $prices = null;
+                        if ($standardClass && $berat <= $standardClass['max_weight']) {
+                            $prices = $standardClass['prices'];
+                        } elseif ($mediumClass && $berat <= $mediumClass['max_weight']) {
+                            $prices = $mediumClass['prices'];
+                        } elseif ($superClass) {
+                            $prices = $superClass['prices'];
+                        } elseif ($standardClass) {
+                            $prices = $standardClass['prices'];
+                        }
+                        
+                        if ($prices) {
+                            $keyKelamin = ucfirst(strtolower($jenis_kelamin));
+                            return $prices[$keyKelamin] ?? 0;
                         }
                     }
                 }

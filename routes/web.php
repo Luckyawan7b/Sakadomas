@@ -12,6 +12,7 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\HargaKatalogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,6 +140,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/ternak/{id}', [TernakController::class, 'update'])->name('ternak.update');
     Route::delete('/ternak/{id}', [TernakController::class, 'delete'])->name('ternak.delete');
     Route::get('/ternak/{id}/detail', [TernakController::class, 'detail'])->name('ternak.detail');
+
+    // Harga Katalog
+    Route::get('/ternak/harga', [HargaKatalogController::class, 'index'])->name('ternak.harga.index');
+    Route::post('/ternak/harga/update', [HargaKatalogController::class, 'update'])->name('ternak.harga.update');
+    Route::post('/ternak/harga/sync', [HargaKatalogController::class, 'sync'])->name('ternak.harga.sync');
 
     // Monitoring
     Route::get('/monitoring', [MonitorController::class, 'index'])->name('monitoring.index');

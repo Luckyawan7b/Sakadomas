@@ -189,6 +189,10 @@ class MenuHelper
                         [
                             'name' => 'Data Monitoring',
                             'path' => '/monitoring',
+                        ],
+                        [
+                            'name' => 'Harga Katalog',
+                            'path' => '/ternak/harga',
                         ]
                     ],
                 ],
