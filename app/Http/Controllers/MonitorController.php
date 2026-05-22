@@ -130,14 +130,8 @@ class MonitorController extends Controller
                 'penyakit' => $request->penyakit,
             ]);
 
-            // 2. Update data ke tabel ternak
-            $ternak->update([
-                'usia' => $usia_baru,
-                'berat' => $request->berat,
-                'harga' => $harga_baru,
-                'last_monitor' => $request->tgl_monitoring,
-                'status_ternak' => $status_baru
-            ]);
+            // 2. Sinkronisasikan profil ternak ke monitoring terbaru
+            self::syncTernakDariMonitoring($request->id_ternak);
         }
 
         return back()->with('success', 'Data monitoring berhasil ditambahkan & Profil ternak diperbarui!');
@@ -146,28 +140,108 @@ class MonitorController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'id_ternak' => 'required|exists:ternak,id_ternak',
             'tgl_monitoring' => 'required|date',
             'berat' => 'required|numeric|min:0',
             'penyakit' => 'nullable|string',
+            'usia' => 'required|integer|min:0',
         ]);
 
         $monitor = Monitor::findOrFail($id);
+        $old_id_ternak = $monitor->id_ternak;
+        $new_id_ternak = $request->id_ternak;
+
+        // Hitung selisih usia jika tanggal berubah
+        $tgl_baru = Carbon::parse($request->tgl_monitoring);
+        $tgl_lama = Carbon::parse($monitor->tgl_monitoring);
+        
+        $usia_baru = $request->usia;
+        if ($tgl_baru->format('Y-m') !== $tgl_lama->format('Y-m')) {
+            $selisihBulan = (($tgl_baru->year - $tgl_lama->year) * 12) + ($tgl_baru->month - $tgl_lama->month);
+            $usia_baru = max(0, $monitor->usia + $selisihBulan);
+        }
+
+        // Cek jika ternak baru sudah di-monitor pada bulan/tahun tanggal baru (dan bukan record monitoring ini sendiri)
+        $existingMonitor = Monitor::where('id_ternak', $new_id_ternak)
+            ->whereYear('tgl_monitoring', $tgl_baru->year)
+            ->whereMonth('tgl_monitoring', $tgl_baru->month)
+            ->where('id_monitoring', '!=', $id)
+            ->first();
+
+        if ($existingMonitor) {
+            return redirect()->back()->withInput()->withErrors(['tgl_monitoring' => 'Ternak #ID-' . $new_id_ternak . ' sudah di-monitor pada bulan ' . $tgl_baru->translatedFormat('F Y') . '.']);
+        }
 
         $monitor->update([
+            'id_ternak' => $new_id_ternak,
             'tgl_monitoring' => $request->tgl_monitoring,
+            'usia' => $usia_baru,
             'berat' => $request->berat,
             'penyakit' => $request->penyakit,
         ]);
 
-        return back()->with('success', 'Catatan monitoring berhasil diperbarui.');
+        // Sync old ternak (jika berganti ternak)
+        if ($old_id_ternak != $new_id_ternak) {
+            self::syncTernakDariMonitoring($old_id_ternak);
+        }
+
+        // Sync new/current ternak
+        self::syncTernakDariMonitoring($new_id_ternak);
+
+        return back()->with('success', 'Catatan monitoring berhasil diperbarui & Profil ternak disinkronkan.');
     }
 
-    public function delete($id)
+    public static function syncTernakDariMonitoring($id_ternak)
     {
-        $monitor = Monitor::findOrFail($id);
-        $monitor->delete();
+        $ternak = Ternak::find($id_ternak);
+        if (!$ternak) {
+            return;
+        }
 
-        return back()->with('success', 'Data monitoring berhasil dihapus.');
+        // Ambil log monitoring terbaru berdasarkan tgl_monitoring DESC, id_monitoring DESC
+        $latestMonitor = Monitor::where('id_ternak', $id_ternak)
+            ->orderBy('tgl_monitoring', 'desc')
+            ->orderBy('id_monitoring', 'desc')
+            ->first();
+
+        if ($latestMonitor) {
+            // Tentukan status kesehatan berdasarkan penyakit di log terbaru
+            $status_baru = !empty($latestMonitor->penyakit) ? 'sakit' : 'sehat';
+            if ($ternak->status_ternak === 'hamil' && empty($latestMonitor->penyakit)) {
+                $status_baru = 'hamil';
+            }
+
+            $harga_baru = \App\Http\Controllers\TernakController::hitungHargaOtomatis(
+                $ternak->id_jenis_ternak,
+                $latestMonitor->usia,
+                $latestMonitor->berat,
+                $ternak->jenis_kelamin
+            );
+
+            $ternak->update([
+                'usia' => $latestMonitor->usia,
+                'berat' => $latestMonitor->berat,
+                'status_ternak' => $status_baru,
+                'harga' => $harga_baru,
+                'last_monitor' => $latestMonitor->tgl_monitoring,
+            ]);
+        } else {
+            // Jika tidak ada data monitoring sama sekali (misal setelah dipindah ternaknya)
+            $status_baru = $ternak->status_ternak === 'sakit' ? 'sehat' : $ternak->status_ternak;
+            
+            $harga_baru = \App\Http\Controllers\TernakController::hitungHargaOtomatis(
+                $ternak->id_jenis_ternak,
+                $ternak->usia,
+                $ternak->berat,
+                $ternak->jenis_kelamin
+            );
+
+            $ternak->update([
+                'last_monitor' => null,
+                'status_ternak' => $status_baru,
+                'harga' => $harga_baru,
+            ]);
+        }
     }
 
 }

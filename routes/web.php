@@ -150,7 +150,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/monitoring', [MonitorController::class, 'index'])->name('monitoring.index');
     Route::post('/monitoring', [MonitorController::class, 'store'])->name('monitoring.store');
     Route::put('/monitoring/{id}', [MonitorController::class, 'update'])->name('monitoring.update');
-    Route::delete('/monitoring/{id}', [MonitorController::class, 'delete'])->name('monitoring.delete');
 
     // Transaksi
     Route::get('/transaksi', [TransaksiController::class, 'indexAdmin'])->name('transaksi.index');

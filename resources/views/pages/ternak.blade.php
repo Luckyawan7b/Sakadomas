@@ -6,27 +6,36 @@
         modalFilter: false
     }">
         {{-- Flash Messages --}}
-        @if(session('success'))
+        @if (session('success'))
             <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)"
-                 class="mb-4 flex items-center justify-between rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 border border-green-200">
+                class="mb-4 flex items-center justify-between rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 border border-green-200">
                 <div class="flex items-center gap-2">
-                    <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
                     {{ session('success') }}
                 </div>
                 <button @click="show = false" class="text-green-500 hover:text-green-700">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
         @endif
-        @if(session('error'))
+        @if (session('error'))
             <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 5000)"
-                 class="mb-4 flex items-center justify-between rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 border border-red-200">
+                class="mb-4 flex items-center justify-between rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 border border-red-200">
                 <div class="flex items-center gap-2">
-                    <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
                     {{ session('error') }}
                 </div>
                 <button @click="show = false" class="text-red-500 hover:text-red-700">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
         @endif
@@ -97,19 +106,25 @@
         <div class="grid grid-cols-2 gap-4 md:grid-cols-4 mb-6">
             <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Populasi</p>
-                <h4 class="mt-2 text-2xl font-bold text-gray-800 dark:text-white">{{ $stat_total }} <span class="text-sm font-medium text-gray-500">Ekor</span></h4>
+                <h4 class="mt-2 text-2xl font-bold text-gray-800 dark:text-white">{{ $stat_total }} <span
+                        class="text-sm font-medium text-gray-500">Ekor</span></h4>
             </div>
-            <div class="rounded-xl border border-green-200 bg-green-50 p-5 shadow-sm dark:border-green-900/30 dark:bg-green-500/10">
+            <div
+                class="rounded-xl border border-green-200 bg-green-50 p-5 shadow-sm dark:border-green-900/30 dark:bg-green-500/10">
                 <p class="text-sm font-medium text-green-600 dark:text-green-400">Siap Jual</p>
-                <h4 class="mt-2 text-2xl font-bold text-green-700 dark:text-green-300">{{ $stat_siap_jual }} <span class="text-sm font-medium opacity-70">Ekor</span></h4>
+                <h4 class="mt-2 text-2xl font-bold text-green-700 dark:text-green-300">{{ $stat_siap_jual }} <span
+                        class="text-sm font-medium opacity-70">Ekor</span></h4>
             </div>
             <div class="rounded-xl border border-red-200 bg-red-50 p-5 shadow-sm dark:border-red-900/30 dark:bg-red-500/10">
                 <p class="text-sm font-medium text-red-600 dark:text-red-400">Sakit</p>
-                <h4 class="mt-2 text-2xl font-bold text-red-700 dark:text-red-300">{{ $stat_sakit }} <span class="text-sm font-medium opacity-70">Ekor</span></h4>
+                <h4 class="mt-2 text-2xl font-bold text-red-700 dark:text-red-300">{{ $stat_sakit }} <span
+                        class="text-sm font-medium opacity-70">Ekor</span></h4>
             </div>
-            <div class="rounded-xl border border-blue-200 bg-blue-50 p-5 shadow-sm dark:border-blue-900/30 dark:bg-blue-500/10">
+            <div
+                class="rounded-xl border border-blue-200 bg-blue-50 p-5 shadow-sm dark:border-blue-900/30 dark:bg-blue-500/10">
                 <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Telah Terjual</p>
-                <h4 class="mt-2 text-2xl font-bold text-blue-700 dark:text-blue-300">{{ $stat_terjual }} <span class="text-sm font-medium opacity-70">Ekor</span></h4>
+                <h4 class="mt-2 text-2xl font-bold text-blue-700 dark:text-blue-300">{{ $stat_terjual }} <span
+                        class="text-sm font-medium opacity-70">Ekor</span></h4>
             </div>
         </div>
 
@@ -380,10 +395,13 @@
                             <div>
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Jenis
                                     Kelamin</label>
-                                <select name="jenis_kelamin" required x-model="jenisKelamin" @change="if(jenisKelamin === 'jantan' && statusTernak === 'hamil') statusTernak = 'sehat'"
+                                <select name="jenis_kelamin" required x-model="jenisKelamin"
+                                    @change="if(jenisKelamin === 'jantan' && statusTernak === 'hamil') statusTernak = 'sehat'"
                                     class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
-                                    <option value="jantan" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Jantan</option>
-                                    <option value="betina" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Betina</option>
+                                    <option value="jantan"
+                                        class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Jantan</option>
+                                    <option value="betina"
+                                        class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Betina</option>
                                 </select>
                             </div>
 
@@ -413,10 +431,14 @@
                                     Kesehatan</label>
                                 <select name="status_ternak" required x-model="statusTernak"
                                     class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white">
-                                    <option value="sehat" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Sehat</option>
-                                    <option value="sakit" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Sakit</option>
-                                    <option value="hamil" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" x-show="jenisKelamin === 'betina'">Hamil</option>
-                                    <option value="mati" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Mati</option>
+                                    <option value="sehat"
+                                        class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Sehat</option>
+                                    <option value="sakit"
+                                        class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Sakit</option>
+                                    <option value="hamil" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
+                                        x-show="jenisKelamin === 'betina'">Hamil</option>
+                                    <option value="mati"
+                                        class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Mati</option>
                                 </select>
                             </div>
 
@@ -453,11 +475,15 @@
             </div>
         </template>
 
-        <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mt-6 overflow-hidden">
-            <div class="py-5 px-5 md:px-6 flex justify-between items-center border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+        <div
+            class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 mt-6 overflow-hidden">
+            <div
+                class="py-5 px-5 md:px-6 flex justify-between items-center border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <h4 class="text-lg font-semibold text-gray-800 dark:text-white">Daftar Ternak
-                    @if($data_ternak->total() > 0)
-                        <span class="ml-2 inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-600 ring-1 ring-inset ring-brand-500/10 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20">{{ $data_ternak->total() }} Data Ditemukan</span>
+                    @if ($data_ternak->total() > 0)
+                        <span
+                            class="ml-2 inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-600 ring-1 ring-inset ring-brand-500/10 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20">{{ $data_ternak->total() }}
+                            Data Ditemukan</span>
                     @endif
                 </h4>
             </div>
@@ -470,8 +496,10 @@
                             <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm">Lokasi</th>
                             <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm">Profil Fisik</th>
                             <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm">Harga Jual</th>
-                            <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm text-center">Status</th>
-                            <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm text-center">Aksi</th>
+                            <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm text-center">Status
+                            </th>
+                            <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm text-center">Aksi
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -484,36 +512,58 @@
 
                                 <td class="py-4 px-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-500/10">
-                                            <svg class="h-5 w-5 text-brand-500 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                                        <div
+                                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-500/10">
+                                            <svg class="h-5 w-5 text-brand-500 dark:text-brand-400" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
                                             </svg>
                                         </div>
                                         <div>
-                                            <span class="font-bold text-gray-800 dark:text-white block">ID-{{ $ternak->id_ternak }}</span>
-                                            <span class="text-sm font-medium text-gray-500 capitalize">{{ $ternak->jenis_ternak->jenis_ternak ?? 'Tipe ID: ' . $ternak->id_jenis_ternak }}</span>
+                                            <span
+                                                class="font-bold text-gray-800 dark:text-white block">ID-{{ $ternak->id_ternak }}</span>
+                                            <span
+                                                class="text-sm font-medium text-gray-500 capitalize">{{ $ternak->jenis_ternak->jenis_ternak ?? 'Tipe ID: ' . $ternak->id_jenis_ternak }}</span>
                                         </div>
                                     </div>
                                 </td>
 
                                 <td class="py-4 px-5">
-                                    <span class="font-semibold text-brand-600 dark:text-brand-400 block">Kandang {{ $ternak->kamar->kandang->nomor_kandang ?? 'Kosong' }}</span>
+                                    <span class="font-semibold text-brand-600 dark:text-brand-400 block">Kandang
+                                        {{ $ternak->kamar->kandang->nomor_kandang ?? 'Kosong' }}</span>
                                     <span class="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                            </path>
+                                        </svg>
                                         Kamar {{ $ternak->kamar->nomor_kamar ?? '-' }}
                                     </span>
                                 </td>
 
                                 <td class="py-4 px-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300" title="Jenis Kelamin">
-                                            @if($ternak->jenis_kelamin === 'jantan')
-                                                <svg class="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                                    <circle cx="10" cy="14" r="5"/>
-                                                    <path d="M21 3l-6.5 6.5M21 3h-5M21 3v5"/>
+                                        <div class="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+                                            title="Jenis Kelamin">
+                                            @if ($ternak->jenis_kelamin === 'jantan')
+                                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.5">
+                                                    <circle cx="10" cy="14" r="5" />
+                                                    <path d="M21 3l-6.5 6.5M21 3h-5M21 3v5" />
+                                                </svg>
+                                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M16 8v8m0-8h-8m8 0L8 16"></path>
                                                 </svg>
                                             @else
-                                                <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11a4 4 0 100-8 4 4 0 000 8zm0 0v9m-3-3h6"></path></svg>
+                                                <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 11a4 4 0 100-8 4 4 0 000 8zm0 0v9m-3-3h6"></path>
+                                                </svg>
                                             @endif
                                             {{ ucfirst($ternak->jenis_kelamin) }}
                                         </div>
@@ -529,7 +579,8 @@
                                 </td>
 
                                 <td class="py-4 px-5">
-                                    <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
+                                    <span
+                                        class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
                                         Rp {{ number_format($ternak->harga, 0, ',', '.') }}
                                     </span>
                                 </td>
@@ -537,19 +588,23 @@
                                 <td class="py-4 px-5 text-center">
                                     <div class="flex flex-col items-center gap-1.5">
                                         @if (strtolower($ternak->status_ternak) == 'sehat')
-                                            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800 dark:bg-green-500/20 dark:text-green-300">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800 dark:bg-green-500/20 dark:text-green-300">
                                                 <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-green-500"></span>Sehat
                                             </span>
                                         @elseif(strtolower($ternak->status_ternak) == 'sakit')
-                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-800 dark:bg-red-500/20 dark:text-red-300">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-800 dark:bg-red-500/20 dark:text-red-300">
                                                 <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-red-500"></span>Sakit
                                             </span>
                                         @elseif(strtolower($ternak->status_ternak) == 'hamil')
-                                            <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-800 dark:bg-purple-500/20 dark:text-purple-300">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-800 dark:bg-purple-500/20 dark:text-purple-300">
                                                 <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-purple-500"></span>Hamil
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center rounded-full bg-gray-200 px-2.5 py-1 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-gray-200 px-2.5 py-1 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                                                 <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-gray-500"></span>Mati
                                             </span>
                                         @endif
@@ -562,7 +617,8 @@
 
                                 <td class="py-4 px-5 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <a href="{{ route('ternak.detail', $ternak->id_ternak) }}" title="Analisis Ternak"
+                                        <a href="{{ route('ternak.detail', $ternak->id_ternak) }}"
+                                            title="Analisis Ternak"
                                             class="inline-flex items-center justify-center rounded-lg bg-brand-50 px-3 py-2 text-sm font-medium text-brand-600 transition hover:bg-brand-100 dark:bg-brand-500/10 dark:text-brand-400 dark:hover:bg-brand-500/20">
                                             Detail
                                         </a>
@@ -608,8 +664,8 @@
                                                         {{ $errors->first() }}</div>
                                                 @endif
 
-                                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"
-                                                        x-data='{
+                                                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"
+                                                    x-data='{
                                                             selectedKandang: "{{ old('id_kandang', $ternak->kamar->id_kandang ?? 'kosong') }}",
                                                             selectedKamar: "{{ old('id_kamar', $ternak->id_kamar ?? 'kosong') }}",
                                                             jenisKelamin: "{{ old('jenis_kelamin', $ternak->jenis_kelamin) }}",
@@ -628,11 +684,17 @@
                                                             @change="selectedKamar = (selectedKandang === 'kosong' ? 'kosong' : '')"
                                                             required
                                                             class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                            <option value="" disabled class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Pilih Kandang</option>
-                                                            @foreach($data_kandang as $kd)
-                                                                <option value="{{ $kd->id_kandang }}" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Kandang {{ $kd->nomor_kandang }}</option>
+                                                            <option value="" disabled
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
+                                                                Pilih Kandang</option>
+                                                            @foreach ($data_kandang as $kd)
+                                                                <option value="{{ $kd->id_kandang }}"
+                                                                    class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
+                                                                    Kandang {{ $kd->nomor_kandang }}</option>
                                                             @endforeach
-                                                            <option value="kosong" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white ">Kosong (Keluar Kandang)</option>
+                                                            <option value="kosong"
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white ">
+                                                                Kosong (Keluar Kandang)</option>
                                                         </select>
                                                     </div>
 
@@ -640,12 +702,22 @@
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pindah
                                                             Kamar</label>
-                                                        <select name="id_kamar" x-model="selectedKamar" required class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                            <option value="" disabled x-show="selectedKandang !== 'kosong'" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Pilih Kamar</option>
-                                                            <option value="kosong" x-show="selectedKandang === 'kosong'" class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">Kosong</option>
+                                                        <select name="id_kamar" x-model="selectedKamar" required
+                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                                            <option value="" disabled
+                                                                x-show="selectedKandang !== 'kosong'"
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
+                                                                Pilih Kamar</option>
+                                                            <option value="kosong" x-show="selectedKandang === 'kosong'"
+                                                                class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
+                                                                Kosong</option>
 
-                                                            <template x-for="kamar in kamarTersedia" :key="kamar.id_kamar">
-                                                                <option class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white" :value="kamar.id_kamar" x-text="'Kamar ' + kamar.nomor_kamar"></option>
+                                                            <template x-for="kamar in kamarTersedia"
+                                                                :key="kamar.id_kamar">
+                                                                <option
+                                                                    class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white"
+                                                                    :value="kamar.id_kamar"
+                                                                    x-text="'Kamar ' + kamar.nomor_kamar"></option>
                                                             </template>
                                                         </select>
                                                     </div>
@@ -668,7 +740,8 @@
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kelamin</label>
-                                                        <select name="jenis_kelamin" required x-model="jenisKelamin" @change="if(jenisKelamin === 'jantan' && statusTernak === 'hamil') statusTernak = 'sehat'"
+                                                        <select name="jenis_kelamin" required x-model="jenisKelamin"
+                                                            @change="if(jenisKelamin === 'jantan' && statusTernak === 'hamil') statusTernak = 'sehat'"
                                                             class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
                                                             <option value="jantan"
                                                                 class="bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
@@ -701,7 +774,8 @@
                                                     <div>
                                                         <label
                                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Harga
-                                                            Jual (Rp) <span class="text-xs text-brand-500 font-normal">(Otomatis)</span></label>
+                                                            Jual (Rp) <span
+                                                                class="text-xs text-brand-500 font-normal">(Otomatis)</span></label>
                                                         <input type="number" name="harga"
                                                             value="{{ $ternak->harga }}" readonly
                                                             class="dark:bg-gray-800 h-11 w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">

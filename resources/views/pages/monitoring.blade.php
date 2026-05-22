@@ -492,8 +492,7 @@
                     <tbody>
                         @forelse ($data_monitoring as $monitor)
                             <tr x-data="{
-                                modalEdit: {{ $errors->any() && old('_method') === 'PUT' && old('id_monitoring_edit') == $monitor->id_monitoring ? 'true' : 'false' }},
-                                modalHapus: false
+                                modalEdit: {{ $errors->any() && old('_method') === 'PUT' && old('id_monitoring_edit') == $monitor->id_monitoring ? 'true' : 'false' }}
                             }"
                                 class="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
 
@@ -527,8 +526,6 @@
                                     <div class="flex items-center justify-center gap-2">
                                         <button @click="modalEdit = true" type="button"
                                             class="inline-flex items-center rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20">Edit</button>
-                                        <button @click="modalHapus = true" type="button"
-                                            class="inline-flex items-center rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">Hapus</button>
                                     </div>
                                 </td>
 
@@ -623,35 +620,6 @@
                                                         class="flex w-full justify-center rounded-lg bg-yellow-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-yellow-600 sm:w-auto">Simpan
                                                         Perubahan</button>
                                                 </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                {{-- MODAL HAPUS MONITORING --}}
-                                <template x-teleport="body">
-                                    <div x-show="modalHapus" style="display: none;"
-                                        class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
-                                        @click.self="modalHapus = false">
-                                        <div
-                                            class="relative w-full max-w-[400px] rounded-3xl bg-white p-6 dark:bg-gray-900 text-center">
-                                            <h4 class="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">Hapus
-                                                Riwayat?</h4>
-                                            <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Yakin ingin menghapus
-                                                catatan monitoring tanggal
-                                                <strong>{{ \Carbon\Carbon::parse($monitor->tgl_monitoring)->format('d/m/Y') }}</strong>?
-                                            </p>
-
-                                            <form method="POST"
-                                                action="{{ route('monitoring.delete', $monitor->id_monitoring) }}"
-                                                class="flex justify-center gap-3">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button @click="modalHapus = false" type="button"
-                                                    class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] ">Batal</button>
-                                                <button type="submit"
-                                                    class="rounded-lg bg-red-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-600">Ya,
-                                                    Hapus!</button>
                                             </form>
                                         </div>
                                     </div>
