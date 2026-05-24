@@ -38,6 +38,29 @@ class MonitorController extends Controller
 
         $data_monitoring = $query->paginate(10);
 
+        // AJAX: Kirim hanya data JSON (tanpa query tambahan & tanpa render HTML)
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data_monitoring->map(function ($m) {
+                    return [
+                        'id_monitoring' => $m->id_monitoring,
+                        'id_ternak' => $m->id_ternak,
+                        'tgl_monitoring' => $m->tgl_monitoring,
+                        'berat' => $m->berat,
+                        'usia' => $m->usia,
+                        'penyakit' => $m->penyakit,
+                    ];
+                }),
+                'pagination' => [
+                    'current_page' => $data_monitoring->currentPage(),
+                    'last_page' => $data_monitoring->lastPage(),
+                    'total' => $data_monitoring->total(),
+                    'from' => $data_monitoring->firstItem(),
+                    'to' => $data_monitoring->lastItem(),
+                ],
+            ]);
+        }
+
         // Panggil data kandang, kamar, dan ternak untuk dropdown bertingkat
         $data_kandang = Kandang::all();
         $data_kamar = Kamar::all();
@@ -60,7 +83,19 @@ class MonitorController extends Controller
             ->orderBy('id_ternak', 'asc')->get();
         $stat_belum = $ternakBelumMonitor->count();
 
-        return view('pages.monitoring', compact('data_monitoring', 'data_ternak', 'data_kandang', 'data_kamar', 'stat_total', 'stat_sakit', 'stat_belum', 'ternakBelumMonitor'));
+        // Pre-map data untuk JSON di Blade (menghindari closure di @json)
+        $data_monitoring_json = $data_monitoring->map(function ($m) {
+            return [
+                'id_monitoring' => $m->id_monitoring,
+                'id_ternak' => $m->id_ternak,
+                'tgl_monitoring' => $m->tgl_monitoring,
+                'berat' => $m->berat,
+                'usia' => $m->usia,
+                'penyakit' => $m->penyakit,
+            ];
+        });
+
+        return view('pages.monitoring', compact('data_monitoring', 'data_monitoring_json', 'data_ternak', 'data_kandang', 'data_kamar', 'stat_total', 'stat_sakit', 'stat_belum', 'ternakBelumMonitor'));
     }
 
     public function store(Request $request)

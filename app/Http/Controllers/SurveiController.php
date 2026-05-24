@@ -55,14 +55,86 @@ class SurveiController extends Controller
     // ================================================================
     // ADMIN: Halaman Manajemen Kunjungan (Semua data survei)
     // ================================================================
-    public function indexAdmin()
+    public function indexAdmin(Request $request)
     {
-        $data_survei = Survei::with(['akun', 'transaksi'])->orderBy('tgl_survei', 'desc')->get();
+        $query = Survei::with(['akun', 'transaksi'])->orderBy('tgl_survei', 'desc');
+
+        // 1. Filter Status
+        if ($request->filled('status') && $request->status !== 'semua') {
+            $query->where('status', $request->status);
+        }
+
+        // 2. Filter Tanggal (Awal & Akhir)
+        if ($request->filled('tgl_awal')) {
+            $query->whereDate('tgl_survei', '>=', $request->tgl_awal);
+        }
+        if ($request->filled('tgl_akhir')) {
+            $query->whereDate('tgl_survei', '<=', $request->tgl_akhir);
+        }
+
+        // 3. Pencarian Nama/Username Pengguna (Relasi Akun)
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->whereHas('akun', function ($q) use ($search) {
+                $q->whereRaw('LOWER(nama) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(username) LIKE ?', ["%{$search}%"]);
+            });
+        }
+
+        $data_survei = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data_survei->map(function ($s) {
+                    return [
+                        'id_survei' => $s->id_survei,
+                        'tgl_survei' => $s->tgl_survei,
+                        'ket' => $s->ket,
+                        'status' => $s->status,
+                        'ket_admin' => $s->ket_admin,
+                        'id_transaksi' => $s->id_transaksi,
+                        'akun' => [
+                            'id_akun' => $s->akun->id_akun ?? null,
+                            'nama' => $s->akun->nama ?? 'Akun Terhapus',
+                            'no_hp' => $s->akun->no_hp ?? '-'
+                        ]
+                    ];
+                }),
+                'pagination' => [
+                    'current_page' => $data_survei->currentPage(),
+                    'last_page' => $data_survei->lastPage(),
+                    'total' => $data_survei->total(),
+                    'from' => $data_survei->firstItem(),
+                    'to' => $data_survei->lastItem(),
+                ],
+            ]);
+        }
+
         $data_akun = Akun::where('role', 'pelanggan')
                               ->select('id_akun', 'nama', 'username')
                               ->get();
 
-        return view('pages.survei', compact('data_survei', 'data_akun'));
+        // Siapkan data JSON bawaan agar komponen alpine memiliki data tanpa memanggil API pada load pertama
+        $data_survei_json = $data_survei->map(function ($s) {
+            return [
+                'id_survei' => $s->id_survei,
+                'tgl_survei' => $s->tgl_survei,
+                'ket' => $s->ket,
+                'status' => $s->status,
+                'ket_admin' => $s->ket_admin,
+                'id_transaksi' => $s->id_transaksi,
+                'akun' => [
+                    'id_akun' => $s->akun->id_akun ?? null,
+                    'nama' => $s->akun->nama ?? 'Akun Terhapus',
+                    'no_hp' => $s->akun->no_hp ?? '-'
+                ]
+            ];
+        });
+
+        // Hitung statistik untuk summary/widget (opsional tapi bisa berguna jika user ingin menambah total summary nanti)
+        // Namun saat ini survei.blade.php memiliki `counts` perhitungan statis.
+        // Kita cukup memberikan variabel saja.
+        return view('pages.survei', compact('data_survei', 'data_survei_json', 'data_akun'));
     }
 
     // ================================================================

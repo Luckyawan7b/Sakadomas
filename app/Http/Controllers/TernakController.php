@@ -84,6 +84,37 @@ class TernakController extends Controller
 
         $data_ternak = $query->paginate(10);
 
+        // AJAX: Kirim hanya data JSON (tanpa query tambahan & tanpa render HTML)
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data_ternak->map(function ($t) {
+                    return [
+                        'id_ternak' => $t->id_ternak,
+                        'jenis_ternak' => $t->jenis_ternak->jenis_ternak ?? ('Tipe ID: ' . $t->id_jenis_ternak),
+                        'id_jenis_ternak' => $t->id_jenis_ternak,
+                        'kandang' => $t->kamar->kandang->nomor_kandang ?? 'Kosong',
+                        'kamar' => $t->kamar->nomor_kamar ?? '-',
+                        'id_kamar' => $t->id_kamar,
+                        'id_kandang' => $t->kamar->id_kandang ?? 'kosong',
+                        'jenis_kelamin' => $t->jenis_kelamin,
+                        'usia' => $t->usia,
+                        'berat' => $t->berat,
+                        'harga' => $t->harga,
+                        'status_ternak' => $t->status_ternak,
+                        'status_jual' => $t->status_jual,
+                        'last_update' => $t->last_update,
+                    ];
+                }),
+                'pagination' => [
+                    'current_page' => $data_ternak->currentPage(),
+                    'last_page' => $data_ternak->lastPage(),
+                    'total' => $data_ternak->total(),
+                    'from' => $data_ternak->firstItem(),
+                    'to' => $data_ternak->lastItem(),
+                ],
+            ]);
+        }
+
         $data_kandang = Kandang::all();
         $data_kamar = Kamar::with('kandang')->get();
         $data_jenis = JenisTernak::all();
@@ -93,7 +124,27 @@ class TernakController extends Controller
         $stat_sakit = Ternak::where('status_ternak', 'sakit')->count();
         $stat_terjual = Ternak::where('status_jual', 'terjual')->count();
 
-        return view('pages.ternak', compact('data_ternak', 'data_kandang', 'data_kamar', 'data_jenis', 'stat_total', 'stat_siap_jual', 'stat_sakit', 'stat_terjual'));
+        // Pre-map data untuk JSON di Blade (menghindari closure di @json)
+        $data_ternak_json = $data_ternak->map(function ($t) {
+            return [
+                'id_ternak' => $t->id_ternak,
+                'jenis_ternak' => $t->jenis_ternak->jenis_ternak ?? ('Tipe ID: ' . $t->id_jenis_ternak),
+                'id_jenis_ternak' => $t->id_jenis_ternak,
+                'kandang' => $t->kamar->kandang->nomor_kandang ?? 'Kosong',
+                'kamar' => $t->kamar->nomor_kamar ?? '-',
+                'id_kamar' => $t->id_kamar,
+                'id_kandang' => $t->kamar->id_kandang ?? 'kosong',
+                'jenis_kelamin' => $t->jenis_kelamin,
+                'usia' => $t->usia,
+                'berat' => $t->berat,
+                'harga' => $t->harga,
+                'status_ternak' => $t->status_ternak,
+                'status_jual' => $t->status_jual,
+                'last_update' => $t->last_update,
+            ];
+        });
+
+        return view('pages.ternak', compact('data_ternak', 'data_ternak_json', 'data_kandang', 'data_kamar', 'data_jenis', 'stat_total', 'stat_siap_jual', 'stat_sakit', 'stat_terjual'));
     }
 
     public function store(Request $request)

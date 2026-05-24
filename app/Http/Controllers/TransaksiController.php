@@ -479,7 +479,23 @@ class TransaksiController extends Controller
         }
 
         $data_transaksi = $query->paginate(15);
-        return view('pages.rekap-transaksi', compact('data_transaksi'));
+
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data_transaksi->items(),
+                'pagination' => [
+                    'current_page' => $data_transaksi->currentPage(),
+                    'last_page'    => $data_transaksi->lastPage(),
+                    'total'        => $data_transaksi->total(),
+                    'from'         => $data_transaksi->firstItem(),
+                    'to'           => $data_transaksi->lastItem(),
+                ]
+            ]);
+        }
+
+        $data_transaksi_json = $data_transaksi->items();
+
+        return view('pages.rekap-transaksi', compact('data_transaksi', 'data_transaksi_json'));
     }
 
     // ================================================================

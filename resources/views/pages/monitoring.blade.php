@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <div x-data="{
-        modalTambah: {{ $errors->any() && !old('_method') ? 'true' : 'false' }},
-        modalFilter: false,
-        activeTab: 'manual'
-    }">
+    <div x-data="ajaxTable('{{ url('/monitoring') }}')">
+        <div x-data="{
+            modalTambah: {{ $errors->any() && !old('_method') ? 'true' : 'false' }},
+            modalFilter: false,
+            activeTab: 'manual'
+        }">
         {{-- FLASH MESSAGE --}}
         @if (session('success'))
             <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
@@ -67,7 +68,7 @@
             </div>
             <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Hasil Filter</p>
-                <h4 class="mt-1.5 text-2xl font-bold text-brand-600 dark:text-brand-400">{{ $data_monitoring->total() }}</h4>
+                <h4 class="mt-1.5 text-2xl font-bold text-brand-600 dark:text-brand-400" x-text="totalData"></h4>
             </div>
             <div class="rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm dark:border-red-900/30 dark:bg-red-500/10">
                 <p class="text-xs font-medium text-red-600 dark:text-red-400">Catatan Sakit</p>
@@ -104,7 +105,7 @@
                         </button>
                     </div>
 
-                    <form method="GET" action="{{ route('monitoring.index') }}" class="flex flex-col gap-4"
+                    <form @submit.prevent="fetchData" id="filter-form" method="GET" action="{{ route('monitoring.index') }}" class="flex flex-col gap-4"
                           x-data='{
                               selectedKandang: "semua",
                               selectedKamar: "semua",
@@ -169,21 +170,6 @@
                             </div>
                         </div>
 
-                        {{-- <div>
-                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih
-                                Ternak</label>
-                            <select name="id_ternak"
-                                class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                <option value="semua" {{ request('id_ternak') == 'semua' ? 'selected' : '' }}>Semua Ternak
-                                </option>
-                                @foreach ($data_ternak as $t)
-                                    <option value="{{ $t->id_ternak }}"
-                                        {{ request('id_ternak') == $t->id_ternak ? 'selected' : '' }}>Ternak
-                                        #ID-{{ $t->id_ternak }}</option>
-                                @endforeach
-                            </select>
-                        </div> --}}
-
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tanggal
@@ -238,9 +224,21 @@
                         </div>
 
                         <div class="flex items-center gap-3 mt-4 justify-end">
-                            <a href="{{ route('monitoring.index') }}"
-                                class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Reset
-                                Filter</a>
+                            <button type="button" @click="
+                                let form = document.getElementById('filter-form');
+                                if (form) {
+                                    form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+                                    form.querySelectorAll('input').forEach(i => i.value = '');
+                                }
+                                selectedKandang = 'semua';
+                                selectedKamar = 'semua';
+                                selectedTernak = 'semua';
+                                modalFilter = false;
+                                fetchData();
+                            "
+                                class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">
+                                Reset Filter
+                            </button>
                             <button type="submit"
                                 class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">Terapkan</button>
                         </div>
@@ -474,12 +472,18 @@
         <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
             <div class="py-5 px-5 md:px-6 flex justify-between items-center border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <h4 class="text-lg font-semibold text-gray-800 dark:text-white">Riwayat Monitoring
-                    @if($data_monitoring->total() > 0)
-                        <span class="ml-2 inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-600 ring-1 ring-inset ring-brand-500/10 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20">{{ $data_monitoring->total() }} Data</span>
-                    @endif
+                    <span x-show="totalData > 0" class="ml-2 inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-600 ring-1 ring-inset ring-brand-500/10 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20" x-text="totalData + ' Data'"></span>
                 </h4>
             </div>
-            <div class="max-w-full overflow-x-auto">
+            {{-- Loading Overlay --}}
+            <div x-show="isFetching" class="py-8 flex justify-center items-center">
+                <svg class="animate-spin h-8 w-8 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+
+            <div class="max-w-full overflow-x-auto" x-show="!isFetching" x-transition.opacity.duration.200ms>
                 <table class="w-full table-auto min-w-[700px]">
                     <thead>
                         <tr class="bg-gray-50 text-left dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800">
@@ -490,163 +494,326 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($data_monitoring as $monitor)
-                            <tr x-data="{
-                                modalEdit: {{ $errors->any() && old('_method') === 'PUT' && old('id_monitoring_edit') == $monitor->id_monitoring ? 'true' : 'false' }}
-                            }"
-                                class="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
 
+                        <template x-for="monitor in rows" :key="monitor.id_monitoring">
+                            <tr class="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                 <td class="py-4 px-5">
-                                    <span class="font-medium text-gray-800 dark:text-white block">{{ \Carbon\Carbon::parse($monitor->tgl_monitoring)->translatedFormat('d M Y') }}</span>
-                                    <span class="text-sm font-bold text-brand-500">#ID-{{ $monitor->id_ternak }}</span>
+                                    <span class="font-medium text-gray-800 dark:text-white block" x-text="formatDate(monitor.tgl_monitoring)"></span>
+                                    <span class="text-sm font-bold text-brand-500" x-text="'#ID-' + monitor.id_ternak"></span>
                                 </td>
 
                                 <td class="py-4 px-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $monitor->berat }} Kg</div>
+                                        <div class="text-sm font-medium text-gray-700 dark:text-gray-300" x-text="monitor.berat + ' Kg'"></div>
                                         <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
-                                        <div class="text-sm text-gray-500">{{ $monitor->usia }} Bulan</div>
+                                        <div class="text-sm text-gray-500" x-text="monitor.usia + ' Bulan'"></div>
                                     </div>
                                 </td>
 
                                 <td class="py-4 px-5">
-                                    @if (empty($monitor->penyakit))
+                                    <template x-if="!monitor.penyakit || monitor.penyakit.trim() === ''">
                                         <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800 dark:bg-green-500/20 dark:text-green-300">
                                             <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-green-500"></span>Sehat
                                         </span>
-                                    @else
-                                        <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-800 dark:bg-red-500/20 dark:text-red-300 mb-1">
-                                            <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-red-500"></span>Sakit
-                                        </span>
-                                        <p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $monitor->penyakit }}</p>
-                                    @endif
+                                    </template>
+                                    <template x-if="monitor.penyakit && monitor.penyakit.trim() !== ''">
+                                        <div>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-800 dark:bg-red-500/20 dark:text-red-300 mb-1">
+                                                <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-red-500"></span>Sakit
+                                            </span>
+                                            <p class="text-xs text-red-600 dark:text-red-400 mt-1" x-text="monitor.penyakit"></p>
+                                        </div>
+                                    </template>
                                 </td>
 
                                 <td class="py-4 px-5 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button @click="modalEdit = true" type="button"
+                                        <button @click="openEditModal(monitor)" type="button"
                                             class="inline-flex items-center rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20">Edit</button>
                                     </div>
                                 </td>
-
-                                {{-- MODAL EDIT MONITORING --}}
-                                <template x-teleport="body">
-                                    <div x-show="modalEdit" style="display: none;"
-                                        class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
-                                        @click.self="modalEdit = false">
-                                        <div
-                                            class="relative w-full max-w-[600px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8">
-                                            <div class="mb-6">
-                                                <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-                                                    Edit Data Monitoring</h4>
-                                            </div>
-
-                                            <form method="POST"
-                                                action="{{ route('monitoring.update', $monitor->id_monitoring) }}"
-                                                class="flex flex-col gap-4">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="id_monitoring_edit"
-                                                    value="{{ $monitor->id_monitoring }}">
-
-                                                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                                    <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Ternak</label>
-                                                        <select name="id_ternak" required
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                            @foreach ($data_ternak as $t)
-                                                                <option value="{{ $t->id_ternak }}"
-                                                                    {{ $monitor->id_ternak == $t->id_ternak ? 'selected' : '' }}>
-                                                                    #ID-{{ $t->id_ternak }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-
-                                                    <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tanggal</label>
-                                                        <div class="relative">
-                                                            <input type="text" name="tgl_monitoring"
-                                                                value="{{ $monitor->tgl_monitoring }}" required
-                                                                x-init="flatpickr($el, { dateFormat: 'Y-m-d', locale: 'id' })"
-                                                                class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:text-white dark:focus:border-brand-800"
-                                                                placeholder="Pilih Tanggal">
-                                                            <span
-                                                                class="absolute top-1/2 right-3.5 -translate-y-1/2 pointer-events-none">
-                                                                <svg class="fill-gray-700 dark:fill-gray-400"
-                                                                    width="14" height="14" viewBox="0 0 14 14"
-                                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                        d="M4.33317 0.0830078C4.74738 0.0830078 5.08317 0.418794 5.08317 0.833008V1.24967H8.9165V0.833008C8.9165 0.418794 9.25229 0.0830078 9.6665 0.0830078C10.0807 0.0830078 10.4165 0.418794 10.4165 0.833008V1.24967L11.3332 1.24967C12.2997 1.24967 13.0832 2.03318 13.0832 2.99967V4.99967V11.6663C13.0832 12.6328 12.2997 13.4163 11.3332 13.4163H2.6665C1.70001 13.4163 0.916504 12.6328 0.916504 11.6663V4.99967V2.99967C0.916504 2.03318 1.70001 1.24967 2.6665 1.24967L3.58317 1.24967V0.833008C3.58317 0.418794 3.91896 0.0830078 4.33317 0.0830078ZM4.33317 2.74967H2.6665C2.52843 2.74967 2.4165 2.8616 2.4165 2.99967V4.24967H11.5832V2.99967C11.5832 2.8616 11.4712 2.74967 11.3332 2.74967H9.6665H4.33317ZM11.5832 5.74967H2.4165V11.6663C2.4165 11.8044 2.52843 11.9163 2.6665 11.9163H11.3332C11.4712 11.9163 11.5832 11.8044 11.5832 11.6663V5.74967Z"
-                                                                        fill="" />
-                                                                </svg>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Usia
-                                                            (Bulan)
-                                                        </label>
-                                                        <input type="number" name="usia"
-                                                            value="{{ $monitor->usia }}" required min="0"
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                    </div>
-
-                                                    <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Berat
-                                                            (Kg)</label>
-                                                        <input type="number" name="berat"
-                                                            value="{{ $monitor->berat }}" required min="0"
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label
-                                                        class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Penyakit
-                                                        / Catatan Medis</label>
-                                                    <textarea name="penyakit" rows="3"
-                                                        class="dark:bg-gray-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">{{ $monitor->penyakit }}</textarea>
-                                                </div>
-
-                                                <div class="flex items-center gap-3 mt-4 justify-end">
-                                                    <button @click="modalEdit = false" type="button"
-                                                        class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Batal</button>
-                                                    <button type="submit"
-                                                        class="flex w-full justify-center rounded-lg bg-yellow-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-yellow-600 sm:w-auto">Simpan
-                                                        Perubahan</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </template>
-
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="py-10 px-5 text-center">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                                        <p class="text-gray-500 dark:text-gray-400">Belum ada catatan monitoring yang sesuai.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
+                        </template>
+
+                        <tr x-show="rows.length === 0 && !isFetching">
+                            <td colspan="4" class="py-10 px-5 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                    <p class="text-gray-500 dark:text-gray-400">Belum ada catatan monitoring yang sesuai.</p>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
 
-            @if ($data_monitoring->hasPages())
-                <div class="border-t border-gray-200 dark:border-gray-800 p-4">
-                    {{ $data_monitoring->withQueryString()->links() }}
+            <!-- Client-Side Pagination Controls -->
+            <div x-show="lastPage > 1" class="border-t border-gray-200 dark:border-gray-800 px-5 py-4">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Menampilkan <span class="font-medium text-gray-900 dark:text-white" x-text="fromData"></span> 
+                        hingga <span class="font-medium text-gray-900 dark:text-white" x-text="toData"></span> 
+                        dari <span class="font-medium text-gray-900 dark:text-white" x-text="totalData"></span> data
+                    </p>
+                    <div class="flex items-center gap-1">
+                        <button @click="goToPage(currentPage - 1)" :disabled="currentPage <= 1"
+                            class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                            &laquo; Prev
+                        </button>
+                        <template x-for="p in paginationPages" :key="'page-'+p">
+                            <button @click="if(p !== '...') goToPage(p)"
+                                :class="p === currentPage ? 'bg-brand-500 text-white border-brand-500' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'"
+                                class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition border min-w-[40px]"
+                                :disabled="p === '...'"
+                                x-text="p"></button>
+                        </template>
+                        <button @click="goToPage(currentPage + 1)" :disabled="currentPage >= lastPage"
+                            class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                            Next &raquo;
+                        </button>
+                    </div>
                 </div>
-            @endif
+            </div>
+
+            {{-- MODAL EDIT MONITORING (SHARED) --}}
+            <template x-teleport="body">
+                <div x-show="modalEdit" style="display: none;"
+                    class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
+                    @click.self="modalEdit = false">
+                    <div
+                        class="relative w-full max-w-[600px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8">
+                        <div class="mb-6">
+                            <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+                                Edit Data Monitoring</h4>
+                        </div>
+
+                        <form method="POST"
+                            :action="editData ? `{{ url('/monitoring') }}/${editData.id_monitoring}` : '#'"
+                            class="flex flex-col gap-4">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="id_monitoring_edit" :value="editData ? editData.id_monitoring : ''">
+
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label
+                                        class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Ternak</label>
+                                    <select name="id_ternak" x-model="editData.id_ternak" required
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                        @foreach ($data_ternak as $t)
+                                            <option value="{{ $t->id_ternak }}">#ID-{{ $t->id_ternak }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tanggal</label>
+                                    <div class="relative">
+                                        <input type="text" name="tgl_monitoring" x-model="editData.tgl_monitoring" required
+                                            x-init="$watch('editData', value => { if(value && value.tgl_monitoring) { let fp = flatpickr($el, { dateFormat: 'Y-m-d', locale: 'id' }); fp.setDate(value.tgl_monitoring); } })"
+                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:text-white dark:focus:border-brand-800"
+                                            placeholder="Pilih Tanggal">
+                                        <span class="absolute top-1/2 right-3.5 -translate-y-1/2 pointer-events-none">
+                                            <svg class="fill-gray-700 dark:fill-gray-400" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4.33317 0.0830078C4.74738 0.0830078 5.08317 0.418794 5.08317 0.833008V1.24967H8.9165V0.833008C8.9165 0.418794 9.25229 0.0830078 9.6665 0.0830078C10.0807 0.0830078 10.4165 0.418794 10.4165 0.833008V1.24967L11.3332 1.24967C12.2997 1.24967 13.0832 2.03318 13.0832 2.99967V4.99967V11.6663C13.0832 12.6328 12.2997 13.4163 11.3332 13.4163H2.6665C1.70001 13.4163 0.916504 12.6328 0.916504 11.6663V4.99967V2.99967C0.916504 2.03318 1.70001 1.24967 2.6665 1.24967L3.58317 1.24967V0.833008C3.58317 0.418794 3.91896 0.0830078 4.33317 0.0830078ZM4.33317 2.74967H2.6665C2.52843 2.74967 2.4165 2.8616 2.4165 2.99967V4.24967H11.5832V2.99967C11.5832 2.8616 11.4712 2.74967 11.3332 2.74967H9.6665H4.33317ZM11.5832 5.74967H2.4165V11.6663C2.4165 11.8044 2.52843 11.9163 2.6665 11.9163H11.3332C11.4712 11.9163 11.5832 11.8044 11.5832 11.6663V5.74967Z" fill=""/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Usia (Bulan)</label>
+                                    <input type="number" name="usia" x-model="editData.usia" required min="0"
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                </div>
+
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Berat (Kg)</label>
+                                    <input type="number" name="berat" x-model="editData.berat" required min="0" step="0.01"
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Penyakit / Catatan Medis</label>
+                                <textarea name="penyakit" rows="3" x-model="editData.penyakit"
+                                    class="dark:bg-gray-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white"></textarea>
+                            </div>
+
+                            <div class="flex items-center gap-3 mt-4 justify-end">
+                                <button @click="modalEdit = false" type="button" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Batal</button>
+                                <button type="submit" class="flex w-full justify-center rounded-lg bg-yellow-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-yellow-600 sm:w-auto">Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </template>
         </div>
-
-
+        </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    function ajaxTable(baseUrl) {
+        return {
+            isFetching: false,
+            abortController: null,
+            rows: @json($data_monitoring_json),
+            currentPage: {{ $data_monitoring->currentPage() }},
+            lastPage: {{ $data_monitoring->lastPage() }},
+            totalData: {{ $data_monitoring->total() }},
+            fromData: {{ $data_monitoring->firstItem() ?? 0 }},
+            toData: {{ $data_monitoring->lastItem() ?? 0 }},
+            pageCache: {},
+            modalEdit: false,
+            editData: null,
+
+            init() {
+                // Simpan halaman pertama ke cache (tanpa filter/search tambahan saat load awal)
+                const initialUrl = baseUrl + window.location.search;
+                this.pageCache[initialUrl] = {
+                    rows: this.rows,
+                    currentPage: this.currentPage,
+                    lastPage: this.lastPage,
+                    totalData: this.totalData,
+                    fromData: this.fromData,
+                    toData: this.toData
+                };
+
+                // Handle push state untuk navigasi back/forward
+                window.addEventListener('popstate', (event) => {
+                    this.fetchUrl(window.location.href, false);
+                });
+            },
+
+            formatDate(dateString) {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            },
+
+            get paginationPages() {
+                let pages = [];
+                let l = this.lastPage;
+                let c = this.currentPage;
+                if (l <= 7) {
+                    for (let i = 1; i <= l; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (c > 3) pages.push('...');
+                    for (let i = Math.max(2, c - 1); i <= Math.min(l - 1, c + 1); i++) pages.push(i);
+                    if (c < l - 2) pages.push('...');
+                    pages.push(l);
+                }
+                return pages;
+            },
+
+            openEditModal(monitor) {
+                this.editData = { ...monitor };
+                this.modalEdit = true;
+            },
+
+            goToPage(page) {
+                if (page < 1 || page > this.lastPage) return;
+                
+                let url = new URL(window.location.href);
+                url.searchParams.set('page', page);
+                this.fetchUrl(url.toString());
+            },
+
+            fetchData() {
+                // Fungsi ini dipanggil saat filter disubmit
+                let form = document.getElementById('filter-form');
+                let formData = new FormData(form);
+                let params = new URLSearchParams(formData);
+
+                // Buat URL dengan parameter form, reset ke page 1
+                let url = new URL(baseUrl);
+                for (let [key, value] of params.entries()) {
+                    if (value) url.searchParams.append(key, value);
+                }
+                url.searchParams.delete('page');
+
+                this.fetchUrl(url.toString());
+                this.modalFilter = false;
+            },
+
+            fixProtocol(urlStr) {
+                // Pastikan URL selalu menggunakan skema yang sama dengan window.location
+                let currentUrl = new URL(window.location.href);
+                let targetUrl = new URL(urlStr, window.location.origin);
+                targetUrl.protocol = currentUrl.protocol;
+                return targetUrl.toString();
+            },
+
+            fetchUrl(rawUrl, pushState = true) {
+                let url = this.fixProtocol(rawUrl);
+
+                // Cek cache terlebih dahulu (0ms delay)
+                if (this.pageCache[url]) {
+                    this.applyData(this.pageCache[url]);
+                    if (pushState) {
+                        window.history.pushState({}, '', url);
+                    }
+                    return;
+                }
+
+                // Abort request yang sedang berjalan
+                if (this.abortController) {
+                    this.abortController.abort();
+                }
+                this.abortController = new AbortController();
+
+                this.isFetching = true;
+
+                // Gunakan header x-requested-with agar controller mereturn JSON
+                axios.get(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    signal: this.abortController.signal
+                })
+                .then(response => {
+                    const res = response.data;
+                    const cacheData = {
+                        rows: res.data,
+                        currentPage: res.pagination.current_page,
+                        lastPage: res.pagination.last_page,
+                        totalData: res.pagination.total,
+                        fromData: res.pagination.from || 0,
+                        toData: res.pagination.to || 0
+                    };
+                    
+                    this.applyData(cacheData);
+                    this.pageCache[url] = cacheData;
+                    
+                    if (pushState) {
+                        window.history.pushState({}, '', url);
+                    }
+                })
+                .catch(error => {
+                    if (axios.isCancel(error)) {
+                        console.log('Request dibatalkan:', error.message);
+                    } else {
+                        console.error('AJAX Error:', error);
+                        // Fallback jika error, reload biasa
+                        window.location.href = url;
+                    }
+                })
+                .finally(() => {
+                    this.isFetching = false;
+                });
+            },
+
+            applyData(data) {
+                this.rows = data.rows;
+                this.currentPage = data.currentPage;
+                this.lastPage = data.lastPage;
+                this.totalData = data.totalData;
+                this.fromData = data.fromData;
+                this.toData = data.toData;
+            }
+        };
+    }
+</script>
+@endpush

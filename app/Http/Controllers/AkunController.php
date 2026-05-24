@@ -79,7 +79,7 @@ class AkunController extends Controller
         $request->validate([
             'login' => 'required|string',
             'password' => 'required|string',
-        ],[
+        ], [
             'required'           => ':attribute wajib diisi.',
         ]);
 
@@ -145,11 +145,25 @@ class AkunController extends Controller
         // 3. Eksekusi Query dengan Pagination (10 data per halaman)
         $data_akun = $query->paginate(10);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data_akun->items(),
+                'pagination' => [
+                    'current_page' => $data_akun->currentPage(),
+                    'last_page'    => $data_akun->lastPage(),
+                    'total'        => $data_akun->total(),
+                    'from'         => $data_akun->firstItem(),
+                    'to'           => $data_akun->lastItem(),
+                ]
+            ]);
+        }
+
         // Ambil data untuk modal tambah/edit
         $kecamatan = \App\Models\Kecamatan::all();
         $desa = \App\Models\Desa::all();
+        $data_akun_json = $data_akun->items();
 
-        return view('pages.akun', compact('data_akun', 'kecamatan', 'desa'));
+        return view('pages.akun', compact('data_akun', 'kecamatan', 'desa', 'data_akun_json'));
     }
     // IKI GET BY ID
     public function show($id)
