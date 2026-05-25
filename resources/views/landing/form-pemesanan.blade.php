@@ -180,13 +180,18 @@
             const jenisParam  = params.get("jenis");
             const kelaminParam = params.get("kelamin");
             const hargaParam  = params.get("harga");
+            const kategoriParam = params.get("kategori");
+            const kelasParam = params.get("kelas");
 
             if (jenisParam && kelaminParam && hargaParam) {
-                const match = this.rawData.find(item =>
-                    String(item.id_jenis) === jenisParam &&
-                    (item.jenis_kelamin || "").toLowerCase() === kelaminParam.toLowerCase() &&
-                    String(item.harga) === hargaParam
-                );
+                const match = this.rawData.find(item => {
+                    const sameJenis = String(item.id_jenis) === jenisParam;
+                    const sameKelamin = (item.jenis_kelamin || "").toLowerCase() === kelaminParam.toLowerCase();
+                    const sameHarga = String(item.harga) === hargaParam;
+                    const sameKategori = !kategoriParam || (item.nama_produk || "").toLowerCase() === kategoriParam.toLowerCase();
+                    const sameKelas = !kelasParam || (item.kelas_berat || "") === kelasParam;
+                    return sameJenis && sameKelamin && sameHarga && sameKategori && sameKelas;
+                });
                 if (match) {
                     setTimeout(() => {
                         this.selectedKategori = match.nama_produk;

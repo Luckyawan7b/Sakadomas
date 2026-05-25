@@ -56,18 +56,20 @@
                         item.jenis_kelamin === oldKelamin
                     );
                     if (match) {
-                        this.selectedKategori = match.nama_produk;
-                        this.$nextTick(() => {
-                            this.selectedKelas = match.kelas_berat;
+                        setTimeout(() => {
+                            this.selectedKategori = match.nama_produk;
                             this.$nextTick(() => {
-                                this.selectedKey = match.nama_produk + "_" + match.kelas_berat + "_" + match.jenis_kelamin + "_" + match.harga;
+                                this.selectedKelas = match.kelas_berat;
                                 this.$nextTick(() => {
-                                    if (oldTernakIds.length > 0) {
-                                        this.selectedTernakIds = oldTernakIds.map(id => String(id));
-                                    }
+                                    this.selectedKey = match.nama_produk + "_" + match.kelas_berat + "_" + match.jenis_kelamin + "_" + match.harga;
+                                    this.$nextTick(() => {
+                                        if (oldTernakIds.length > 0) {
+                                            this.selectedTernakIds = oldTernakIds.map(id => String(id));
+                                        }
+                                    });
                                 });
                             });
-                        });
+                        }, 50);
                     }
                 } else {
                     // Auto-fill dari URL parameters (dari halaman Katalog / Detail Produk)
@@ -75,22 +77,29 @@
                     const jenisParam = params.get("jenis");
                     const kelaminParam = params.get("kelamin");
                     const hargaParam = params.get("harga");
+                    const kategoriParam = params.get("kategori");
+                    const kelasParam = params.get("kelas");
 
                     if (jenisParam && kelaminParam && hargaParam) {
                         // Cari item yang cocok berdasarkan parameter
-                        const match = this.rawData.find(item =>
-                            String(item.id_jenis) === jenisParam &&
-                            item.jenis_kelamin === kelaminParam &&
-                            String(item.harga) === hargaParam
-                        );
+                        const match = this.rawData.find(item => {
+                            const sameJenis = String(item.id_jenis) === jenisParam;
+                            const sameKelamin = (item.jenis_kelamin || "").toLowerCase() === kelaminParam.toLowerCase();
+                            const sameHarga = String(item.harga) === hargaParam;
+                            const sameKategori = !kategoriParam || (item.nama_produk || "").toLowerCase() === kategoriParam.toLowerCase();
+                            const sameKelas = !kelasParam || (item.kelas_berat || "") === kelasParam;
+                            return sameJenis && sameKelamin && sameHarga && sameKategori && sameKelas;
+                        });
                         if (match) {
-                            this.selectedKategori = match.nama_produk;
-                            this.$nextTick(() => {
-                                this.selectedKelas = match.kelas_berat;
-                                        this.$nextTick(() => {
-                                    this.selectedKey = match.nama_produk + "_" + match.kelas_berat + "_" + match.jenis_kelamin + "_" + match.harga;
+                            setTimeout(() => {
+                                this.selectedKategori = match.nama_produk;
+                                this.$nextTick(() => {
+                                    this.selectedKelas = match.kelas_berat;
+                                    this.$nextTick(() => {
+                                        this.selectedKey = match.nama_produk + "_" + match.kelas_berat + "_" + match.jenis_kelamin + "_" + match.harga;
+                                    });
                                 });
-                            });
+                            }, 50);
                         }
                     }
                 }

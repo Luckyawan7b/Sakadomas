@@ -116,7 +116,7 @@
                 <div class="flex flex-col sm:flex-row gap-4 pt-4">
                     @if ($produk['stok'] > 0)
                         @auth
-                            <a href="{{ route('transaksi.create') }}?jenis={{ $produk['id_jenis'] }}&kelamin={{ $produk['jenis_kelamin'] }}&harga={{ $produk['harga'] }}"
+                            <a href="{{ route('transaksi.create') }}?jenis={{ $produk['id_jenis'] }}&kelamin={{ strtolower($produk['jenis_kelamin']) }}&harga={{ $produk['harga'] }}&kategori={{ urlencode($produk['breed_db'] . ' - ' . $produk['kategori_usia']) }}&kelas={{ urlencode($produk['kelas_berat']) }}"
                                 class="flex-1 bg-m3-primary text-m3-on-primary py-5 rounded-full font-bold font-headline text-lg hover:bg-m3-primary-container transition-all flex items-center justify-center gap-3">
                                 Pesan Sekarang
                             </a>

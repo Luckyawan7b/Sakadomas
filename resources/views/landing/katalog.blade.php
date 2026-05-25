@@ -488,7 +488,8 @@
                                 <div class="flex gap-2">
                                     @auth
                                         <a :href="'{{ route('transaksi.create') }}?jenis=' + item.id_jenis +
-                                            '&kelamin=' + item.jenis_kelamin + '&harga=' + item.harga"
+                                            '&kelamin=' + (item.jenis_kelamin || '').toLowerCase() + '&harga=' + item.harga +
+                                            '&kategori=' + encodeURIComponent(item.nama_produk) + '&kelas=' + encodeURIComponent(item.kelas_berat)"
                                             class="flex-1 py-2.5 bg-m3-secondary-container text-m3-on-secondary-container rounded-full font-bold text-sm hover:bg-m3-primary-fixed transition-colors text-center">
                                             Pesan Sekarang
                                         </a>
