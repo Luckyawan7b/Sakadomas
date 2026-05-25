@@ -37,7 +37,7 @@ return [
     'founded'  => env('SMARTSAKA_FOUNDED', '2016'),
 
     'address' => [
-        'street'   => env('SMARTSAKA_ADDRESS_STREET', 'Jl. Sakadomas'),
+        'street'   => env('SMARTSAKA_ADDRESS_STREET', 'Tanjung sari, Glundengan'),
         'city'     => env('SMARTSAKA_ADDRESS_CITY', 'Jember'),
         'province' => env('SMARTSAKA_ADDRESS_PROVINCE', 'Jawa Timur'),
         'zip'      => env('SMARTSAKA_ADDRESS_ZIP', '68122'),
@@ -57,8 +57,8 @@ return [
 
     // ── Media Sosial ─────────────────────────────────────────────────────────
     'socials' => [
-        'instagram' => env('SMARTSAKA_INSTAGRAM', 'https://www.instagram.com/smartsaka'),
-        'facebook'  => env('SMARTSAKA_FACEBOOK',  'https://www.facebook.com/smartsaka'),
+        'instagram' => env('SMARTSAKA_INSTAGRAM', ''),
+        'facebook'  => env('SMARTSAKA_FACEBOOK',  ''),
         'tiktok'    => env('SMARTSAKA_TIKTOK',    ''),
         'youtube'   => env('SMARTSAKA_YOUTUBE',   ''),
     ],

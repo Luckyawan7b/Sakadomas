@@ -129,7 +129,7 @@
                             <span class="material-symbols-outlined text-outline">schedule</span> {{ $formattedTime }} WIB
                         </div>
                         <div class="flex items-center gap-3 text-on-surface-variant font-medium text-sm sm:col-span-2">
-                            <span class="material-symbols-outlined text-outline">location_on</span> Farm Smart-Saka Pusat (Lembang)
+                            <span class="material-symbols-outlined text-outline">location_on</span> Sakadomas Farm (Jember)
                         </div>
                     </div>
 
@@ -276,7 +276,7 @@
                             <label class="block text-sm font-bold text-on-surface mb-2">Tujuan Kunjungan <span class="text-error">*</span></label>
                             <input type="text" name="tujuan" :value="selectedVal" class="sr-only" required>
                             <div class="relative">
-                                <button type="button" @click="open = !open" 
+                                <button type="button" @click="open = !open"
                                     class="w-full px-5 py-3.5 rounded-xl bg-surface-container-low text-left text-sm font-bold text-on-surface cursor-pointer focus:ring-2 focus:ring-primary/50 outline-none flex items-center justify-between">
                                     <span x-text="selectedLabel" :class="selectedVal ? 'text-on-surface' : 'text-outline-variant'"></span>
                                     <svg class="w-5 h-5 transition-transform duration-200 text-outline shrink-0"
@@ -284,8 +284,8 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </button>
-                                
-                                <div x-show="open" 
+
+                                <div x-show="open"
                                     x-transition:enter="transition ease-out duration-100"
                                     x-transition:enter-start="transform opacity-0 scale-95"
                                     x-transition:enter-end="transform opacity-100 scale-100"
@@ -295,7 +295,7 @@
                                     class="absolute z-[60] left-0 right-0 mt-2 bg-white border border-surface-container-high rounded-xl shadow-lg max-h-60 overflow-y-auto py-1"
                                     style="display: none;">
                                     <template x-for="opt in options" :key="opt.val">
-                                        <div @click="selectedVal = opt.val; selectedLabel = opt.label; open = false" 
+                                        <div @click="selectedVal = opt.val; selectedLabel = opt.label; open = false"
                                             class="px-5 py-3 hover:bg-surface-container-low cursor-pointer text-sm font-bold text-on-surface transition-colors"
                                             x-text="opt.label"></div>
                                     </template>
@@ -450,7 +450,7 @@
                             <label class="block text-sm font-bold text-on-surface mb-2 text-left">Alasan Pembatalan <span class="text-error">*</span></label>
                             <input type="text" name="alasan" :value="selectedVal" class="sr-only" required>
                             <div class="relative text-left">
-                                <button type="button" @click="open = !open" 
+                                <button type="button" @click="open = !open"
                                     class="w-full px-5 py-3.5 rounded-xl bg-surface-container-low text-left text-sm font-bold text-on-surface cursor-pointer focus:ring-2 focus:ring-error/50 outline-none flex items-center justify-between">
                                     <span x-text="selectedLabel" :class="selectedVal ? 'text-on-surface' : 'text-outline-variant'"></span>
                                     <svg class="w-5 h-5 transition-transform duration-200 text-outline shrink-0"
@@ -458,8 +458,8 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </button>
-                                
-                                <div x-show="open" 
+
+                                <div x-show="open"
                                     x-transition:enter="transition ease-out duration-100"
                                     x-transition:enter-start="transform opacity-0 scale-95"
                                     x-transition:enter-end="transform opacity-100 scale-100"
@@ -469,7 +469,7 @@
                                     class="absolute z-[60] left-0 right-0 mt-2 bg-white border border-surface-container-high rounded-xl shadow-lg max-h-60 overflow-y-auto py-1"
                                     style="display: none;">
                                     <template x-for="opt in options" :key="opt.val">
-                                        <div @click="selectedVal = opt.val; selectedLabel = opt.label; open = false" 
+                                        <div @click="selectedVal = opt.val; selectedLabel = opt.label; open = false"
                                             class="px-5 py-3 hover:bg-surface-container-low cursor-pointer text-sm font-bold text-on-surface transition-colors"
                                             x-text="opt.label"></div>
                                     </template>

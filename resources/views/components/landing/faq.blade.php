@@ -30,7 +30,7 @@
         [
             'question' => 'Apakah tersedia layanan pengiriman ke luar Jember?',
             'answer' =>
-                'Ya, kami melayani pengiriman ke seluruh wilayah Jawa Timur dengan kendaraan khusus ternak yang aman dan nyaman. Untuk pengiriman ke luar Jawa Timur, silakan hubungi kami terlebih dahulu untuk koordinasi lebih lanjut.',
+                'Tidak, saat ini kami hanya melayani pengiriman di wilayah Kabupaten Jember saja.',
         ],
         [
             'question' => 'Apakah hewan ternak sudah divaksinasi dan ada sertifikat kesehatannya?',
@@ -40,7 +40,7 @@
         [
             'question' => 'Berapa minimal pembelian dan apakah ada harga grosir?',
             'answer' =>
-                'Tidak ada minimal pembelian — kami melayani dari 1 ekor hingga ratusan ekor. Untuk pembelian di atas 5 ekor, kami menyediakan harga khusus. Hubungi kami untuk mendapatkan penawaran terbaik sesuai kebutuhan Anda.',
+                'Tidak ada minimal pembelian — kami melayani dari 1 ekor hingga puluhan ekor. Hubungi kami untuk mendapatkan penawaran terbaik sesuai kebutuhan Anda.',
         ],
         [
             'question' => 'Bagaimana dengan layanan aqiqah dan kurban?',

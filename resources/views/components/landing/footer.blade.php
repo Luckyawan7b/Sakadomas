@@ -16,7 +16,7 @@
     'waNumber' => null,
     'email'    => 'hello@smart-saka.id',
     'address'  => [
-        'street'   => 'Jl. Sakadomas',
+        'street'   => 'Tanjung sari, Glundengan',
         'city'     => 'Jember',
         'province' => 'Jawa Timur',
         'zip'      => '68122',
@@ -99,7 +99,7 @@
                 <li><a href="{{ route('katalog') }}"    class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Katalog Domba</a></li>
                 <li><a href="{{ route('home') }}#keunggulan" class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Mengapa Kami</a></li>
                 <li><a href="{{ route('home') }}#faq"        class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">FAQ</a></li>
-                <li><a href="{{ route('home') }}#testimoni"  class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Testimoni</a></li>
+                {{-- <li><a href="{{ route('home') }}#testimoni"  class="text-cream-300/70 hover:text-cream-50 text-sm transition-colors">Testimoni</a></li> --}}
             </ul>
         </nav>
 

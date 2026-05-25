@@ -47,7 +47,7 @@
         $tujuan = 'Kunjungan ' . ($isTransaksi ? 'Terkait Transaksi' : 'Mandiri');
         $catatan = '';
         $alasanBatal = '';
-        
+
         if (preg_match('/Tujuan:\s*(.*?)(?=\n|\||Catatan:|$)/i', $r->ket, $matches)) {
             $tujuan = trim($matches[1]);
         }
@@ -73,17 +73,17 @@
     });
 @endphp
 
-<main class="pt-24 flex-1 text-on-surface" 
-    x-data="{ 
-        search: '', 
+<main class="pt-24 flex-1 text-on-surface"
+    x-data="{
+        search: '',
         filterStatus: 'Semua',
         riwayat: {{ \Illuminate\Support\Js::from($riwayatJson) }},
         modalDetail: false,
         detailData: {},
-        
+
         get filteredRiwayat() {
             return this.riwayat.filter(item => {
-                const matchSearch = item.id.toLowerCase().includes(this.search.toLowerCase()) || 
+                const matchSearch = item.id.toLowerCase().includes(this.search.toLowerCase()) ||
                                     item.tujuan.toLowerCase().includes(this.search.toLowerCase()) ||
                                     (item.is_transaksi && String(item.id_transaksi).includes(this.search));
                 const matchFilter = this.filterStatus === 'Semua' || item.status === this.filterStatus;
@@ -111,7 +111,7 @@
     <section class="max-w-7xl mx-auto px-8 -mt-8 mb-24 relative z-10">
         <!-- Card Container -->
         <div class="bg-white rounded-3xl shadow-[0_20px_50px_rgba(61,103,0,0.04)] border border-surface-container-high overflow-hidden">
-            
+
             <!-- Toolbar (Search & Filter) -->
             <div class="p-6 md:p-8 border-b border-surface-container-high flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-container-lowest">
                 <!-- Search -->
@@ -119,7 +119,7 @@
                     <span class="material-symbols-outlined absolute left-4 text-outline pointer-events-none select-none">search</span>
                     <input type="text" x-model="search" placeholder="Cari ID Survei atau Tujuan..." class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary/50 text-sm font-bold text-on-surface outline-none">
                 </div>
-                
+
                 <!-- Filters -->
                 <div class="flex items-center gap-3 w-full md:w-auto overflow-x-auto no-scrollbar pb-2 md:pb-0">
                     <button @click="filterStatus = 'Semua'" :class="filterStatus === 'Semua' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-variant'" class="px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap transition-all">Semua</button>
@@ -172,9 +172,9 @@
                                     <div class="text-xs text-on-surface-variant flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-outline">schedule</span> <span x-text="item.waktu + ' WIB'"></span></div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <span :class="item.status_class === 'success' ? 'bg-status-success-bg text-status-success border-status-success/20' : 'bg-status-cancel-bg text-status-cancel border-status-cancel/20'" 
+                                    <span :class="item.status_class === 'success' ? 'bg-status-success-bg text-status-success border-status-success/20' : 'bg-status-cancel-bg text-status-cancel border-status-cancel/20'"
                                           class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold tracking-wide uppercase border">
-                                        <span :class="item.status_class === 'success' ? 'bg-status-success' : 'bg-status-cancel'" class="w-1.5 h-1.5 rounded-full"></span> 
+                                        <span :class="item.status_class === 'success' ? 'bg-status-success' : 'bg-status-cancel'" class="w-1.5 h-1.5 rounded-full"></span>
                                         <span x-text="item.status === 'Batal' ? 'Dibatalkan' : item.status"></span>
                                     </span>
                                 </td>
@@ -188,7 +188,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <div class="p-6 border-t border-surface-container-high bg-surface-container-lowest text-center">
                  <p class="text-sm text-on-surface-variant font-medium">Menampilkan <span class="font-bold text-on-surface" x-text="filteredRiwayat.length"></span> riwayat</p>
             </div>
@@ -199,7 +199,7 @@
     <template x-teleport="body">
         <div x-show="modalDetail" style="display: none;" class="fixed inset-0 z-50">
             <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-sm transition-opacity" @click="modalDetail = false"></div>
-            
+
             <div class="fixed inset-0 flex items-center justify-center p-4">
                 <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
                     <div class="px-8 py-6 border-b border-surface-container-high flex justify-between items-center bg-surface-container-lowest shrink-0">
@@ -208,7 +208,7 @@
                             <span class="material-symbols-outlined text-[20px]">close</span>
                         </button>
                     </div>
-                    
+
                     <div class="p-8 overflow-y-auto no-scrollbar space-y-6">
                         <!-- Status & ID -->
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-surface-container-high gap-4">
@@ -221,9 +221,9 @@
                                     </div>
                                 </template>
                             </div>
-                            <span :class="detailData.status_class === 'success' ? 'bg-status-success-bg text-status-success border-status-success/20' : 'bg-status-cancel-bg text-status-cancel border-status-cancel/20'" 
+                            <span :class="detailData.status_class === 'success' ? 'bg-status-success-bg text-status-success border-status-success/20' : 'bg-status-cancel-bg text-status-cancel border-status-cancel/20'"
                                 class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-extrabold tracking-wide uppercase border">
-                                <span :class="detailData.status_class === 'success' ? 'bg-status-success' : 'bg-status-cancel'" class="w-1.5 h-1.5 rounded-full"></span> 
+                                <span :class="detailData.status_class === 'success' ? 'bg-status-success' : 'bg-status-cancel'" class="w-1.5 h-1.5 rounded-full"></span>
                                 <span x-text="detailData.status === 'Batal' ? 'Dibatalkan' : detailData.status"></span>
                             </span>
                         </div>
@@ -247,7 +247,7 @@
                                     <h3 class="font-bold text-sm">Lokasi Peternakan</h3>
                                 </div>
                                 <p class="text-sm font-extrabold text-on-surface mb-1">Farm Smart-Saka Pusat</p>
-                                <p class="text-on-surface-variant font-medium text-xs leading-relaxed">Jl. Peternakan Indah No. 12, Lembang, Kab. Bandung Barat, Jawa Barat</p>
+                                <p class="text-on-surface-variant font-medium text-xs leading-relaxed">Tanjungsari, Glundengan, Kec. Wuluhan, Kabupaten Jember, Jawa Timur</p>
                             </div>
                         </div>
 
@@ -274,7 +274,7 @@
                         </div>
 
                         <!-- Laporan -->
-                        <div :class="detailData.status_class === 'success' ? 'bg-surface-container-lowest shadow-sm' : 'bg-status-cancel-bg/50 border-error/20'" 
+                        <div :class="detailData.status_class === 'success' ? 'bg-surface-container-lowest shadow-sm' : 'bg-status-cancel-bg/50 border-error/20'"
                              class="border border-surface-container-high p-4 rounded-xl flex gap-3 items-start mt-4">
                             <span :class="detailData.status_class === 'success' ? 'text-status-success' : 'text-error'" class="material-symbols-outlined text-[20px]" x-text="detailData.status_class === 'success' ? 'check_circle' : 'cancel'"></span>
                             <div>
