@@ -546,7 +546,7 @@
                                     <div class="flex items-center gap-3">
                                         <div class="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                             <template x-if="ternak.jenis_kelamin === 'jantan'">
-                                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m0-8h-8m8 0L8 16"></path></svg>
+                                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a4 4 0 100-8 4 4 0 000 8zm3-7l6-6M19 5h-4m4 0v4"></path></svg>
                                             </template>
                                             <template x-if="ternak.jenis_kelamin !== 'jantan'">
                                                 <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11a4 4 0 100-8 4 4 0 000 8zm0 0v9m-3-3h6"></path></svg>

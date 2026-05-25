@@ -1,4 +1,4 @@
-﻿            <div class="max-w-full overflow-x-auto">
+            <div class="max-w-full overflow-x-auto">
                 <table class="w-full table-auto min-w-[900px]">
                     <thead>
                         <tr class="bg-gray-50 text-left dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800">
@@ -58,15 +58,10 @@
                                         <div class="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300"
                                             title="Jenis Kelamin">
                                             @if ($ternak->jenis_kelamin === 'jantan')
-                                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <circle cx="10" cy="14" r="5" />
-                                                    <path d="M21 3l-6.5 6.5M21 3h-5M21 3v5" />
-                                                </svg>
                                                 <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M16 8v8m0-8h-8m8 0L8 16"></path>
+                                                        d="M10 18a4 4 0 100-8 4 4 0 000 8zm3-7l6-6M19 5h-4m4 0v4"></path>
                                                 </svg>
                                             @else
                                                 <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor"

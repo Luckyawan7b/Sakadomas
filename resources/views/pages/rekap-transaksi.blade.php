@@ -162,7 +162,7 @@
                                     <span class="text-xs text-gray-500" x-text="transaksi.akun ? transaksi.akun.no_hp : '-'"></span>
                                 </td>
 
-                                <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
+                                <td class="py-4 px-4 text-gray-800 dark:text-gray-300 capitalize">
                                     <span class="font-medium" x-text="transaksi.jenis_ternak ? transaksi.jenis_ternak.jenis_ternak : '-'"></span><br>
                                     <span class="text-xs text-gray-500" x-text="`${transaksi.jenis_kelamin_pesanan ? transaksi.jenis_kelamin_pesanan.charAt(0).toUpperCase() + transaksi.jenis_kelamin_pesanan.slice(1) : '-'} &bull; ${transaksi.total_jumlah} Ekor`"></span>
                                 </td>
@@ -170,11 +170,11 @@
                                 <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
                                     <span class="font-bold text-green-600 dark:text-green-400" x-text="`Rp ${formatRupiah(transaksi.total_harga + transaksi.ongkir)}`"></span><br>
                                     <span class="text-xs text-gray-500 capitalize" x-text="transaksi.metode_pembayaran || '-'"></span>
-                                    
+
                                     <template x-if="transaksi.ongkir > 0">
                                         <span><br><span class="text-xs text-brand-500" x-text="`(+Ongkir Rp ${formatRupiah(transaksi.ongkir)})`"></span></span>
                                     </template>
-                                    
+
                                     <template x-if="transaksi.metode_pengiriman === 'ambil_sendiri'">
                                         <span><br><span class="inline-flex items-center gap-0.5 mt-0.5 text-[10px] font-medium text-green-600 dark:text-green-400">🏠 Ambil Sendiri</span></span>
                                     </template>
@@ -271,7 +271,7 @@
             isFetching: false,
             abortController: null,
             modalFilter: false,
-            
+
             // Filters
             searchQuery: "{{ request('q') }}",
             filterTglAwal: "{{ request('tgl_awal') }}",
@@ -288,9 +288,9 @@
             toData: {{ $data_transaksi->lastItem() ?? 0 }},
 
             get isFiltered() {
-                return this.filterTglAwal !== '' || 
-                       this.filterTglAkhir !== '' || 
-                       this.filterStatus !== 'semua' || 
+                return this.filterTglAwal !== '' ||
+                       this.filterTglAkhir !== '' ||
+                       this.filterStatus !== 'semua' ||
                        this.filterMetode !== 'semua';
             },
 
@@ -305,7 +305,7 @@
 
             async fetchData() {
                 this.isFetching = true;
-                
+
                 if (this.abortController) {
                     this.abortController.abort();
                 }
@@ -332,7 +332,7 @@
                     if (!response.ok) throw new Error('Network response was not ok');
 
                     const json = await response.json();
-                    
+
                     this.rows = json.data;
                     this.currentPage = json.pagination.current_page;
                     this.lastPage = json.pagination.last_page;
