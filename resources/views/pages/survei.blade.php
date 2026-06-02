@@ -5,6 +5,32 @@
         <div x-data="{
             modalTambah: {{ $errors->any() && !old('_method') ? 'true' : 'false' }}
         }">
+
+        {{-- Flash Messages --}}
+        @if(session('success'))
+            <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)"
+                 class="mb-4 flex items-center justify-between rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 border border-green-200">
+                <div class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    {{ session('success') }}
+                </div>
+                <button @click="show = false" class="text-green-500 hover:text-green-700">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 5000)"
+                 class="mb-4 flex items-center justify-between rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 border border-red-200">
+                <div class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    {{ session('error') }}
+                </div>
+                <button @click="show = false" class="text-red-500 hover:text-red-700">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        @endif
         <div class="mb-6 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
             <div>
                 <h2 class="text-title-md2 font-bold text-black dark:text-white">
@@ -290,7 +316,7 @@
             </div>
         </template>
 
-        <div class="rounded-md border border-green-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-900 mb-8 mt-6">
+        <div class="rounded-md border border-gray-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-900 mb-8 mt-6">
             <div class="py-6 px-4 md:px-6 xl:px-7.5">
                 <h4 class="text-xl font-semibold text-black dark:text-white">Daftar Jadwal Kunjungan</h4>
             </div>
@@ -383,8 +409,8 @@
             <div x-show="lastPage > 1" class="border-t border-gray-200 dark:border-gray-800 px-5 py-4">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                        Menampilkan <span class="font-medium text-gray-900 dark:text-white" x-text="fromData"></span> 
-                        hingga <span class="font-medium text-gray-900 dark:text-white" x-text="toData"></span> 
+                        Menampilkan <span class="font-medium text-gray-900 dark:text-white" x-text="fromData"></span>
+                        hingga <span class="font-medium text-gray-900 dark:text-white" x-text="toData"></span>
                         dari <span class="font-medium text-gray-900 dark:text-white" x-text="totalData"></span> data
                     </p>
                     <div class="flex items-center gap-1">
@@ -406,7 +432,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- MODAL EDIT SURVEI (SHARED) --}}
             <template x-teleport="body">
                 <div x-show="modalEdit" style="display: none;"
@@ -422,6 +448,12 @@
                                 Edit Jadwal Kunjungan</h4>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Perbarui data kunjungan.</p>
                         </div>
+
+                        @if ($errors->any() && old('_method') === 'PUT')
+                            <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200">
+                                {{ $errors->first() }}
+                            </div>
+                        @endif
 
                         <form method="POST"
                             :action="editData ? `{{ url('/survei') }}/${editData.id_survei}` : '#'"
@@ -513,7 +545,7 @@
             totalData: {{ $data_survei->total() }},
             fromData: {{ $data_survei->firstItem() ?? 0 }},
             toData: {{ $data_survei->lastItem() ?? 0 }},
-            
+
             // Modal Edit State
             modalEdit: {{ $errors->any() && old('_method') === 'PUT' ? 'true' : 'false' }},
             editData: null,
@@ -529,7 +561,7 @@
 
             async fetchData() {
                 this.isFetching = true;
-                
+
                 if (this.abortController) {
                     this.abortController.abort();
                 }
@@ -552,7 +584,7 @@
                     if (!response.ok) throw new Error('Network response was not ok');
 
                     const json = await response.json();
-                    
+
                     this.rows = json.data;
                     this.currentPage = json.pagination.current_page;
                     this.lastPage = json.pagination.last_page;
@@ -607,7 +639,7 @@
 
             openEditModal(data) {
                 this.editData = data;
-                
+
                 // Pisahkan YYYY-MM-DD dan HH:mm
                 const tgl = data.tgl_survei; // format "2024-05-12 10:00:00"
                 this.editSelectedDate = tgl.split(' ')[0];

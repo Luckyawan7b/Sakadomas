@@ -20,7 +20,7 @@ class SurveiController extends Controller
     {
         $tgl_survei_gabungan = $tanggal . ' ' . $waktu . ':00';
         $query = Survei::where('tgl_survei', $tgl_survei_gabungan)
-                            ->where('status', '!=', 'batal');
+            ->where('status', '!=', 'batal');
 
         if ($ignoreId) {
             $query->where('id_survei', '!=', $ignoreId);
@@ -43,12 +43,12 @@ class SurveiController extends Controller
         }
 
         $jadwalTerisi = Survei::whereDate('tgl_survei', $tanggal)
-                            ->where('status', '!=', 'batal')
-                            ->pluck('tgl_survei')
-                            ->map(function ($date) {
-                                return Carbon::parse($date)->format('H:i');
-                            })
-                            ->toArray();
+            ->where('status', '!=', 'batal')
+            ->pluck('tgl_survei')
+            ->map(function ($date) {
+                return Carbon::parse($date)->format('H:i');
+            })
+            ->toArray();
 
         return response()->json($jadwalTerisi);
     }
@@ -77,7 +77,7 @@ class SurveiController extends Controller
             $search = strtolower($request->search);
             $query->whereHas('akun', function ($q) use ($search) {
                 $q->whereRaw('LOWER(nama) LIKE ?', ["%{$search}%"])
-                  ->orWhereRaw('LOWER(username) LIKE ?', ["%{$search}%"]);
+                    ->orWhereRaw('LOWER(username) LIKE ?', ["%{$search}%"]);
             });
         }
 
@@ -111,8 +111,8 @@ class SurveiController extends Controller
         }
 
         $data_akun = Akun::where('role', 'pelanggan')
-                              ->select('id_akun', 'nama', 'username')
-                              ->get();
+            ->select('id_akun', 'nama', 'username')
+            ->get();
 
         // Siapkan data JSON bawaan agar komponen alpine memiliki data tanpa memanggil API pada load pertama
         $data_survei_json = $data_survei->map(function ($s) {
@@ -145,9 +145,9 @@ class SurveiController extends Controller
         $user = Auth::user();
 
         $semuaSurvei = Survei::with(['akun', 'transaksi'])
-                        ->where('id_akun', $user->id_akun)
-                        ->orderBy('tgl_survei', 'desc')
-                        ->get();
+            ->where('id_akun', $user->id_akun)
+            ->orderBy('tgl_survei', 'desc')
+            ->get();
 
         $jadwalAktif = $semuaSurvei->filter(function ($survei) {
             return in_array(strtolower($survei->status), ['pending', 'disetujui']);
@@ -168,10 +168,10 @@ class SurveiController extends Controller
         $user = Auth::user();
 
         $riwayatSemua = Survei::with(['akun', 'transaksi'])
-                        ->where('id_akun', $user->id_akun)
-                        ->whereIn('status', ['selesai', 'batal'])
-                        ->orderBy('tgl_survei', 'desc')
-                        ->get();
+            ->where('id_akun', $user->id_akun)
+            ->whereIn('status', ['selesai', 'batal'])
+            ->orderBy('tgl_survei', 'desc')
+            ->get();
 
         return view('landing.riwayat_survei', compact('riwayatSemua'));
     }
@@ -211,7 +211,8 @@ class SurveiController extends Controller
         if ($id_akun != Auth::id()) {
             try {
                 $fcm = new FcmService();
-                $fcm->sendToUser($id_akun,
+                $fcm->sendToUser(
+                    $id_akun,
                     '📅 Kunjungan Dijadwalkan',
                     'Admin menjadwalkan kunjungan Anda pada ' . \Carbon\Carbon::parse($tgl_survei_gabungan)->translatedFormat('d M Y H:i') . '.'
                 );
@@ -347,7 +348,7 @@ class SurveiController extends Controller
     public function updateUser(Request $request, $id)
     {
         $survei = Survei::where('id_akun', Auth::id())
-                    ->findOrFail($id); // Allow updating trx-linked too
+            ->findOrFail($id); // Allow updating trx-linked too
 
         // Check 1x24 hours rule
         if (Carbon::parse($survei->tgl_survei)->diffInHours(now(), false) > -24) {
@@ -396,7 +397,7 @@ class SurveiController extends Controller
     public function deleteUser(Request $request, $id)
     {
         $survei = Survei::where('id_akun', Auth::id())
-                    ->findOrFail($id);
+            ->findOrFail($id);
 
         // Check 1x24 hours rule
         if (Carbon::parse($survei->tgl_survei)->diffInHours(now(), false) > -24) {
@@ -419,7 +420,7 @@ class SurveiController extends Controller
             '5' => 'Lainnya'
         ];
         $alasanText = $alasanList[$request->alasan] ?? $request->alasan;
-        
+
         $ketBatal = "\nAlasan Batal: " . $alasanText;
 
         $survei->update([
@@ -493,5 +494,3 @@ class SurveiController extends Controller
         return view('landing.pengajuan-survei', compact('survei', 'sisaDetik'));
     }
 }
-
-
