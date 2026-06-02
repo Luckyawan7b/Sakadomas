@@ -22,17 +22,16 @@ class TernakSeeder extends Seeder
             3 => 'Etawa (PE)'
         ];
 
-        // 2. Baca file data json terpisah
-        $dataTernakPath = database_path('data/data_ternak_60.json');
-        $dataMonitoringPath = database_path('data/data_monitoring_60.json');
+        // 2. Baca file data json terpadu
+        $dataPath = database_path('data/data_ternak_monitor_60.json');
         
-        if (!File::exists($dataTernakPath) || !File::exists($dataMonitoringPath)) {
-            $this->command->error("File data_ternak_60.json atau data_monitoring_60.json tidak ditemukan!");
+        if (!File::exists($dataPath)) {
+            $this->command->error("File data_ternak_monitor_60.json tidak ditemukan!");
             return;
         }
         
-        $dataTernak = json_decode(File::get($dataTernakPath), true);
-        $dataMonitoring = json_decode(File::get($dataMonitoringPath), true);
+        $jsonData = json_decode(File::get($dataPath), true);
+        $dataTernakArray = $jsonData['data'] ?? [];
 
         // --- TAMBAHAN LOGIKA KAMAR ---
         // Ambil semua kamar yang ada di database
@@ -50,11 +49,13 @@ class TernakSeeder extends Seeder
         shuffle($kuotaKamar);
         // ------------------------------
 
-        // Mapping ID Lama ke ID Baru
-        $mapOldToNewIdTernak = [];
+        $monitoringToInsert = [];
 
-        // Insert Ternak
-        foreach ($dataTernak as $ternakData) {
+        // Proses insert Ternak beserta data Monitoring-nya
+        foreach ($dataTernakArray as $item) {
+            $ternakData = $item['ternak'] ?? [];
+            $monitoringData = $item['monitoring'] ?? [];
+
             // Handle nilai kosong/inkonsisten
             $jenisKelamin = isset($ternakData['jenis_kelamin']) ? ucfirst(strtolower($ternakData['jenis_kelamin'])) : 'Jantan';
             if (!in_array($jenisKelamin, ['Jantan', 'Betina'])) {
@@ -138,23 +139,12 @@ class TernakSeeder extends Seeder
                 'id_kamar'        => $assignedIdKamar,
             ], 'id_ternak');
 
-            // Simpan mapping id_ternak lama (dari JSON) ke id_ternak baru (dari database)
-            $oldIdTernak = $ternakData['id_ternak'] ?? null;
-            if ($oldIdTernak) {
-                $mapOldToNewIdTernak[$oldIdTernak] = $idTernakBaru;
-            }
-        }
-
-        // Insert Monitoring
-        $monitoringToInsert = [];
-        foreach ($dataMonitoring as $mon) {
-            $oldId = $mon['id_ternak'] ?? null;
-            
-            if ($oldId && isset($mapOldToNewIdTernak[$oldId])) {
+            // Tambahkan data monitoring ke array untuk di-insert sekaligus nanti
+            foreach ($monitoringData as $mon) {
                 $tglMon = !empty($mon['tgl_monitoring']) ? $mon['tgl_monitoring'] : Carbon::now()->toDateString();
                 
                 $monitoringToInsert[] = [
-                    'id_ternak'      => $mapOldToNewIdTernak[$oldId],
+                    'id_ternak'      => $idTernakBaru,
                     'usia'           => isset($mon['usia']) ? (int)$mon['usia'] : 0,
                     'berat'          => isset($mon['berat']) ? (int)$mon['berat'] : 0,
                     'penyakit'       => !empty($mon['penyakit']) ? $mon['penyakit'] : null,

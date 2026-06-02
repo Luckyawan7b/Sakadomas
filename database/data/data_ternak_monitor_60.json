@@ -249,12 +249,6 @@
                     "berat": 38,
                     "penyakit": null,
                     "tgl_monitoring": "2026-05-03"
-                },
-                {
-                    "usia": 7,
-                    "berat": 43,
-                    "penyakit": null,
-                    "tgl_monitoring": "2026-06-02"
                 }
             ]
         },
@@ -379,12 +373,6 @@
                     "berat": 105,
                     "penyakit": null,
                     "tgl_monitoring": "2026-05-02"
-                },
-                {
-                    "usia": 18,
-                    "berat": 110,
-                    "penyakit": null,
-                    "tgl_monitoring": "2026-06-01"
                 }
             ]
         },
@@ -709,12 +697,6 @@
                     "berat": 127,
                     "penyakit": null,
                     "tgl_monitoring": "2026-05-29"
-                },
-                {
-                    "usia": 26,
-                    "berat": 133,
-                    "penyakit": null,
-                    "tgl_monitoring": "2026-06-28"
                 }
             ]
         },
@@ -2119,12 +2101,6 @@
                     "berat": 52,
                     "penyakit": null,
                     "tgl_monitoring": "2026-05-07"
-                },
-                {
-                    "usia": 20,
-                    "berat": 55,
-                    "penyakit": null,
-                    "tgl_monitoring": "2026-06-06"
                 }
             ]
         },

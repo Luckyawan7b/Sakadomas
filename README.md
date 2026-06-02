@@ -11,13 +11,14 @@
 ## ✨ Fitur Utama
 
 ### 👨‍💻 Role: Admin
-- **Dashboard Analytics**: Visualisasi data transaksi dan populasi ternak.
+- **Dashboard Analytics**: Visualisasi data transaksi dan populasi ternak secara interaktif (menggunakan ApexCharts).
 - **Manajemen Akun**: Kontrol penuh terhadap data pengguna (pelanggan & staf).
 - **Manajemen Kandang & Kamar**: Pengorganisasian infrastruktur peternakan secara hierarkis.
 - **Inventori Ternak**: Monitoring data detail setiap hewan ternak, lokasi kandang, dan status kesehatan.
-- **Sistem Transaksi**: Pengelolaan pesanan, penugasan ternak ke pembeli, dan rekapitulasi data keuangan.
-- **Penjadwalan Kunjungan**: Verifikasi dan pengaturan jadwal survei dari calon pembeli.
-- **Monitoring**: Pelacakan kondisi harian operasional peternakan.
+- **Sistem Transaksi & Keuangan**: Pengelolaan pesanan, penugasan ternak ke pembeli, dan rekapitulasi data keuangan.
+- **Penjadwalan Kunjungan**: Verifikasi dan pengaturan jadwal survei dari calon pembeli (terintegrasi dengan FullCalendar).
+- **Laporan & Dokumen PDF**: Ekspor data dan cetak laporan transaksi secara dinamis.
+- **Media Management**: Pengelolaan aset gambar secara cloud menggunakan Cloudinary.
 
 ### 👥 Role: Pelanggan
 - **Landing Page**: Informasi produk dan profil peternakan.
@@ -32,9 +33,11 @@
 
 | Komponen | Teknologi |
 | --- | --- |
-| **Framework** | [Laravel 11](https://laravel.com) |
-| **Frontend UI** | [TailAdmin](https://tailadmin.com) (Tailwind CSS & Alpine.js) |
+| **Framework** | [Laravel 12](https://laravel.com) |
+| **Frontend UI** | [TailAdmin](https://tailadmin.com) (Tailwind CSS v4 & Alpine.js) |
 | **Database** | MySQL / PostgreSQL |
+| **Media Storage** | [Cloudinary](https://cloudinary.com) |
+| **Push/Services** | [Firebase](https://firebase.google.com) |
 | **Build Tool** | [Vite](https://vitejs.dev) |
 | **Language** | PHP 8.2+, JavaScript |
 
@@ -67,8 +70,10 @@ cp .env.example .env
 # Generate Application Key
 php artisan key:generate
 
-# Konfigurasi Database di .env
-# Edit DB_DATABASE, DB_USERNAME, DB_PASSWORD sesuai database lokal Anda
+# Konfigurasi Database & Layanan Pihak Ketiga di .env
+# - Sesuaikan DB_DATABASE, DB_USERNAME, DB_PASSWORD
+# - Konfigurasi CLOUDINARY_URL
+# - Konfigurasi Firebase Credentials
 
 # Jalankan Migrasi dan Seeder
 php artisan migrate --seed
@@ -80,14 +85,14 @@ php artisan storage:link
 ### 3. Menjalankan Aplikasi
 
 #### Mode Pengembangan (Development)
-Anda dapat menggunakan perintah tunggal jika sudah dikonfigurasi di `composer.json`:
+Anda dapat menggunakan perintah tunggal jika sudah menggunakan konfigurasi bawaan `composer.json`:
 
 ```bash
-# Menjalankan server Laravel & Vite secara otomatis
+# Menjalankan server Laravel, antrean (queue worker), dan Vite secara otomatis
 composer run dev
 ```
 
-Atau jalankan secara terpisah di dua terminal berbeda:
+Atau jalankan secara terpisah di terminal yang berbeda:
 
 ```bash
 # Terminal 1: Server Laravel
@@ -95,6 +100,9 @@ php artisan serve
 
 # Terminal 2: Vite Dev Server
 npm run dev
+
+# Terminal 3: Queue Worker (Untuk background processing email/PDF)
+php artisan queue:listen
 ```
 
 Aplikasi dapat diakses di: `http://localhost:8000`
@@ -122,4 +130,3 @@ npm run build
 <p align="center">
   Dibuat dengan ❤️ oleh Tim SAKADOMAS
 </p>
-
