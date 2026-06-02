@@ -19,11 +19,15 @@
 
     {{-- Compiled CSS & JS via Vite --}}
     @vite(['resources/css/landing.css', 'resources/js/landing.js'])
+    @stack('head')
+
 </head>
 <body class="selection:bg-primary/20 bg-background text-on-background antialiased">
 
     {{-- Main page slot --}}
     @yield('content')
+    @stack('scripts')
+
 
 </body>
 </html>

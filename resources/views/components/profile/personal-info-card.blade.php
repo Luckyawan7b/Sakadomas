@@ -1,14 +1,13 @@
 @php
-    $kecamatan = \App\Models\kecamatanModel::all();
-    $desa = \App\Models\desaModel::all();
+    $kecamatan = \App\Models\Kecamatan::all();
+    $desa = \App\Models\Desa::all();
 @endphp
 
 <div x-data='{
     modalGantiPassword: {{ $errors->has("password_lama") || $errors->has("password_baru") ? "true" : "false" }},
 
     selectedKecamatan: "{{ Auth::user()?->desa?->id_kecamatan ?? '' }}",
-    modalEditProfile: false,
-    selectedKecamatan: "{{ Auth::user()?->desa?->id_kecamatan ?? '' }}",
+    modalEditProfile: {{ $errors->any() && !$errors->has('password_lama') && !$errors->has('password_baru') ? 'true' : 'false' }},
     selectedDesa: "{{ Auth::user()->id_desa ?? '' }}",
     semuaDesa: @json($desa),
     get filteredDesa() {
@@ -16,6 +15,50 @@
         return this.semuaDesa.filter(d => d.id_kecamatan == this.selectedKecamatan);
     }
 }'>
+
+    {{-- FLASH MESSAGES --}}
+    @if (session('success'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4"
+            class="mb-6 flex items-center justify-between gap-3 rounded-2xl border border-green-200 bg-gradient-to-r from-green-50 to-green-100/50 p-4 shadow-sm dark:border-green-900/50 dark:from-green-500/10 dark:to-green-500/5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 h-full w-1 bg-green-500"></div>
+            <div class="flex items-center gap-3 text-green-800 dark:text-green-300">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-500/20">
+                    <svg class="h-5 w-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-sm">Berhasil!</h4>
+                    <p class="text-sm opacity-90">{{ session('success') }}</p>
+                </div>
+            </div>
+            <button @click="show = false" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200 transition-colors p-1.5 rounded-lg hover:bg-green-200/50 dark:hover:bg-green-500/20">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 6000)"
+            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4"
+            class="mb-6 flex items-center justify-between gap-3 rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-red-100/50 p-4 shadow-sm dark:border-red-900/50 dark:from-red-500/10 dark:to-red-500/5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 h-full w-1 bg-red-500"></div>
+            <div class="flex items-center gap-3 text-red-800 dark:text-red-300">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
+                    <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-sm">Terjadi Kesalahan!</h4>
+                    <p class="text-sm opacity-90">{{ session('error') }}</p>
+                </div>
+            </div>
+            <button @click="show = false" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 transition-colors p-1.5 rounded-lg hover:bg-red-200/50 dark:hover:bg-red-500/20">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
+
     <div class="p-5 mb-6 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div class="w-full">
@@ -85,6 +128,12 @@
                     <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">Edit Profil Anda</h4>
                     <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Perbarui detail informasi akun Anda di bawah ini.</p>
                 </div>
+
+                @if ($errors->any() && !$errors->has('password_lama') && !$errors->has('password_baru'))
+                    <div class="mx-2 mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200 dark:border-red-900/50 dark:bg-red-500/10 dark:text-red-400">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
 
                 <form method="POST" action="{{ route('profile.update') }}" class="flex flex-col">
                     @csrf
@@ -209,3 +258,4 @@
         </div>
     </template>
 </div>
+

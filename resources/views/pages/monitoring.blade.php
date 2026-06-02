@@ -1,12 +1,34 @@
 @extends('layouts.app')
 
 @section('content')
-    <div x-data="{
-        modalTambah: {{ $errors->any() && !old('_method') ? 'true' : 'false' }},
-        modalFilter: false
-    }">
-        <div class="mb-6 flex flex-col gap-3 lg:flex-row sm:items-center sm:justify-between">
-            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+    <div x-data="ajaxTable('{{ url('/monitoring') }}')">
+        <div x-data="{
+            modalTambah: {{ $errors->any() && !old('_method') ? 'true' : 'false' }},
+            modalFilter: false,
+            activeTab: 'manual'
+        }">
+        {{-- FLASH MESSAGE --}}
+        @if (session('success'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+                x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 -translate-y-2"
+                class="mb-4 flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800 dark:border-green-800 dark:bg-green-500/10 dark:text-green-300">
+                <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+                x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="mb-4 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-500/10 dark:text-red-300">
+                <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-white">
                 Riwayat Monitoring Ternak
             </h2>
 
@@ -20,42 +42,53 @@
                 @endphp
 
                 <div class="flex items-center gap-3 w-full sm:w-auto">
-                    {{-- Tombol Buka Modal Filter --}}
                     <button @click="modalFilter = true" type="button"
                         class="relative inline-flex items-center justify-center font-medium gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
-                            </path>
-                        </svg>
-                        Filter Data
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        Filter
                         @if ($isFiltered)
-                            <span
-                                class="absolute top-2 right-2 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></span>
+                            <span class="absolute top-2 right-2 flex h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></span>
                         @endif
                     </button>
 
-                    {{-- Tombol Tambah Data --}}
-                    <button @click="modalTambah = true" type="button"
+                    <button @click="modalTambah = true; activeTab = 'manual'" type="button"
                         class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-3 text-sm bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600">
-                        <svg class="fill-current w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 4.5v15m7.5-7.5h-15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                        Tambah Monitoring
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+                        Tambah
                     </button>
                 </div>
-
             </div>
+        </div>
+
+        {{-- SUMMARY CARDS --}}
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4 mb-6">
+            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Catatan</p>
+                <h4 class="mt-1.5 text-2xl font-bold text-gray-800 dark:text-white">{{ $stat_total }}</h4>
+            </div>
+            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Hasil Filter</p>
+                <h4 class="mt-1.5 text-2xl font-bold text-brand-600 dark:text-brand-400" x-text="totalData"></h4>
+            </div>
+            <div class="rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm dark:border-red-900/30 dark:bg-red-500/10">
+                <p class="text-xs font-medium text-red-600 dark:text-red-400">Catatan Sakit</p>
+                <h4 class="mt-1.5 text-2xl font-bold text-red-700 dark:text-red-300">{{ $stat_sakit }}</h4>
+            </div>
+            <button @click="modalTambah = true; activeTab = 'belum'" class="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm dark:border-amber-900/30 dark:bg-amber-500/10 text-left hover:ring-2 hover:ring-amber-300 transition group">
+                <div class="flex justify-between items-start">
+                    <p class="text-xs font-medium text-amber-600 dark:text-amber-400">Belum Monitor (Bulan Ini)</p>
+                    <svg class="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+                </div>
+                <h4 class="mt-1.5 text-2xl font-bold text-amber-700 dark:text-amber-300">{{ $stat_belum }} <span class="text-sm font-medium opacity-70">Ekor</span></h4>
+            </button>
         </div>
 
         {{-- MODAL FILTER ADVANCED --}}
         <template x-teleport="body">
             <div x-show="modalFilter" style="display: none;"
-                class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
+                class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
                 @click.self="modalFilter = false">
-                <div class="relative w-full max-w-[500px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
+                <div class="relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
                     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
                     x-transition:enter-end="opacity-100 scale-100">
 
@@ -72,7 +105,7 @@
                         </button>
                     </div>
 
-                    <form method="GET" action="{{ route('monitoring.index') }}" class="flex flex-col gap-4"
+                    <form @submit.prevent="fetchData" id="filter-form" method="GET" action="{{ route('monitoring.index') }}" class="flex flex-col gap-4"
                           x-data='{
                               selectedKandang: "semua",
                               selectedKamar: "semua",
@@ -110,7 +143,7 @@
                                     @foreach ($data_kandang as $kd)
                                         <option value="{{ $kd->id_kandang }}">Kandang {{ $kd->nomor_kandang }}</option>
                                     @endforeach
-                                    <option value="kosong" class="text-red-500 font-semibold">Kosong (Tanpa Kandang)</option>
+                                    <option value="kosong">Kosong (Tanpa Kandang)</option>
                                 </select>
                             </div>
 
@@ -136,21 +169,6 @@
                                 </select>
                             </div>
                         </div>
-
-                        {{-- <div>
-                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih
-                                Ternak</label>
-                            <select name="id_ternak"
-                                class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                <option value="semua" {{ request('id_ternak') == 'semua' ? 'selected' : '' }}>Semua Ternak
-                                </option>
-                                @foreach ($data_ternak as $t)
-                                    <option value="{{ $t->id_ternak }}"
-                                        {{ request('id_ternak') == $t->id_ternak ? 'selected' : '' }}>Ternak
-                                        #ID-{{ $t->id_ternak }}</option>
-                                @endforeach
-                            </select>
-                        </div> --}}
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -206,9 +224,21 @@
                         </div>
 
                         <div class="flex items-center gap-3 mt-4 justify-end">
-                            <a href="{{ route('monitoring.index') }}"
-                                class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Reset
-                                Filter</a>
+                            <button type="button" @click="
+                                let form = document.getElementById('filter-form');
+                                if (form) {
+                                    form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+                                    form.querySelectorAll('input').forEach(i => i.value = '');
+                                }
+                                selectedKandang = 'semua';
+                                selectedKamar = 'semua';
+                                selectedTernak = 'semua';
+                                modalFilter = false;
+                                fetchData();
+                            "
+                                class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">
+                                Reset Filter
+                            </button>
                             <button type="submit"
                                 class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">Terapkan</button>
                         </div>
@@ -217,27 +247,112 @@
             </div>
         </template>
 
-        {{-- MODAL TAMBAH MONITORING (DENGAN AUTOFILL ALPINE.JS) --}}
+        {{-- MODAL TAMBAH MONITORING --}}
 
         <template x-teleport="body">
             <div x-show="modalTambah" style="display: none;"
-                class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
+                class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
                 @click.self="modalTambah = false">
-                <div class="relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
+                <div class="relative w-full max-w-[700px] overflow-y-auto grow rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8"
                     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
                     x-transition:enter-end="opacity-100 scale-100">
 
-                    <div class="mb-6">
-                        <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">Catat Monitoring Baru</h4>
-                        <p class="text-sm text-gray-500">*Usia ternak akan dihitung otomatis oleh sistem.</p>
+                    <div class="mb-2">
+                        <h4 class="mb-1 text-2xl font-semibold text-gray-800 dark:text-white/90">Catat Monitoring Baru</h4>
+                        <p class="text-sm text-gray-500">*Usia ternak akan dihitung otomatis oleh sistem berdasarkan riwayat.</p>
                     </div>
 
                     @if ($errors->any() && !old('_method'))
-                        <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200">
+                        <div class="mt-4 mb-2 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200">
                             {{ $errors->first() }}</div>
                     @endif
 
-                    <form method="POST" action="{{ route('monitoring.store') }}" class="flex flex-col gap-4"
+                    <div class="flex border-b border-gray-200 dark:border-gray-700 mt-5 mb-6">
+                        <button type="button" @click="activeTab = 'belum'"
+                            :class="activeTab === 'belum' ? 'border-brand-500 text-brand-500' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'"
+                            class="flex-1 py-2.5 text-sm font-medium border-b-2 transition-colors text-center">
+                            🔔 Belum Di-monitor
+                        </button>
+                        <button type="button" @click="activeTab = 'manual'"
+                            :class="activeTab === 'manual' ? 'border-brand-500 text-brand-500' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'"
+                            class="flex-1 py-2.5 text-sm font-medium border-b-2 transition-colors text-center">
+                            ✍️ Pilih Manual
+                        </button>
+                    </div>
+
+                    {{-- TAB 1: BELUM DI-MONITOR --}}
+                    <form x-show="activeTab === 'belum'" method="POST" action="{{ route('monitoring.store') }}" class="flex flex-col gap-4"
+                        x-data='{
+                            selectedTernak: "",
+                            ternakBelum: @json($ternakBelumMonitor),
+                            autoFillBerat() {
+                                let t = this.ternakBelum.find(x => x.id_ternak == this.selectedTernak);
+                                if(t) {
+                                    $refs.beratInputBelum.value = t.berat;
+                                }
+                            },
+                            labelTernak(t) {
+                                let label = "#ID-" + t.id_ternak;
+                                if (t.kamar && t.kamar.kandang) {
+                                    label += " — Kandang " + t.kamar.kandang.nomor_kandang + " · Kamar " + t.kamar.nomor_kamar;
+                                } else {
+                                    label += " — Belum ada kandang";
+                                }
+                                label += " (" + t.berat + " Kg)";
+                                return label;
+                            }
+                        }'>
+                        @csrf
+                        @if($stat_belum > 0)
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div class="sm:col-span-2">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih Ternak (Wajib Monitor Bulan Ini)</label>
+                                    <select name="id_ternak" x-model="selectedTernak" @change="autoFillBerat" required
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-brand-300 bg-brand-50/30 px-4 py-2 text-sm text-gray-800 focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-brand-500/50 dark:bg-brand-500/5 dark:text-white dark:focus:border-brand-500 ring-1 ring-brand-500/20">
+                                        <option value="" disabled>Pilih Ternak...</option>
+                                        <template x-for="t in ternakBelum" :key="t.id_ternak">
+                                            <option :value="t.id_ternak" x-text="labelTernak(t)"></option>
+                                        </template>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tanggal Pengecekan</label>
+                                    <div class="relative">
+                                        <input type="text" name="tgl_monitoring" value="{{ old('tgl_monitoring', date('Y-m-d')) }}" required
+                                            x-init="flatpickr($el, { dateFormat: 'Y-m-d', locale: 'id' })"
+                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:text-white dark:focus:border-brand-800">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Berat Saat Ini (Kg)</label>
+                                    <input type="number" name="berat" x-ref="beratInputBelum" value="{{ old('berat') }}" required min="0"
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-500 dark:border-gray-700 dark:text-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Penyakit / Catatan Medis <span class="text-xs text-gray-500">(Opsional)</span></label>
+                                <textarea name="penyakit" rows="3" placeholder="Kosongkan jika hewan sehat..."
+                                    class="dark:bg-gray-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-500 dark:border-gray-700 dark:text-white">{{ old('penyakit') }}</textarea>
+                            </div>
+
+                            <div class="flex items-center gap-3 mt-4 justify-end">
+                                <button @click="modalTambah = false" type="button" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Batal</button>
+                                <button type="submit" class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">Simpan Data</button>
+                            </div>
+                        @else
+                            <div class="flex flex-col items-center justify-center py-12 opacity-80 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl">
+                                <svg class="w-16 h-16 text-green-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-lg font-medium text-gray-700 dark:text-gray-300">Semua ternak sudah di-monitor bulan ini!</p>
+                                <p class="text-sm text-gray-500 mt-1">Gunakan tab "Pilih Manual" jika ingin memonitor ulang.</p>
+                            </div>
+                        @endif
+                    </form>
+
+                    {{-- TAB 2: PILIH MANUAL --}}
+                    <form x-show="activeTab === 'manual'" style="display: none;" method="POST" action="{{ route('monitoring.store') }}" class="flex flex-col gap-4"
                         x-data='{
                               selectedKandang: "",
                               selectedKamar: "",
@@ -276,12 +391,12 @@
                                     Kandang</label>
                                 <select x-model="selectedKandang"
                                     @change="selectedKamar = ''; selectedTernak = ''; $refs.beratInput.value = ''"
-                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white focus:border-brand-500">
                                     <option value="" disabled>Pilih Kandang...</option>
                                     @foreach ($data_kandang as $kd)
                                         <option value="{{ $kd->id_kandang }}">Kandang {{ $kd->nomor_kandang }}</option>
                                     @endforeach
-                                    <option value="kosong" class="text-red-500 font-semibold">Kosong (Tanpa Kandang)
+                                    <option value="kosong" >Kosong (Tanpa Kandang)
                                     </option>
                                 </select>
                             </div>
@@ -291,7 +406,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih
                                     Kamar</label>
                                 <select x-model="selectedKamar" @change="selectedTernak = ''; $refs.beratInput.value = ''"
-                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white focus:border-brand-500">
                                     <option value="" disabled x-show="!selectedKandang">Pilih Kandang Dulu</option>
                                     <option value="" disabled x-show="selectedKandang">Pilih Kamar...</option>
                                     <template x-for="kamar in kamarTersedia" :key="kamar.id_kamar">
@@ -305,7 +420,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pilih
                                     Ternak</label>
                                 <select name="id_ternak" x-model="selectedTernak" @change="autoFillBerat" required
-                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white border-brand-500 ring-1 ring-brand-500">
+                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-brand-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-brand-500 dark:text-white ring-1 ring-brand-500 focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10">
                                     <option value="" disabled>Pilih Ternak...</option>
                                     <template x-for="t in ternakTersedia" :key="t.id_ternak">
                                         <option :value="t.id_ternak"
@@ -323,16 +438,7 @@
                                     <input type="text" name="tgl_monitoring"
                                         value="{{ old('tgl_monitoring', date('Y-m-d')) }}" required
                                         x-init="flatpickr($el, { dateFormat: 'Y-m-d', locale: 'id' })"
-                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:text-white dark:focus:border-brand-800"
-                                        placeholder="Pilih Tanggal">
-                                    <span class="absolute top-1/2 right-3.5 -translate-y-1/2 pointer-events-none">
-                                        <svg class="fill-gray-700 dark:fill-gray-400" width="14" height="14"
-                                            viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                d="M4.33317 0.0830078C4.74738 0.0830078 5.08317 0.418794 5.08317 0.833008V1.24967H8.9165V0.833008C8.9165 0.418794 9.25229 0.0830078 9.6665 0.0830078C10.0807 0.0830078 10.4165 0.418794 10.4165 0.833008V1.24967L11.3332 1.24967C12.2997 1.24967 13.0832 2.03318 13.0832 2.99967V4.99967V11.6663C13.0832 12.6328 12.2997 13.4163 11.3332 13.4163H2.6665C1.70001 13.4163 0.916504 12.6328 0.916504 11.6663V4.99967V2.99967C0.916504 2.03318 1.70001 1.24967 2.6665 1.24967L3.58317 1.24967V0.833008C3.58317 0.418794 3.91896 0.0830078 4.33317 0.0830078ZM4.33317 2.74967H2.6665C2.52843 2.74967 2.4165 2.8616 2.4165 2.99967V4.24967H11.5832V2.99967C11.5832 2.8616 11.4712 2.74967 11.3332 2.74967H9.6665H4.33317ZM11.5832 5.74967H2.4165V11.6663C2.4165 11.8044 2.52843 11.9163 2.6665 11.9163H11.3332C11.4712 11.9163 11.5832 11.8044 11.5832 11.6663V5.74967Z"
-                                                fill="" />
-                                        </svg>
-                                    </span>
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:text-white dark:focus:border-brand-800">
                                 </div>
                             </div>
 
@@ -340,8 +446,8 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Berat Saat
                                     Ini (Kg)</label>
                                 <input type="number" name="berat" x-ref="beratInput" value="{{ old('berat') }}"
-                                    required min="0"
-                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                    required min="0" 
+                                    class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white focus:border-brand-500">
                             </div>
                         </div>
 
@@ -349,7 +455,7 @@
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Penyakit /
                                 Catatan Medis <span class="text-xs text-gray-500">(Opsional)</span></label>
                             <textarea name="penyakit" rows="3" placeholder="Kosongkan jika hewan sehat..."
-                                class="dark:bg-gray-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">{{ old('penyakit') }}</textarea>
+                                class="dark:bg-gray-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white focus:border-brand-500">{{ old('penyakit') }}</textarea>
                         </div>
 
                         <div class="flex items-center gap-3 mt-4 justify-end">
@@ -363,199 +469,351 @@
                 </div>
             </div>
         </template>
-        <div class="rounded-sm border border-gray-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-900 mt-6">
-            <div class="max-w-full overflow-x-auto">
-                <table class="w-full table-auto">
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
+            <div class="py-5 px-5 md:px-6 flex justify-between items-center border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                <h4 class="text-lg font-semibold text-gray-800 dark:text-white">Riwayat Monitoring
+                    <span x-show="totalData > 0" class="ml-2 inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-600 ring-1 ring-inset ring-brand-500/10 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20" x-text="totalData + ' Data'"></span>
+                </h4>
+            </div>
+            {{-- Loading Overlay --}}
+            <div x-show="isFetching" class="py-8 flex justify-center items-center">
+                <svg class="animate-spin h-8 w-8 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+
+            <div class="max-w-full overflow-x-auto" x-show="!isFetching" x-transition.opacity.duration.200ms>
+                <table class="w-full table-auto min-w-[700px]">
                     <thead>
                         <tr class="bg-gray-50 text-left dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800">
-                            <th class="py-4 px-4 font-medium text-black dark:text-white">Tgl & ID Ternak</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white">Kondisi Fisik</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white">Catatan Medis</th>
-                            <th class="py-4 px-4 font-medium text-black dark:text-white text-center">Aksi</th>
+                            <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm">Tanggal & Ternak</th>
+                            <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm">Kondisi Fisik</th>
+                            <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm">Catatan Medis</th>
+                            <th class="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300 text-sm text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($data_monitoring as $monitor)
-                            <tr x-data="{
-                                modalEdit: {{ $errors->any() && old('_method') === 'PUT' && old('id_monitoring_edit') == $monitor->id_monitoring ? 'true' : 'false' }},
-                                modalHapus: false
-                            }"
-                                class="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
 
-                                <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
-                                    <span
-                                        class="font-medium">{{ \Carbon\Carbon::parse($monitor->tgl_monitoring)->translatedFormat('d M Y') }}</span><br>
-                                    <span class="text-sm font-bold text-brand-500">#ID-{{ $monitor->id_ternak }}</span>
+                        <template x-for="monitor in rows" :key="monitor.id_monitoring">
+                            <tr class="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                <td class="py-4 px-5">
+                                    <span class="font-medium text-gray-800 dark:text-white block" x-text="formatDate(monitor.tgl_monitoring)"></span>
+                                    <span class="text-sm font-bold text-brand-500" x-text="'#ID-' + monitor.id_ternak"></span>
                                 </td>
 
-                                <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
-                                    <span class="font-medium">{{ $monitor->berat }} Kg</span><br>
-                                    <span class="text-sm">Usia: {{ $monitor->usia }} Bulan</span>
-                                </td>
-
-                                <td class="py-4 px-4 text-gray-800 dark:text-gray-300">
-                                    @if (empty($monitor->penyakit))
-                                        <span
-                                            class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700 dark:bg-green-500/10">Sehat</span>
-                                    @else
-                                        <span
-                                            class="inline-flex rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-500/10 mb-1">Sakit</span><br>
-                                        <span
-                                            class="text-xs text-red-600 dark:text-red-400">{{ $monitor->penyakit }}</span>
-                                    @endif
-                                </td>
-
-                                <td class="py-4 px-4 text-center">
-                                    <div class="flex items-center justify-center space-x-3.5">
-                                        <button @click="modalEdit = true" type="button"
-                                            class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-yellow-500 text-white hover:bg-yellow-600">Edit</button>
-                                        <button @click="modalHapus = true" type="button"
-                                            class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-3 py-1.5 text-sm bg-red-500 text-white hover:bg-red-600">Hapus</button>
+                                <td class="py-4 px-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="text-sm font-medium text-gray-700 dark:text-gray-300" x-text="monitor.berat + ' Kg'"></div>
+                                        <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+                                        <div class="text-sm text-gray-500" x-text="monitor.usia + ' Bulan'"></div>
                                     </div>
                                 </td>
 
-                                {{-- MODAL EDIT MONITORING --}}
-                                <template x-teleport="body">
-                                    <div x-show="modalEdit" style="display: none;"
-                                        class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
-                                        @click.self="modalEdit = false">
-                                        <div
-                                            class="relative w-full max-w-[600px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8">
-                                            <div class="mb-6">
-                                                <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-                                                    Edit Data Monitoring</h4>
-                                            </div>
-
-                                            <form method="POST"
-                                                action="{{ route('monitoring.update', $monitor->id_monitoring) }}"
-                                                class="flex flex-col gap-4">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="id_monitoring_edit"
-                                                    value="{{ $monitor->id_monitoring }}">
-
-                                                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                                    <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Ternak</label>
-                                                        <select name="id_ternak" required
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                            @foreach ($data_ternak as $t)
-                                                                <option value="{{ $t->id_ternak }}"
-                                                                    {{ $monitor->id_ternak == $t->id_ternak ? 'selected' : '' }}>
-                                                                    #ID-{{ $t->id_ternak }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-
-                                                    <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tanggal</label>
-                                                        <div class="relative">
-                                                            <input type="text" name="tgl_monitoring"
-                                                                value="{{ $monitor->tgl_monitoring }}" required
-                                                                x-init="flatpickr($el, { dateFormat: 'Y-m-d', locale: 'id' })"
-                                                                class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:text-white dark:focus:border-brand-800"
-                                                                placeholder="Pilih Tanggal">
-                                                            <span
-                                                                class="absolute top-1/2 right-3.5 -translate-y-1/2 pointer-events-none">
-                                                                <svg class="fill-gray-700 dark:fill-gray-400"
-                                                                    width="14" height="14" viewBox="0 0 14 14"
-                                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                        d="M4.33317 0.0830078C4.74738 0.0830078 5.08317 0.418794 5.08317 0.833008V1.24967H8.9165V0.833008C8.9165 0.418794 9.25229 0.0830078 9.6665 0.0830078C10.0807 0.0830078 10.4165 0.418794 10.4165 0.833008V1.24967L11.3332 1.24967C12.2997 1.24967 13.0832 2.03318 13.0832 2.99967V4.99967V11.6663C13.0832 12.6328 12.2997 13.4163 11.3332 13.4163H2.6665C1.70001 13.4163 0.916504 12.6328 0.916504 11.6663V4.99967V2.99967C0.916504 2.03318 1.70001 1.24967 2.6665 1.24967L3.58317 1.24967V0.833008C3.58317 0.418794 3.91896 0.0830078 4.33317 0.0830078ZM4.33317 2.74967H2.6665C2.52843 2.74967 2.4165 2.8616 2.4165 2.99967V4.24967H11.5832V2.99967C11.5832 2.8616 11.4712 2.74967 11.3332 2.74967H9.6665H4.33317ZM11.5832 5.74967H2.4165V11.6663C2.4165 11.8044 2.52843 11.9163 2.6665 11.9163H11.3332C11.4712 11.9163 11.5832 11.8044 11.5832 11.6663V5.74967Z"
-                                                                        fill="" />
-                                                                </svg>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Usia
-                                                            (Bulan)
-                                                        </label>
-                                                        <input type="number" name="usia"
-                                                            value="{{ $monitor->usia }}" required min="0"
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                    </div>
-
-                                                    <div>
-                                                        <label
-                                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Berat
-                                                            (Kg)</label>
-                                                        <input type="number" name="berat"
-                                                            value="{{ $monitor->berat }}" required min="0"
-                                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label
-                                                        class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Penyakit
-                                                        / Catatan Medis</label>
-                                                    <textarea name="penyakit" rows="3"
-                                                        class="dark:bg-gray-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white">{{ $monitor->penyakit }}</textarea>
-                                                </div>
-
-                                                <div class="flex items-center gap-3 mt-4 justify-end">
-                                                    <button @click="modalEdit = false" type="button"
-                                                        class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Batal</button>
-                                                    <button type="submit"
-                                                        class="flex w-full justify-center rounded-lg bg-yellow-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-yellow-600 sm:w-auto">Simpan
-                                                        Perubahan</button>
-                                                </div>
-                                            </form>
+                                <td class="py-4 px-5">
+                                    <template x-if="!monitor.penyakit || monitor.penyakit.trim() === ''">
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800 dark:bg-green-500/20 dark:text-green-300">
+                                            <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-green-500"></span>Sehat
+                                        </span>
+                                    </template>
+                                    <template x-if="monitor.penyakit && monitor.penyakit.trim() !== ''">
+                                        <div>
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-800 dark:bg-red-500/20 dark:text-red-300 mb-1">
+                                                <span class="mr-1.5 h-1.5 w-1.5 rounded-full bg-red-500"></span>Sakit
+                                            </span>
+                                            <p class="text-xs text-red-600 dark:text-red-400 mt-1" x-text="monitor.penyakit"></p>
                                         </div>
+                                    </template>
+                                </td>
+
+                                <td class="py-4 px-5 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button @click="openEditModal(monitor)" type="button"
+                                            class="inline-flex items-center rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-600 transition hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20">Edit</button>
                                     </div>
-                                </template>
-
-                                {{-- MODAL HAPUS MONITORING --}}
-                                <template x-teleport="body">
-                                    <div x-show="modalHapus" style="display: none;"
-                                        class="fixed inset-0 z- flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
-                                        @click.self="modalHapus = false">
-                                        <div
-                                            class="relative w-full max-w-[400px] rounded-3xl bg-white p-6 dark:bg-gray-900 text-center">
-                                            <h4 class="mb-2 text-xl font-semibold text-gray-800 dark:text-white/90">Hapus
-                                                Riwayat?</h4>
-                                            <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Yakin ingin menghapus
-                                                catatan monitoring tanggal
-                                                <strong>{{ \Carbon\Carbon::parse($monitor->tgl_monitoring)->format('d/m/Y') }}</strong>?
-                                            </p>
-
-                                            <form method="POST"
-                                                action="{{ route('monitoring.delete', $monitor->id_monitoring) }}"
-                                                class="flex justify-center gap-3">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button @click="modalHapus = false" type="button"
-                                                    class="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] ">Batal</button>
-                                                <button type="submit"
-                                                    class="rounded-lg bg-red-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-600">Ya,
-                                                    Hapus!</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </template>
-
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="py-10 px-4 text-center text-gray-500 dark:text-gray-400">
-                                    Belum ada catatan monitoring yang sesuai.
                                 </td>
                             </tr>
-                        @endforelse
+                        </template>
+
+                        <tr x-show="rows.length === 0 && !isFetching">
+                            <td colspan="4" class="py-10 px-5 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                    <p class="text-gray-500 dark:text-gray-400">Belum ada catatan monitoring yang sesuai.</p>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
 
-            @if ($data_monitoring->hasPages())
-                <div class="border-t border-gray-200 dark:border-gray-800 p-4">
-                    {{ $data_monitoring->withQueryString()->links() }}
+            <!-- Client-Side Pagination Controls -->
+            <div x-show="lastPage > 1" class="border-t border-gray-200 dark:border-gray-800 px-5 py-4">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Menampilkan <span class="font-medium text-gray-900 dark:text-white" x-text="fromData"></span> 
+                        hingga <span class="font-medium text-gray-900 dark:text-white" x-text="toData"></span> 
+                        dari <span class="font-medium text-gray-900 dark:text-white" x-text="totalData"></span> data
+                    </p>
+                    <div class="flex items-center gap-1">
+                        <button @click="goToPage(currentPage - 1)" :disabled="currentPage <= 1"
+                            class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                            &laquo; Prev
+                        </button>
+                        <template x-for="p in paginationPages" :key="'page-'+p">
+                            <button @click="if(p !== '...') goToPage(p)"
+                                :class="p === currentPage ? 'bg-brand-500 text-white border-brand-500' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'"
+                                class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition border min-w-[40px]"
+                                :disabled="p === '...'"
+                                x-text="p"></button>
+                        </template>
+                        <button @click="goToPage(currentPage + 1)" :disabled="currentPage >= lastPage"
+                            class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                            Next &raquo;
+                        </button>
+                    </div>
                 </div>
-            @endif
+            </div>
+
+            {{-- MODAL EDIT MONITORING (SHARED) --}}
+            <template x-teleport="body">
+                <div x-show="modalEdit" style="display: none;"
+                    class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4 py-5 backdrop-blur-sm"
+                    @click.self="modalEdit = false">
+                    <div
+                        class="relative w-full max-w-[600px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8">
+                        <div class="mb-6">
+                            <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+                                Edit Data Monitoring</h4>
+                        </div>
+
+                        <form method="POST"
+                            :action="editData ? `{{ url('/monitoring') }}/${editData.id_monitoring}` : '#'"
+                            class="flex flex-col gap-4">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="id_monitoring_edit" :value="editData ? editData.id_monitoring : ''">
+
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label
+                                        class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Ternak</label>
+                                    <select name="id_ternak" x-model="editData.id_ternak" required
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                        @foreach ($data_ternak as $t)
+                                            <option value="{{ $t->id_ternak }}">#ID-{{ $t->id_ternak }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tanggal</label>
+                                    <div class="relative">
+                                        <input type="text" name="tgl_monitoring" x-model="editData.tgl_monitoring" required
+                                            x-init="$watch('editData', value => { if(value && value.tgl_monitoring) { let fp = flatpickr($el, { dateFormat: 'Y-m-d', locale: 'id' }); fp.setDate(value.tgl_monitoring); } })"
+                                            class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:text-white dark:focus:border-brand-800"
+                                            placeholder="Pilih Tanggal">
+                                        <span class="absolute top-1/2 right-3.5 -translate-y-1/2 pointer-events-none">
+                                            <svg class="fill-gray-700 dark:fill-gray-400" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4.33317 0.0830078C4.74738 0.0830078 5.08317 0.418794 5.08317 0.833008V1.24967H8.9165V0.833008C8.9165 0.418794 9.25229 0.0830078 9.6665 0.0830078C10.0807 0.0830078 10.4165 0.418794 10.4165 0.833008V1.24967L11.3332 1.24967C12.2997 1.24967 13.0832 2.03318 13.0832 2.99967V4.99967V11.6663C13.0832 12.6328 12.2997 13.4163 11.3332 13.4163H2.6665C1.70001 13.4163 0.916504 12.6328 0.916504 11.6663V4.99967V2.99967C0.916504 2.03318 1.70001 1.24967 2.6665 1.24967L3.58317 1.24967V0.833008C3.58317 0.418794 3.91896 0.0830078 4.33317 0.0830078ZM4.33317 2.74967H2.6665C2.52843 2.74967 2.4165 2.8616 2.4165 2.99967V4.24967H11.5832V2.99967C11.5832 2.8616 11.4712 2.74967 11.3332 2.74967H9.6665H4.33317ZM11.5832 5.74967H2.4165V11.6663C2.4165 11.8044 2.52843 11.9163 2.6665 11.9163H11.3332C11.4712 11.9163 11.5832 11.8044 11.5832 11.6663V5.74967Z" fill=""/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Usia (Bulan)</label>
+                                    <input type="number" name="usia" x-model="editData.usia" required min="0"
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                </div>
+
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Berat (Kg)</label>
+                                    <input type="number" name="berat" x-model="editData.berat" required min="0" step="0.01"
+                                        class="dark:bg-gray-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Penyakit / Catatan Medis</label>
+                                <textarea name="penyakit" rows="3" x-model="editData.penyakit"
+                                    class="dark:bg-gray-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white"></textarea>
+                            </div>
+
+                            <div class="flex items-center gap-3 mt-4 justify-end">
+                                <button @click="modalEdit = false" type="button" class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] sm:w-auto">Batal</button>
+                                <button type="submit" class="flex w-full justify-center rounded-lg bg-yellow-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-yellow-600 sm:w-auto">Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </template>
+        </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    function ajaxTable(baseUrl) {
+        return {
+            isFetching: false,
+            abortController: null,
+            rows: @json($data_monitoring_json),
+            currentPage: {{ $data_monitoring->currentPage() }},
+            lastPage: {{ $data_monitoring->lastPage() }},
+            totalData: {{ $data_monitoring->total() }},
+            fromData: {{ $data_monitoring->firstItem() ?? 0 }},
+            toData: {{ $data_monitoring->lastItem() ?? 0 }},
+            pageCache: {},
+            modalEdit: false,
+            editData: null,
+
+            init() {
+                // Simpan halaman pertama ke cache (tanpa filter/search tambahan saat load awal)
+                const initialUrl = baseUrl + window.location.search;
+                this.pageCache[initialUrl] = {
+                    rows: this.rows,
+                    currentPage: this.currentPage,
+                    lastPage: this.lastPage,
+                    totalData: this.totalData,
+                    fromData: this.fromData,
+                    toData: this.toData
+                };
+
+                // Handle push state untuk navigasi back/forward
+                window.addEventListener('popstate', (event) => {
+                    this.fetchUrl(window.location.href, false);
+                });
+            },
+
+            formatDate(dateString) {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            },
+
+            get paginationPages() {
+                let pages = [];
+                let l = this.lastPage;
+                let c = this.currentPage;
+                if (l <= 7) {
+                    for (let i = 1; i <= l; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (c > 3) pages.push('...');
+                    for (let i = Math.max(2, c - 1); i <= Math.min(l - 1, c + 1); i++) pages.push(i);
+                    if (c < l - 2) pages.push('...');
+                    pages.push(l);
+                }
+                return pages;
+            },
+
+            openEditModal(monitor) {
+                this.editData = { ...monitor };
+                this.modalEdit = true;
+            },
+
+            goToPage(page) {
+                if (page < 1 || page > this.lastPage) return;
+                
+                let url = new URL(window.location.href);
+                url.searchParams.set('page', page);
+                this.fetchUrl(url.toString());
+            },
+
+            fetchData() {
+                // Fungsi ini dipanggil saat filter disubmit
+                let form = document.getElementById('filter-form');
+                let formData = new FormData(form);
+                let params = new URLSearchParams(formData);
+
+                // Buat URL dengan parameter form, reset ke page 1
+                let url = new URL(baseUrl);
+                for (let [key, value] of params.entries()) {
+                    if (value) url.searchParams.append(key, value);
+                }
+                url.searchParams.delete('page');
+
+                this.fetchUrl(url.toString());
+                this.modalFilter = false;
+            },
+
+            fixProtocol(urlStr) {
+                // Pastikan URL selalu menggunakan skema yang sama dengan window.location
+                let currentUrl = new URL(window.location.href);
+                let targetUrl = new URL(urlStr, window.location.origin);
+                targetUrl.protocol = currentUrl.protocol;
+                return targetUrl.toString();
+            },
+
+            fetchUrl(rawUrl, pushState = true) {
+                let url = this.fixProtocol(rawUrl);
+
+                // Cek cache terlebih dahulu (0ms delay)
+                if (this.pageCache[url]) {
+                    this.applyData(this.pageCache[url]);
+                    if (pushState) {
+                        window.history.pushState({}, '', url);
+                    }
+                    return;
+                }
+
+                // Abort request yang sedang berjalan
+                if (this.abortController) {
+                    this.abortController.abort();
+                }
+                this.abortController = new AbortController();
+
+                this.isFetching = true;
+
+                // Gunakan header x-requested-with agar controller mereturn JSON
+                axios.get(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    signal: this.abortController.signal
+                })
+                .then(response => {
+                    const res = response.data;
+                    const cacheData = {
+                        rows: res.data,
+                        currentPage: res.pagination.current_page,
+                        lastPage: res.pagination.last_page,
+                        totalData: res.pagination.total,
+                        fromData: res.pagination.from || 0,
+                        toData: res.pagination.to || 0
+                    };
+                    
+                    this.applyData(cacheData);
+                    this.pageCache[url] = cacheData;
+                    
+                    if (pushState) {
+                        window.history.pushState({}, '', url);
+                    }
+                })
+                .catch(error => {
+                    if (axios.isCancel(error)) {
+                        console.log('Request dibatalkan:', error.message);
+                    } else {
+                        console.error('AJAX Error:', error);
+                        // Fallback jika error, reload biasa
+                        window.location.href = url;
+                    }
+                })
+                .finally(() => {
+                    this.isFetching = false;
+                });
+            },
+
+            applyData(data) {
+                this.rows = data.rows;
+                this.currentPage = data.currentPage;
+                this.lastPage = data.lastPage;
+                this.totalData = data.totalData;
+                this.fromData = data.fromData;
+                this.toData = data.toData;
+            }
+        };
+    }
+</script>
+@endpush
