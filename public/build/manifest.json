@@ -1,0 +1,108 @@
+{
+  "_module.esm-Fzhlmc-i.js": {
+    "file": "assets/module.esm-Fzhlmc-i.js",
+    "name": "module.esm"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-C0YZpMoQ.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/css/landing.css": {
+    "file": "assets/landing-ureI_zT-.css",
+    "src": "resources/css/landing.css",
+    "isEntry": true,
+    "names": [
+      "landing.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DY2zBlnN.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_module.esm-Fzhlmc-i.js"
+    ],
+    "dynamicImports": [
+      "resources/js/components/map.js",
+      "resources/js/components/chart/chart-1.js",
+      "resources/js/components/chart/chart-2.js",
+      "resources/js/components/chart/chart-3.js",
+      "resources/js/components/chart/chart-6.js",
+      "resources/js/components/chart/chart-8.js",
+      "resources/js/components/chart/chart-13.js",
+      "resources/js/components/calendar-init.js"
+    ],
+    "css": [
+      "assets/app-CksuuEqD.css"
+    ]
+  },
+  "resources/js/components/calendar-init.js": {
+    "file": "assets/calendar-init-Dfy0FgJ-.js",
+    "name": "calendar-init",
+    "src": "resources/js/components/calendar-init.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_module.esm-Fzhlmc-i.js"
+    ]
+  },
+  "resources/js/components/chart/chart-1.js": {
+    "file": "assets/chart-1-Cwm95pwl.js",
+    "name": "chart-1",
+    "src": "resources/js/components/chart/chart-1.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/components/chart/chart-13.js": {
+    "file": "assets/chart-13-DLZZ4C39.js",
+    "name": "chart-13",
+    "src": "resources/js/components/chart/chart-13.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/components/chart/chart-2.js": {
+    "file": "assets/chart-2-DQXQOavV.js",
+    "name": "chart-2",
+    "src": "resources/js/components/chart/chart-2.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/components/chart/chart-3.js": {
+    "file": "assets/chart-3-Cfu9A7Q-.js",
+    "name": "chart-3",
+    "src": "resources/js/components/chart/chart-3.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/components/chart/chart-6.js": {
+    "file": "assets/chart-6-CUCJPIbt.js",
+    "name": "chart-6",
+    "src": "resources/js/components/chart/chart-6.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/components/chart/chart-8.js": {
+    "file": "assets/chart-8-DGmhkTSA.js",
+    "name": "chart-8",
+    "src": "resources/js/components/chart/chart-8.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/components/map.js": {
+    "file": "assets/map-B1bYXlpu.js",
+    "name": "map",
+    "src": "resources/js/components/map.js",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/map-DIsGouq0.css"
+    ]
+  },
+  "resources/js/landing.js": {
+    "file": "assets/landing-5ARJ__5m.js",
+    "name": "landing",
+    "src": "resources/js/landing.js",
+    "isEntry": true,
+    "imports": [
+      "_module.esm-Fzhlmc-i.js"
+    ]
+  }
+}
