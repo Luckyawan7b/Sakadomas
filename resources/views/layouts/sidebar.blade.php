@@ -1,7 +1,8 @@
 
 @php
     use App\Helpers\MenuHelper;
-    $menuGroups = MenuHelper::getMenuGroups();
+    // $menuGroups = MenuHelper::getMenuGroups();
+    $menuGroups = MenuHelper::filterMenuByRole(MenuHelper::getMenuGroups());
 
     // Get current path
     $currentPath = request()->path();

@@ -1,0 +1,402 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Ternak;
+use App\Models\Kamar;
+use App\Models\Kandang;
+use App\Models\JenisTernak;
+use Illuminate\Support\Facades\File;
+use Carbon\Carbon;
+
+class TernakController extends Controller
+{
+    // public function index()
+    // {
+    //     $data_ternak = Ternak::with(['kamar.kandang', 'jenis_ternak'])
+    //                               ->orderBy('id_ternak', 'desc')
+    //                               ->get();
+
+    //     $data_kamar = Kamar::with('kandang')->get();
+    //     $data_jenis = JenisTernak::all();
+
+    //     return view('pages.ternak', compact('data_ternak', 'data_kamar', 'data_jenis'));
+    // }
+
+    public function index(Request $request)
+    {
+        $query = Ternak::with(['kamar.kandang', 'jenis_ternak'])
+                            ->orderBy('id_ternak', 'desc');
+
+        // 1. Filter Lokasi Kandang (Baru)
+        if ($request->filled('id_kandang') && $request->id_kandang !== 'semua') {
+            if ($request->id_kandang === 'kosong') {
+                // Jika mencari 'kosong', berarti id_kamar-nya null
+                $query->whereNull('id_kamar');
+            } else {
+                // Jika mencari kandang tertentu, cari lewat relasi kamar
+                $query->whereHas('kamar', function ($q) use ($request) {
+                    $q->where('id_kandang', $request->id_kandang);
+                });
+            }
+        }
+
+        // 2. Filter Jenis Ternak
+        if ($request->filled('id_jenis_ternak') && $request->id_jenis_ternak !== 'semua') {
+            $query->where('id_jenis_ternak', $request->id_jenis_ternak);
+        }
+
+        // 3. Filter Rentang Usia (Bulan)
+        if ($request->filled('usia_min')) {
+            $query->where('usia', '>=', $request->usia_min);
+        }
+        if ($request->filled('usia_max')) {
+            $query->where('usia', '<=', $request->usia_max);
+        }
+
+        // 4. Filter Rentang Berat (Kg)
+        if ($request->filled('berat_min')) {
+            $query->where('berat', '>=', $request->berat_min);
+        }
+        if ($request->filled('berat_max')) {
+            $query->where('berat', '<=', $request->berat_max);
+        }
+
+        // 5. Filter Status Kesehatan
+        if ($request->filled('status_ternak') && $request->status_ternak !== 'semua') {
+            $query->where('status_ternak', $request->status_ternak);
+        }
+
+        // 6. Filter Status Penjualan
+        if ($request->filled('status_jual') && $request->status_jual !== 'semua') {
+            $query->where('status_jual', $request->status_jual);
+        }
+
+        // 7. Filter Jenis Kelamin
+        if ($request->filled('jenis_kelamin') && $request->jenis_kelamin !== 'semua') {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+        // Pencarian berdasarkan ID Ternak dari form Search Input "q"
+        if ($request->filled('q')) {
+            $query->where('id_ternak', 'like', '%' . $request->q . '%');
+        }
+
+        $data_ternak = $query->paginate(10);
+
+        // AJAX: Kirim hanya data JSON (tanpa query tambahan & tanpa render HTML)
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data_ternak->map(function ($t) {
+                    return [
+                        'id_ternak' => $t->id_ternak,
+                        'jenis_ternak' => $t->jenis_ternak->jenis_ternak ?? ('Tipe ID: ' . $t->id_jenis_ternak),
+                        'id_jenis_ternak' => $t->id_jenis_ternak,
+                        'kandang' => $t->kamar->kandang->nomor_kandang ?? 'Kosong',
+                        'kamar' => $t->kamar->nomor_kamar ?? '-',
+                        'id_kamar' => $t->id_kamar,
+                        'id_kandang' => $t->kamar->id_kandang ?? 'kosong',
+                        'jenis_kelamin' => $t->jenis_kelamin,
+                        'usia' => $t->usia,
+                        'berat' => $t->berat,
+                        'harga' => $t->harga,
+                        'status_ternak' => $t->status_ternak,
+                        'status_jual' => $t->status_jual,
+                        'last_update' => $t->last_update,
+                    ];
+                }),
+                'pagination' => [
+                    'current_page' => $data_ternak->currentPage(),
+                    'last_page' => $data_ternak->lastPage(),
+                    'total' => $data_ternak->total(),
+                    'from' => $data_ternak->firstItem(),
+                    'to' => $data_ternak->lastItem(),
+                ],
+            ]);
+        }
+
+        $data_kandang = Kandang::all();
+        $data_kamar = Kamar::with('kandang')->get();
+        $data_jenis = JenisTernak::all();
+
+        $stat_total = Ternak::where('status_ternak', '!=', 'mati')->where('status_jual', '!=', 'terjual')->count();
+        $stat_siap_jual = Ternak::where('status_jual', 'siap jual')->count();
+        $stat_sakit = Ternak::where('status_ternak', 'sakit')->count();
+        $stat_terjual = Ternak::where('status_jual', 'terjual')->count();
+
+        // Pre-map data untuk JSON di Blade (menghindari closure di @json)
+        $data_ternak_json = $data_ternak->map(function ($t) {
+            return [
+                'id_ternak' => $t->id_ternak,
+                'jenis_ternak' => $t->jenis_ternak->jenis_ternak ?? ('Tipe ID: ' . $t->id_jenis_ternak),
+                'id_jenis_ternak' => $t->id_jenis_ternak,
+                'kandang' => $t->kamar->kandang->nomor_kandang ?? 'Kosong',
+                'kamar' => $t->kamar->nomor_kamar ?? '-',
+                'id_kamar' => $t->id_kamar,
+                'id_kandang' => $t->kamar->id_kandang ?? 'kosong',
+                'jenis_kelamin' => $t->jenis_kelamin,
+                'usia' => $t->usia,
+                'berat' => $t->berat,
+                'harga' => $t->harga,
+                'status_ternak' => $t->status_ternak,
+                'status_jual' => $t->status_jual,
+                'last_update' => $t->last_update,
+            ];
+        });
+
+        return view('pages.ternak', compact('data_ternak', 'data_ternak_json', 'data_kandang', 'data_kamar', 'data_jenis', 'stat_total', 'stat_siap_jual', 'stat_sakit', 'stat_terjual'));
+    }
+
+    public function store(Request $request)
+    {
+        if ($request->id_kamar === 'kosong' || $request->id_kamar === '') {
+            $request->merge(['id_kamar' => null]);
+        }
+
+        $request->validate([
+            'id_jenis_ternak' => 'required',
+            'id_kamar' => 'nullable|exists:kamar,id_kamar',
+            'jenis_kelamin' => 'required|in:jantan,betina',
+            'usia' => 'required|integer|min:0',
+            'berat' => 'required|numeric|min:0',
+            // 'harga' => 'required|numeric|min:0',
+            'status_ternak' => 'required|in:sehat,sakit,hamil,mati',
+            'status_jual' => 'required|in:tidak dijual,siap jual,booking,terjual',
+        ]);
+
+        if ($request->id_kamar) {
+            $kamar = Kamar::findOrFail($request->id_kamar);
+            $jumlah_isi_kamar = Ternak::where('id_kamar', $request->id_kamar)->count();
+
+            if ($jumlah_isi_kamar >= $kamar->kapasitas) {
+                return back()->withErrors([
+                    'id_kamar' => 'Gagal! Kamar ' . $kamar->nomor_kamar . ' sudah penuh kapasitasnya (' . $kamar->kapasitas . ' Ekor).'
+                ])->withInput();
+            }
+        }
+
+        $hargaOtomatis = self::hitungHargaOtomatis(
+            $request->id_jenis_ternak,
+            $request->usia,
+            $request->berat,
+            $request->jenis_kelamin
+        );
+
+
+        Ternak::create([
+            'id_jenis_ternak' => $request->id_jenis_ternak,
+            'id_kamar' => $request->id_kamar,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'usia' => $request->usia,
+            'berat' => $request->berat,
+            // 'harga' => $request->harga,
+            'harga' => $hargaOtomatis,
+            'status_ternak' => $request->status_ternak,
+            'status_jual' => $request->status_jual,
+            'last_update' => \Carbon\Carbon::now(),
+        ]);
+
+        return back()->with('success', 'Data ternak baru berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        // 1. Jika dikirim kosong dari dropdown, ubah jadi null
+        if ($request->id_kamar === 'kosong' || $request->id_kamar === '') {
+            $request->merge(['id_kamar' => null]);
+        }
+
+        // 2. Validasi Input Dasar
+        $request->validate([
+            'id_jenis_ternak' => 'required',
+            'id_kamar' => 'nullable|exists:kamar,id_kamar',
+            'jenis_kelamin' => 'required|in:jantan,betina',
+            'usia' => 'required|integer|min:0',
+            'berat' => 'required|numeric|min:0',
+            'status_ternak' => 'required|in:sehat,sakit,hamil,mati',
+            'status_jual' => 'required|in:tidak dijual,siap jual,booking,terjual',
+        ]);
+
+        $ternak = Ternak::findOrFail($id);
+
+        // 3. LOGIKA BARU: Cek kapasitas HANYA jika pindah kamar
+        if ($request->id_kamar && $request->id_kamar != $ternak->id_kamar) {
+            $kamar_tujuan = Kamar::findOrFail($request->id_kamar);
+            $jumlah_isi_tujuan = Ternak::where('id_kamar', $request->id_kamar)->count();
+
+            // Jika jumlah penghuni di kamar tujuan sudah mencapai batasnya
+            if ($jumlah_isi_tujuan >= $kamar_tujuan->kapasitas) {
+                return back()->withErrors([
+                    'id_kamar' => 'Gagal memindah! Kamar tujuan (' . $kamar_tujuan->nomor_kamar . ') sudah penuh.'
+                ])->withInput();
+            }
+        }
+
+        $hargaOtomatis = self::hitungHargaOtomatis(
+            $request->id_jenis_ternak,
+            $request->usia,
+            $request->berat,
+            $request->jenis_kelamin
+        );
+
+        // 4. Update Data jika Lolos Validasi
+        $ternak->update([
+            'id_jenis_ternak' => $request->id_jenis_ternak,
+            'id_kamar' => $request->id_kamar,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'usia' => $request->usia,
+            'berat' => $request->berat,
+            'harga' => $hargaOtomatis,
+            'status_ternak' => $request->status_ternak,
+            'status_jual' => $request->status_jual,
+            'last_update' => \Carbon\Carbon::now(),
+        ]);
+
+        return back()->with('success', 'Data ternak berhasil diperbarui.');
+    }
+
+    public function delete($id)
+    {
+        $ternak = Ternak::findOrFail($id);
+
+        // Sempurnakan logika: bukan menghapus record, tapi mengeluarkan dari kamar
+        $ternak->update([
+            'id_kamar' => null
+        ]);
+
+        return back()->with('success', 'Ternak berhasil dikeluarkan dari kandang.');
+    }
+
+    public function detail($id)
+    {
+        $ternak = Ternak::with(['kamar.kandang', 'jenis_ternak'])->findOrFail($id);
+
+        // 1. Ambil Data Riwayat Penyakit (Hanya yang sakit)
+        $riwayat_penyakit = \App\Models\Monitor::where('id_ternak', $id)
+                            ->whereNotNull('penyakit')
+                            ->where('penyakit', '!=', '')
+                            ->orderBy('tgl_monitoring', 'desc')
+                            ->get();
+
+        // 2. Ambil Semua Data Monitoring untuk Grafik
+        $monitoring = \App\Models\Monitor::where('id_ternak', $id)
+                            ->orderBy('usia', 'asc')
+                            ->get();
+
+        // 3. Baca File JSON Standar Pertumbuhan
+        $jsonPath = public_path('json/sheep_growth_data.json');
+        $idealData = [];
+
+        if (file_exists($jsonPath)) {
+            $jsonData = json_decode(file_get_contents($jsonPath), true);
+
+            // Mapping nama dari Database ke kunci JSON Anda
+            $mapJenis = [
+                'merino' => 'Merino',
+                'crosstexel' => 'Cross Texel',
+                'etawa' => 'Etawa (PE)'
+            ];
+
+            $namaJenisDb = strtolower($ternak->jenis_ternak->jenis_ternak ?? '');
+            $keyJson = $mapJenis[$namaJenisDb] ?? null;
+
+            if ($keyJson && isset($jsonData[$keyJson])) {
+                $idealData = $jsonData[$keyJson];
+            }
+        }
+
+        // 4. Siapkan Array untuk Grafik (X = Umur Bulan, Y1 = Ideal, Y2 = Aktual)
+        $chartLabels = [];
+        $chartIdeal = [];
+        $chartAktual = [];
+
+        $kelaminKey = $ternak->jenis_kelamin == 'jantan' ? 'weight_male_kg' : 'weight_female_kg';
+
+        // Petakan data monitoring aktual berdasarkan usianya
+        $actualMap = [];
+        foreach($monitoring as $m) {
+            $actualMap[$m->usia] = $m->berat;
+        }
+
+        // Memasukkan berat saat ini juga ke dalam map aktual
+        $actualMap[$ternak->usia] = $ternak->berat;
+
+        // Racik datanya (Maksimal 24 Bulan sesuai JSON)
+        foreach($idealData as $row) {
+            $bulan = $row['month'];
+            $chartLabels[] = $bulan . " Bln";
+            $chartIdeal[] = $row[$kelaminKey];
+
+            // Jika ada data aktual di bulan tersebut, masukkan. Jika tidak, biarkan kosong (null)
+            $chartAktual[] = isset($actualMap[$bulan]) ? $actualMap[$bulan] : null;
+        }
+
+        return view('pages.grafik-ternak', compact('ternak', 'riwayat_penyakit', 'chartLabels', 'chartIdeal', 'chartAktual'));
+    }
+
+    public static function hitungHargaOtomatis($id_jenis_ternak, $usia, $berat, $jenis_kelamin)
+    {
+        $jsonPath = public_path('json/value.json');
+        if (!File::exists($jsonPath)) return 0;
+
+        $data = json_decode(File::get($jsonPath), true);
+        $jenisTernak = \App\Models\JenisTernak::find($id_jenis_ternak);
+        $namaJenis = $jenisTernak ? $jenisTernak->jenis_ternak : '';
+
+        // Mapping nama jenis dari DB ke JSON
+        $mapJenis = [
+            'crosstexel' => 'Cross Texel',
+            'merino' => 'Merino',
+            'etawa' => 'Etawa (PE)'
+        ];
+        $searchJenis = $mapJenis[strtolower($namaJenis)] ?? $namaJenis;
+
+        foreach ($data['ternak_klasifikasi'] as $breed) {
+            if ($breed['breed_name'] === $searchJenis) {
+                // Tentukan kategori usia
+                $kategoriUsia = '';
+                if ($usia <= 5) $kategoriUsia = 'Anakan/Bibit';
+                elseif ($usia <= 11) $kategoriUsia = 'Doro/Muda';
+                else $kategoriUsia = 'Indukan/Dewasa';
+
+                foreach ($breed['age_categories'] as $ageCat) {
+                    if ($ageCat['category_name'] === $kategoriUsia) {
+                        $standardClass = null;
+                        $mediumClass = null;
+                        $superClass = null;
+                        
+                        foreach ($ageCat['weight_classes'] as $wClass) {
+                            if (strtolower($wClass['class_name']) === 'standard') {
+                                $standardClass = $wClass;
+                            } elseif (strtolower($wClass['class_name']) === 'medium') {
+                                $mediumClass = $wClass;
+                            } elseif (strtolower($wClass['class_name']) === 'super') {
+                                $superClass = $wClass;
+                            }
+                        }
+                        
+                        $prices = null;
+                        if ($standardClass && $berat <= $standardClass['max_weight']) {
+                            $prices = $standardClass['prices'];
+                        } elseif ($mediumClass && $berat <= $mediumClass['max_weight']) {
+                            $prices = $mediumClass['prices'];
+                        } elseif ($superClass) {
+                            $prices = $superClass['prices'];
+                        } elseif ($standardClass) {
+                            $prices = $standardClass['prices'];
+                        }
+                        
+                        if ($prices) {
+                            $keyKelamin = ucfirst(strtolower($jenis_kelamin));
+                            return $prices[$keyKelamin] ?? 0;
+                        }
+                    }
+                }
+            }
+        }
+        return 0; // Kembalikan 0 jika tidak ditemukan kecocokan
+    }
+
+
+}
+

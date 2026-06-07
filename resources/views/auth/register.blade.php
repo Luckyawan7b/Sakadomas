@@ -17,8 +17,8 @@
     <header class="fixed top-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-sm md:hidden">
         <div class="flex justify-between items-center w-full px-6 py-4">
             <span class="font-noto-serif text-2xl italic font-bold text-primary">Smart-Saka</span>
-            <a href="{{ route('login') }}" class="font-manrope text-xs tracking-widest uppercase text-primary hover:bg-surface-variant transition-colors px-4 py-2 rounded-xl">
-                Masuk
+            <a href="{{ route('home') }}" class="font-manrope text-xs tracking-widest uppercase text-primary hover:bg-surface-variant transition-colors px-4 py-2 rounded-xl">
+                Home
             </a>
         </div>
     </header>
@@ -31,9 +31,9 @@
         <div class="absolute inset-0 bg-gradient-to-tr from-primary/80 to-transparent"></div>
 
         <div class="absolute top-8 left-8 z-30">
-            <a href="{{ route('login') }}" class="flex items-center text-white/80 hover:text-white transition-colors bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm pointer-events-auto">
+            <a href="{{ route('home') }}" class="flex items-center text-white/80 hover:text-white transition-colors bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm pointer-events-auto">
                 <span class="material-symbols-outlined mr-2 text-sm" aria-hidden="true">arrow_back</span>
-                <span class="font-manrope text-sm font-medium">Kembali ke Login</span>
+                <span class="font-manrope text-sm font-medium">Kembali ke Halaman Utama</span>
             </a>
         </div>
 
@@ -97,7 +97,7 @@
                     </div>
                 </div>
 
-                {{-- Email & Password (Menggunakan Alpine.js) --}}
+                {{-- Email & Password --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div class="space-y-1.5">
                         <label for="email" class="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Email <span class="text-error">*</span></label>
@@ -112,38 +112,53 @@
                         {{-- DI SINI ALPINE JS BEKERJA MENGATUR PASSWORD SHOW/HIDE --}}
                         <div x-data="{ showPassword: false }" class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200 flex items-center pr-4 relative">
                             <input id="password" :type="showPassword ? 'text' : 'password'" name="password" placeholder="Masukkan password" required class="w-full bg-transparent border-none focus:ring-0 px-4 py-3.5 text-on-surface placeholder:text-outline-variant">
-                            <button type="button" @click="showPassword = !showPassword" class="absolute right-4 text-on-surface-variant hover:text-primary transition-colors cursor-pointer z-10">
-                                <span x-show="!showPassword" class="material-symbols-outlined">visibility</span>
-                                <span x-show="showPassword" class="material-symbols-outlined" style="display: none;">visibility_off</span>
+                            <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors cursor-pointer z-10">
+                                <span x-show="!showPassword" class="material-symbols-outlined leading-none">visibility</span>
+                                <span x-show="showPassword" class="material-symbols-outlined leading-none" style="display: none;">visibility_off</span>
                             </button>
                         </div>
                         @error('password') <p class="text-xs text-error mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
-                {{-- Kecamatan & Desa --}}
-                <div class="grid grid-cols-2 gap-5">
-                    <div class="space-y-1.5">
-                        <label for="kecamatan" class="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Kecamatan <span class="text-error">*</span></label>
-                        <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200 relative">
-                            <select id="kecamatan" name="id_kecamatan" required class="w-full bg-transparent border-none focus:ring-0 pl-4 pr-10 py-3.5 text-on-surface appearance-none cursor-pointer">
-                                <option value="" disabled {{ old('id_kecamatan') ? '' : 'selected' }} hidden>Pilih Kecamatan</option>
-                                @foreach ($kecamatan as $kec)
-                                    <option value="{{ $kec->id_kecamatan }}" {{ old('id_kecamatan') == $kec->id_kecamatan ? 'selected' : '' }}>{{ $kec->nama_kecamatan }}</option>
-                                @endforeach
-                            </select>
-                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+                {{-- Kecamatan & Desa (Autocomplete dgn AlpineJS) --}}
+                <div class="grid grid-cols-2 gap-5"
+                     x-data="locationPicker(window.locationData)">
+
+                    {{-- Kecamatan Autocomplete --}}
+                    <div class="space-y-1.5 relative">
+                        <label for="kecamatan_search" class="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Kecamatan <span class="text-error">*</span></label>
+                        <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200 relative" @click.away="openKecamatan = false">
+                            <input type="hidden" name="id_kecamatan" x-model="selectedKecamatanId">
+                            <input id="kecamatan_search" type="text" x-model="searchKecamatan" @focus="openKecamatan = true" @input="openKecamatan = true; selectedKecamatanId = ''; selectedDesaId = ''; searchDesa = '';" placeholder="Cari Kecamatan..." autocomplete="off" class="w-full bg-transparent border-none focus:ring-0 pl-4 pr-10 py-3.5 text-on-surface placeholder:text-outline-variant">
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">search</span>
+
+                            {{-- Dropdown Kecamatan --}}
+                            <ul x-show="openKecamatan" x-transition class="absolute z-50 w-full bg-surface border border-outline-variant rounded-xl mt-1 shadow-lg max-h-60 overflow-y-auto" style="display: none;">
+                                <template x-for="kec in filteredKecamatan" :key="kec.id_kecamatan">
+                                    <li @click="selectKecamatan(kec)" class="px-4 py-3 hover:bg-surface-variant cursor-pointer text-on-surface text-sm transition-colors" x-text="kec.nama_kecamatan"></li>
+                                </template>
+                                <li x-show="filteredKecamatan.length === 0" class="px-4 py-3 text-on-surface-variant text-sm text-center">Kecamatan tidak ditemukan</li>
+                            </ul>
                         </div>
                         @error('id_kecamatan') <p class="text-xs text-error mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="space-y-1.5">
-                        <label for="desa" class="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Desa <span class="text-error">*</span></label>
-                        <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200 relative">
-                            <select id="desa" name="id_desa" required disabled class="w-full bg-transparent border-none focus:ring-0 pl-4 pr-10 py-3.5 text-on-surface appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                                <option value="" disabled selected hidden>Pilih Desa</option>
-                            </select>
-                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+                    {{-- Desa Autocomplete --}}
+                    <div class="space-y-1.5 relative">
+                        <label for="desa_search" class="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant ml-1">Desa <span class="text-error">*</span></label>
+                        <div class="input-focus-effect bg-surface-container-highest rounded-xl transition-all duration-200 relative" @click.away="openDesa = false">
+                            <input type="hidden" name="id_desa" x-model="selectedDesaId">
+                            <input id="desa_search" type="text" x-model="searchDesa" @focus="openDesa = true" @input="openDesa = true; selectedDesaId = '';" placeholder="Cari Desa..." autocomplete="off" :disabled="!selectedKecamatanId" class="w-full bg-transparent border-none focus:ring-0 pl-4 pr-10 py-3.5 text-on-surface placeholder:text-outline-variant disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">search</span>
+
+                            {{-- Dropdown Desa --}}
+                            <ul x-show="openDesa && selectedKecamatanId" x-transition class="absolute z-50 w-full bg-surface border border-outline-variant rounded-xl mt-1 shadow-lg max-h-60 overflow-y-auto" style="display: none;">
+                                <template x-for="d in filteredDesa" :key="d.id_desa">
+                                    <li @click="selectDesa(d)" class="px-4 py-3 hover:bg-surface-variant cursor-pointer text-on-surface text-sm transition-colors" x-text="d.nama_desa"></li>
+                                </template>
+                                <li x-show="filteredDesa.length === 0" class="px-4 py-3 text-on-surface-variant text-sm text-center">Desa tidak ditemukan</li>
+                            </ul>
                         </div>
                         @error('id_desa') <p class="text-xs text-error mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
@@ -177,41 +192,84 @@
     </section>
 </div>
 
-{{-- SCRIPT JAVASCRIPT UNTUK MENGAMBIL DATA DESA --}}
+{{-- SCRIPT JAVASCRIPT UNTUK ALPINE.JS COMPONENT --}}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const kecamatanSelect = document.getElementById("kecamatan");
-        const desaSelect = document.getElementById("desa");
+    // Menyimpan data ke dalam variabel global agar HTML tidak kotor/memanjang oleh JSON string
+    window.locationData = {
+        kecamatanList: @json($kecamatan),
+        desaList: @json($desa),
+        oldIdKecamatan: '{{ old('id_kecamatan') }}',
+        oldIdDesa: '{{ old('id_desa') }}'
+    };
 
-        if (kecamatanSelect && desaSelect) {
-            kecamatanSelect.addEventListener("change", function() {
-                const idKecamatan = this.value;
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('locationPicker', (data) => ({
+            kecamatanList: data.kecamatanList,
+            desaList: data.desaList,
 
-                if (idKecamatan) {
-                    desaSelect.innerHTML = '<option value="" disabled selected hidden>Memuat desa...</option>';
-                    desaSelect.setAttribute("disabled", "disabled");
+            searchKecamatan: '',
+            searchDesa: '',
 
-                    fetch(`/api/desa/${idKecamatan}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            desaSelect.innerHTML = '<option value="" disabled selected hidden>Pilih desa</option>';
+            selectedKecamatanId: data.oldIdKecamatan || '',
+            selectedDesaId: data.oldIdDesa || '',
 
-                            data.forEach(desa => {
-                                const option = document.createElement('option');
-                                option.value = desa.id_desa;
-                                option.textContent = desa.nama_desa;
-                                desaSelect.appendChild(option);
-                            });
+            openKecamatan: false,
+            openDesa: false,
 
-                            desaSelect.removeAttribute("disabled");
-                        })
-                        .catch(error => {
-                            console.error('Error fetching desa:', error);
-                            desaSelect.innerHTML = '<option value="" disabled selected hidden>Gagal memuat data</option>';
-                        });
+            init() {
+                // Saat inisialisasi, jika ada oldIdKecamatan, set text search-nya
+                if (this.selectedKecamatanId) {
+                    const kec = this.kecamatanList.find(k => k.id_kecamatan == this.selectedKecamatanId);
+                    if (kec) this.searchKecamatan = kec.nama_kecamatan;
                 }
-            });
-        }
+
+                // Set old text untuk desa jika ada
+                if (this.selectedDesaId) {
+                    const d = this.desaList.find(d => d.id_desa == this.selectedDesaId);
+                    if (d) this.searchDesa = d.nama_desa;
+                }
+            },
+
+            get filteredKecamatan() {
+                if (this.searchKecamatan === '') return this.kecamatanList;
+                // Jangan filter jika text search sama dengan item yang sudah di-select
+                const selected = this.kecamatanList.find(k => k.id_kecamatan == this.selectedKecamatanId);
+                if (selected && selected.nama_kecamatan === this.searchKecamatan) return this.kecamatanList;
+
+                return this.kecamatanList.filter(kec =>
+                    kec.nama_kecamatan.toLowerCase().includes(this.searchKecamatan.toLowerCase())
+                );
+            },
+
+            get filteredDesa() {
+                const availableDesa = this.desaList.filter(d => d.id_kecamatan == this.selectedKecamatanId);
+                if (this.searchDesa === '') return availableDesa;
+
+                // Jangan filter jika text search sama dengan item yang sudah di-select
+                const selected = availableDesa.find(d => d.id_desa == this.selectedDesaId);
+                if (selected && selected.nama_desa === this.searchDesa) return availableDesa;
+
+                return availableDesa.filter(d =>
+                    d.nama_desa.toLowerCase().includes(this.searchDesa.toLowerCase())
+                );
+            },
+
+            selectKecamatan(kec) {
+                this.selectedKecamatanId = kec.id_kecamatan;
+                this.searchKecamatan = kec.nama_kecamatan;
+                this.openKecamatan = false;
+
+                // Reset desa ketika kecamatan diganti
+                this.selectedDesaId = '';
+                this.searchDesa = '';
+            },
+
+            selectDesa(d) {
+                this.selectedDesaId = d.id_desa;
+                this.searchDesa = d.nama_desa;
+                this.openDesa = false;
+            }
+        }));
     });
 </script>
 @endsection
