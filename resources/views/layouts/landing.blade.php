@@ -8,6 +8,7 @@
 
     {{-- ── SEO ── --}}
     <title>@yield('title', 'Smart-Saka | Peternakan Domba & Kambing Premium Jember')</title>
+    <link rel="icon" href="https://i.postimg.cc/L51FGms2/Logo_Sakadomas.ico.png">
     <meta name="description" content="@yield('meta_description', 'Pusat pembibitan domba Crosstexel, Merino, dan kambing Etawa premium di Jember. Langsung dari kandang, bersertifikat sehat, siap antar Jawa Timur.')">
     <meta name="keywords"
         content="domba premium, kambing etawa, bibit domba, kurban, aqiqah, peternakan jember, smart-saka">
@@ -124,7 +125,7 @@
                         }
                     });
                 }
-                
+
                 window.addEventListener('fcm-message', (e) => {
                     const title = e.detail.notification?.title || 'Notifikasi';
                     const body = e.detail.notification?.body || '';
