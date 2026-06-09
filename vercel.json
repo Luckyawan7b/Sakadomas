@@ -30,12 +30,18 @@
         "LOG_CHANNEL": "stderr",
         "CACHE_DRIVER": "array",
         "SESSION_DRIVER": "cookie",
-        "QUEUE_CONNECTION": "sync",
+        "QUEUE_CONNECTION": "database",
         "VIEW_COMPILED_PATH": "/tmp",
         "APP_SERVICES_CACHE": "/tmp/services.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_ROUTES_CACHE": "/tmp/routes.php",
         "APP_EVENTS_CACHE": "/tmp/events.php"
-    }
+    },
+    "crons": [
+        {
+            "path": "/api/queue-worker",
+            "schedule": "0 0 * * *"
+        }
+    ]
 }

@@ -170,6 +170,34 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 });
 
+/*
+|--------------------------------------------------------------------------
+| Vercel Cron Job Route
+|--------------------------------------------------------------------------
+| Digunakan untuk menjalankan queue worker di lingkungan Vercel.
+| Vercel akan memanggil route ini secara otomatis berdasarkan konfigurasi di vercel.json.
+*/
+Route::get('/api/queue-worker', function () {
+    // Verifikasi bahwa request datang dari Vercel Cron dengan mencocokkan CRON_SECRET
+    $cronSecret = env('CRON_SECRET');
+    $authHeader = request()->header('Authorization');
+
+    if ($cronSecret && $authHeader !== 'Bearer ' . $cronSecret) {
+        return response()->json(['error' => 'Unauthorized. Invalid CRON_SECRET.'], 401);
+    }
+
+    // Jalankan queue:work dan berhenti ketika queue kosong (karena ini serverless)
+    \Illuminate\Support\Facades\Artisan::call('queue:work', [
+        '--stop-when-empty' => true,
+        '--tries' => 3
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Queue processed successfully',
+        'output' => \Illuminate\Support\Facades\Artisan::output()
+    ]);
+});
 
 
 
