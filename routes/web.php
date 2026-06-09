@@ -27,7 +27,7 @@ Route::get('/produk/{slug}', [LandingController::class, 'detailProduk'])->name('
 Route::get('/firebase-messaging-sw.js', function () {
     return response()->view('service-worker', [
         'config' => config('services.firebase')
-    ])->header('Content-Type', 'application/ja  vascript');
+    ])->header('Content-Type', 'application/javascript');
 });
 
 Route::middleware('guest')->group(function () {
