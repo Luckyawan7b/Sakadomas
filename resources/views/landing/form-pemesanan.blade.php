@@ -419,6 +419,26 @@
         sumWaktu()       { return this.selectedTime || "-"; },
         sumPengiriman()  { return this.metodePengiriman === "dikirim" ? "Kirim ke Alamat" : "Ambil Langsung"; },
         sumPembayaran()  { return this.metodePembayaran === "transfer" ? "Transfer Bank" : "COD (Bayar di Tempat)"; },
+
+        /* ── Image helper ── */
+        getImage(item) {
+            if (!item || !item.nama_produk) return "";
+            
+            const parts = item.nama_produk.split("-");
+            const breedPart = parts[0] ? parts[0].trim() : "crosstexel";
+            const usiaPart = parts[1] ? parts[1].trim() : "indukan";
+
+            let breedKey = breedPart.toLowerCase().replace(/[\s()]/g, "");
+            if (breedKey.includes("etawa")) breedKey = "etawa";
+
+            let usiaKey = "indukan";
+            const usia = usiaPart.toLowerCase();
+            if (usia.includes("anakan") || usia.includes("bibit")) usiaKey = "anakan";
+            else if (usia.includes("doro") || usia.includes("muda")) usiaKey = "doro";
+            else if (usia.includes("indukan") || usia.includes("dewasa")) usiaKey = "indukan";
+
+            return `/images/${breedKey}/${usiaKey}.webp?v=1.1`;
+        }
     }'
     x-init="init()"
 >
@@ -1127,10 +1147,15 @@
 
                     {{-- Product image placeholder --}}
                     <div class="relative h-52 bg-m3-surface-container-low flex items-center justify-center overflow-hidden">
-                        <span class="material-symbols-outlined text-[7rem] text-m3-outline-variant/20"
-                            style="font-variation-settings:'FILL' 0,'wght' 200;">pets</span>
+                        <template x-if="selectedItem">
+                            <img :src="getImage(selectedItem)" alt="Gambar Ternak" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                        </template>
+                        <template x-if="!selectedItem">
+                            <span class="material-symbols-outlined text-[7rem] text-m3-outline-variant/20"
+                                style="font-variation-settings:'FILL' 0,'wght' 200;">pets</span>
+                        </template>
                         <div x-show="selectedItem"
-                            class="absolute top-4 right-4 bg-m3-primary/90 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                            class="absolute top-4 right-4 bg-m3-primary/90 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest z-10">
                             Siap Jual
                         </div>
                     </div>
