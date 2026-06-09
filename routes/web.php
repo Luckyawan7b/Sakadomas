@@ -177,7 +177,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 | Digunakan untuk menjalankan queue worker di lingkungan Vercel.
 | Vercel akan memanggil route ini secara otomatis berdasarkan konfigurasi di vercel.json.
 */
-Route::get('/api/queue-worker', function () {
+Route::get('/cron/queue-worker', function () {
     // Verifikasi bahwa request datang dari Vercel Cron dengan mencocokkan CRON_SECRET
     $cronSecret = env('CRON_SECRET');
     $authHeader = request()->header('Authorization');
