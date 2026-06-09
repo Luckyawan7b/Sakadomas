@@ -178,15 +178,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 | Vercel akan memanggil route ini secara otomatis berdasarkan konfigurasi di vercel.json.
 */
 Route::get('/cron/queue-worker', function () {
-    // Verifikasi bahwa request datang dari Vercel Cron dengan mencocokkan CRON_SECRET
     $cronSecret = env('CRON_SECRET');
     $authHeader = request()->header('Authorization');
+    $tokenParam = request()->query('token');
 
-    if ($cronSecret && $authHeader !== 'Bearer ' . $cronSecret) {
+    if ($cronSecret && $authHeader !== 'Bearer ' . $cronSecret && $tokenParam !== $cronSecret) {
         return response()->json(['error' => 'Unauthorized. Invalid CRON_SECRET.'], 401);
     }
 
-    // Jalankan queue:work dan berhenti ketika queue kosong (karena ini serverless)
     \Illuminate\Support\Facades\Artisan::call('queue:work', [
         '--stop-when-empty' => true,
         '--tries' => 3
@@ -195,6 +194,30 @@ Route::get('/cron/queue-worker', function () {
     return response()->json([
         'status' => 'success',
         'message' => 'Queue processed successfully',
+        'output' => \Illuminate\Support\Facades\Artisan::output()
+    ]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Vercel Cron Job Route (Scheduler)
+|--------------------------------------------------------------------------
+| Digunakan untuk menjalankan fitur notifikasi otomatis dan auto-cancel (app:check-transaksi).
+*/
+Route::get('/cron/scheduler', function () {
+    $cronSecret = env('CRON_SECRET');
+    $authHeader = request()->header('Authorization');
+    $tokenParam = request()->query('token');
+
+    if ($cronSecret && $authHeader !== 'Bearer ' . $cronSecret && $tokenParam !== $cronSecret) {
+        return response()->json(['error' => 'Unauthorized.'], 401);
+    }
+
+    \Illuminate\Support\Facades\Artisan::call('schedule:run');
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Scheduler executed',
         'output' => \Illuminate\Support\Facades\Artisan::output()
     ]);
 });
